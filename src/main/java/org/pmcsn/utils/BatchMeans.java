@@ -1,51 +1,39 @@
 package org.pmcsn.utils;
 
-import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.controller.BatchSimulationRunner;
 import org.pmcsn.model.BatchStatistics;
 
 import java.util.List;
 
-import static org.pmcsn.utils.PrintUtils.printError;
-import static org.pmcsn.utils.PrintUtils.printSuccess;
+import static org.pmcsn.utils.PrintUtils.printBatchStatisticsResult;
 
 public class BatchMeans {
     public static void main(String[] args) throws Exception {
         BatchSimulationRunner batchRunner = new BatchSimulationRunner();
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true);
 
-        boolean allOk = true;
-
         // Iterate over each BatchStatistics object
         for (BatchStatistics batchStatistics : batchStatisticsList) {
             // List of all metric lists for current BatchStatistics with their labels
             List<Metric> allMetrics = List.of(
-                    new Metric("Mean Response Time", batchStatistics.meanResponseTimeList),
-                    new Metric("Mean Service Time", batchStatistics.meanServiceTimeList),
-                    new Metric("Mean Queue Time", batchStatistics.meanQueueTimeList),
-                    new Metric("Lambda", batchStatistics.lambdaList),
-                    new Metric("Mean System Population", batchStatistics.meanSystemPopulationList),
-                    new Metric("Mean Utilization", batchStatistics.meanUtilizationList),
-                    new Metric("Mean Queue Population", batchStatistics.meanQueuePopulationList)
+                    new Metric("E[Ts]", batchStatistics.meanResponseTimeList),
+                    new Metric("E[Tq]", batchStatistics.meanQueueTimeList),
+                    new Metric("E[s]", batchStatistics.meanServiceTimeList),
+                    new Metric("E[Ns]", batchStatistics.meanSystemPopulationList),
+                    new Metric("E[Nq]", batchStatistics.meanQueuePopulationList),
+                    new Metric("ρ", batchStatistics.meanUtilizationList),
+                    new Metric("λ", batchStatistics.lambdaList)
             );
 
-            // Calculate and print ACF for each metric list
+            // Calculate ACF for each metric list
             for (Metric metric : allMetrics) {
                 double acfValue = Math.abs(acf(metric.values));
-                System.out.printf("Metric: %s, abs(ACF): %.4f%n", metric.name, acfValue);
-                if (acfValue > 0.2) {
-                    allOk = false;
-                }
+                metric.setAcfValue(acfValue);
             }
 
-            if (allOk) {
-                printSuccess("B and K are OK!.");
-            } else {
-                printError("B and K are NOT OK!.");
-            }
-
+            // Pass the metrics and the allOk status to the print function
+            printBatchStatisticsResult(batchStatistics.getCenterName(), allMetrics);
         }
-
     }
 
     public static double acf(List<Double> data) {
@@ -72,13 +60,18 @@ public class BatchMeans {
     }
 }
 
-// Helper class to hold metric name and values
+// Helper class to hold metric name, values, and ACF value
 class Metric {
     String name;
     List<Double> values;
+    double acfValue;
 
     Metric(String name, List<Double> values) {
         this.name = name;
         this.values = values;
+    }
+
+    public void setAcfValue(double acfValue) {
+        this.acfValue = acfValue;
     }
 }

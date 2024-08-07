@@ -40,19 +40,31 @@ public class PrintUtils {
         sb.append("]");
         return sb.toString();
     }
-    public static void printAnalyticalResult(AnalyticalComputation.AnalyticalResult analyticalResult) {
-        System.out.println(YELLOW + "\n\n*************************************************");
-        System.out.println("Analytical results for " + analyticalResult.name.toUpperCase());
-        System.out.println("*************************************************" + RESET);
-        // Print results
-        System.out.println("Lambda: " + analyticalResult.lambda);
-        System.out.println("Rho: " + analyticalResult.rho);
-        System.out.println("E[Tq]: " + analyticalResult.Etq);
-        System.out.println("E[Nq]: " + analyticalResult.Enq);
-        System.out.println("E[Ts]: " + analyticalResult.Ets);
-        System.out.println("E[Ns]: " + analyticalResult.Ens);
-        System.out.println("E[s]: " + analyticalResult.Es);
-        System.out.println(YELLOW + "*************************************************" + RESET);
+
+    public static void printBatchStatisticsResult(String centerName, List<Metric> metrics) {
+        ConfigurationManager configurationManager = new ConfigurationManager();
+        int batchSize = configurationManager.getInt("general", "batchSize");
+        int numBatches = configurationManager.getInt("general", "numBatches");
+        System.out.println(BLUE + "\n\n*******************************************************************************************************");
+        System.out.println("AUTOCORRELATION VALUES FOR " + centerName + " WITH [B:"+batchSize+"|K:"+numBatches+"]");
+        System.out.println("*******************************************************************************************************" + RESET);
+        for (Metric metric : metrics) {
+            String color = getAcfColor(metric.acfValue);
+            System.out.printf("%s: %s%.4f%s%n", metric.name, color, metric.acfValue, RESET);
+        }
+        System.out.println(BLUE + "*******************************************************************************************************" + RESET);
+    }
+
+    private static String getAcfColor(double value) {
+        if (value > 0.2) {
+            return RED;
+        } else {
+            return GREEN;
+        }
+    }
+
+    private static void printMetric(String name, List<Double> values) {
+        System.out.printf("%s: %s%n", name, values.toString());
     }
 
     public static void printFinalResults(List<Verification.VerificationResult> verificationResultList) {
