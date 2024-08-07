@@ -2,6 +2,7 @@ package org.pmcsn.utils;
 
 
 import org.pmcsn.configuration.ConfigurationManager;
+import org.pmcsn.model.BatchMetric;
 
 import java.util.List;
 import java.util.Scanner;
@@ -15,12 +16,11 @@ public class PrintUtils {
 
     public static void printTitle() {
         System.out.println(BLUE +
-                "  _   _ _      _                             _                 \n" +
-                " | | | (_)_ __(_)_ __   __ _   ___ _   _ ___| |_ ___ _ __ ___  \n" +
-                " | |_| | | '__| | '_ \\ / _` | / __| | | / __| __/ _ \\ '_ ` _ \\ \n" +
-                " |  _  | | |  | | | | | (_| | \\__ \\ |_| \\__ \\ ||  __/ | | | | |\n" +
-                " |_| |_|_|_|  |_|_| |_|\\__, | |___/\\__, |___/\\__\\___|_| |_| |_|\n" +
-                "                       |___/       |___/                       " + RESET);
+                "███████ ██ ███    ███ ██    ██ ██       █████  ████████  ██████  ██████  \n" +
+                "██      ██ ████  ████ ██    ██ ██      ██   ██    ██    ██    ██ ██   ██ \n" +
+                "███████ ██ ██ ████ ██ ██    ██ ██      ███████    ██    ██    ██ ██████  \n" +
+                "     ██ ██ ██  ██  ██ ██    ██ ██      ██   ██    ██    ██    ██ ██   ██ \n" +
+                "███████ ██ ██      ██  ██████  ███████ ██   ██    ██     ██████  ██   ██ \n" + RESET);
     }
 
 
@@ -41,16 +41,16 @@ public class PrintUtils {
         return sb.toString();
     }
 
-    public static void printBatchStatisticsResult(String centerName, List<Metric> metrics) {
+    public static void printBatchStatisticsResult(String centerName, List<BatchMetric> batchMetrics) {
         ConfigurationManager configurationManager = new ConfigurationManager();
         int batchSize = configurationManager.getInt("general", "batchSize");
         int numBatches = configurationManager.getInt("general", "numBatches");
         System.out.println(BLUE + "\n\n*******************************************************************************************************");
         System.out.println("AUTOCORRELATION VALUES FOR " + centerName + " WITH [B:"+batchSize+"|K:"+numBatches+"]");
         System.out.println("*******************************************************************************************************" + RESET);
-        for (Metric metric : metrics) {
-            String color = getAcfColor(metric.acfValue);
-            System.out.printf("%s: %s%.4f%s%n", metric.name, color, metric.acfValue, RESET);
+        for (BatchMetric batchMetric : batchMetrics) {
+            String color = getAcfColor(batchMetric.acfValue);
+            System.out.printf("%s: %s%.4f%s%n", batchMetric.name, color, batchMetric.acfValue, RESET);
         }
         System.out.println(BLUE + "*******************************************************************************************************" + RESET);
     }
@@ -150,9 +150,7 @@ public class PrintUtils {
         System.out.println(BLUE + "\nSelect simulation Type:" + RESET);
         System.out.println(BLUE + "1" + RESET  + ". Basic Simulation");
         System.out.println(BLUE + "2" + RESET + ". Improved Model Simulation");
-        System.out.println(BLUE + "3" + RESET + ". Batch Simulation");
-        System.out.println(BLUE + "4" + RESET  + ". Basic Simulation with Exponential Distributions");
-        System.out.println(BLUE + "5" + RESET + ". Batch Simulation with Exponential Distributions");
+        System.out.println(BLUE + "3" + RESET + ". Batch Simulation (Verification)");
 
         System.out.print(BLUE + "Enter the simulation type number: " + RESET);
     }
@@ -187,6 +185,9 @@ public class PrintUtils {
     }
     public static void printSuccess(String successMessage){
         System.out.println(GREEN + successMessage + RESET);
+    }
+    public static void printDebug(String warningMessage){
+        System.out.println(BLUE + warningMessage + RESET);
     }
     public static void printWarning(String warningMessage){
         System.out.println(YELLOW + warningMessage + RESET);

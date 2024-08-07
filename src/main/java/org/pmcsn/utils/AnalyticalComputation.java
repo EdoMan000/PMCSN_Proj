@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.pmcsn.utils.PrintUtils.printDebug;
+
 public class AnalyticalComputation {
     private static final ConfigurationManager config = new ConfigurationManager();
 
@@ -124,7 +126,7 @@ public class AnalyticalComputation {
     }
 
     public static List<AnalyticalResult> computeAnalyticalResults(String simulationType) {
-        System.out.println("Computing analytical results for simulation...");
+        printDebug("Computing analytical results for simulation...");
         List<AnalyticalResult> analyticalResults = new ArrayList<>();
 
         double lambda = 1 / config.getDouble("general", "interArrivalTime");

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.pmcsn.utils.PrintUtils.printDebug;
+
 
 public class Comparison {
 
@@ -35,7 +37,7 @@ public class Comparison {
     }
 
     public static List<ComparisonResult> compareResults(String simulationType, List<AnalyticalResult> verificationResults, List<MeanStatistics> meanStatisticsList) {
-        System.out.println("Starting comparison with analytical results...");
+        printDebug("Starting comparison with analytical results...");
         List<ComparisonResult> comparisonResults = new ArrayList<>();
 
         for (MeanStatistics meanStatistics : meanStatisticsList) {

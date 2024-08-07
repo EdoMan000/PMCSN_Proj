@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 
 import static org.pmcsn.utils.AnalyticalComputation.computeAnalyticalResults;
 import static org.pmcsn.utils.Comparison.compareResults;
-import static org.pmcsn.utils.PrintUtils.printFinalResults;
+import static org.pmcsn.utils.PrintUtils.*;
 import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
 public class BatchSimulationRunner {
@@ -59,7 +59,7 @@ public class BatchSimulationRunner {
         } else {
             simulationType = "BATCH_SIMULATION";
         }
-        System.out.println("\nRUNNING " + simulationType + "...");
+        printDebug("\nRUNNING " + simulationType + "...");
 
         // Rng setting the seed
         Rngs rngs = new Rngs();
@@ -97,15 +97,15 @@ public class BatchSimulationRunner {
 
             // Checking if still in warmup period
             if (getMinimumNumberOfJobsServedByCenters() >= warmupThreshold && isWarmingUp) {
-                System.out.println("WARMUP COMPLETED... Starting to collect statistics for centers from now on.");
+                printSuccess("WARMUP COMPLETED... Starting to collect statistics for centers from now on.");
                 isWarmingUp = false;
                 stopWarmup(msqTime);
             }
         }
 
         // The batch simulation has now ended. Time to collect the statistics
-        System.out.println(simulationType + " HAS JUST FINISHED.");
-        System.out.printf("Events queue size %d%n", events.size());
+        printSuccess(simulationType + " HAS JUST FINISHED.");
+        printDebug("Events queue size is " + events.size());
 
         // Writing statistics csv with data from all batches
         writeAllStats(simulationType);
@@ -197,7 +197,7 @@ public class BatchSimulationRunner {
 
 
     private void writeAllStats(String simulationType) {
-        System.out.println("Writing csv files with stats for all the centers.");
+        printDebug("Writing csv files with stats for all the centers.");
 
         dummyMultiServer.writeBatchStats(simulationType);
         dummySingleServer.writeBatchStats(simulationType);
