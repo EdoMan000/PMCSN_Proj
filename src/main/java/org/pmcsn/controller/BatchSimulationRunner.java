@@ -31,8 +31,8 @@ public class BatchSimulationRunner {
     private static final int START = 0;
     private static final int STOP = Integer.MAX_VALUE;
     private static final long SEED = 123456789L;
-    private Dummy_SingleServer dummyServer;
-    //private Dummy_MultiServer dummyServer;
+    private Dummy_SingleServer dummySingleServer;
+    private Dummy_MultiServer dummyMultiServer;
 
     // We need to compute autocorrelation on the series
     // Number of jobs in single batch (B)
@@ -71,11 +71,13 @@ public class BatchSimulationRunner {
         EventQueue events = new EventQueue();
 
         // Initialize LuggageChecks
-        dummyServer.start(rngs, START);
+        dummyMultiServer.start(rngs, START);
 
         // Generate the first arrival
-        double time = dummyServer.getArrival();
-        events.add(new MsqEvent(EventType.ARRIVAL, time));
+        double time = dummyMultiServer.getArrival();
+        events.add(new MsqEvent(EventType.ARRIVAL_FIRST_CENTER, time));
+
+        resetCenters(rngs);
 
         // the terminating condition is that all the centers have processed all the jobs
         while(!isDone()) {
@@ -117,29 +119,38 @@ public class BatchSimulationRunner {
     }
 
     private void stopWarmup(MsqTime time) {
-        dummyServer.stopWarmup(time);
+        dummyMultiServer.stopWarmup(time);
+        dummySingleServer.stopWarmup(time);
     }
 
     private List<BatchStatistics> getBatchStatistics() {
         List<BatchStatistics> batchStatistics = new ArrayList<>();
-        batchStatistics.add(dummyServer.getBatchStatistics());
+        batchStatistics.add(dummyMultiServer.getBatchStatistics());
+        batchStatistics.add(dummySingleServer.getBatchStatistics());
         return batchStatistics;
     }
 
 
     private void initCenters(boolean approximateServiceAsExponential) {
         CenterFactory factory = new CenterFactory();
-        //dummyServer = factory.createDummySingleServer(approximateServiceAsExponential);
-        dummyServer = factory.createDummySingleServer(approximateServiceAsExponential);
+        dummySingleServer = factory.createDummySingleServer(approximateServiceAsExponential);
+        dummyMultiServer = factory.createDummyMultiServer(approximateServiceAsExponential);
     }
 
     private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {
         switch (event.type) {
-            case ARRIVAL:
-                dummyServer.processArrival(event, msqTime, events);
+            case ARRIVAL_FIRST_CENTER:
+                dummyMultiServer.processArrival(event, msqTime, events);
+                dummyMultiServer.generateNextArrival(events);
                 break;
-            case DONE:
-                dummyServer.processCompletion(event, msqTime, events);
+            case FIRST_CENTER_DONE:
+                dummyMultiServer.processCompletion(event, msqTime, events);
+                break;
+            case ARRIVAL_SECOND_CENTER:
+                dummySingleServer.processArrival(event, msqTime, events);
+                break;
+            case SECOND_CENTER_DONE:
+                dummySingleServer.processCompletion(event, msqTime, events);
                 break;
         }
     }
@@ -162,7 +173,8 @@ public class BatchSimulationRunner {
     private List<MeanStatistics> aggregateBatchMeanStatistics() {
         List<MeanStatistics> batchMeanStatisticsList = new ArrayList<>();
 
-        batchMeanStatisticsList.add(dummyServer.getBatchMeanStatistics());
+        batchMeanStatisticsList.add(dummyMultiServer.getBatchMeanStatistics());
+        batchMeanStatisticsList.add(dummySingleServer.getBatchMeanStatistics());
 
         return batchMeanStatisticsList;
     }
@@ -170,7 +182,8 @@ public class BatchSimulationRunner {
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {
         List<ConfidenceIntervals> confidenceIntervalsList = new ArrayList<>();
 
-        confidenceIntervalsList.add(createConfidenceIntervals(dummyServer.getBatchStatistics()));
+        confidenceIntervalsList.add(createConfidenceIntervals(dummyMultiServer.getBatchStatistics()));
+        confidenceIntervalsList.add(createConfidenceIntervals(dummySingleServer.getBatchStatistics()));
 
         return confidenceIntervalsList;
     }
@@ -186,18 +199,27 @@ public class BatchSimulationRunner {
     private void writeAllStats(String simulationType) {
         System.out.println("Writing csv files with stats for all the centers.");
 
-        dummyServer.writeBatchStats(simulationType);
+        dummyMultiServer.writeBatchStats(simulationType);
+        dummySingleServer.writeBatchStats(simulationType);
+
     }
 
     private void updateAreas(MsqTime msqTime) {
-        dummyServer.setArea(msqTime);
+        dummyMultiServer.setArea(msqTime);
+        dummySingleServer.setArea(msqTime);
     }
 
     private long getMinimumNumberOfJobsServedByCenters() {
-        return dummyServer.getTotalNumberOfJobsServed();
+        // qua ho messo solo il secondo perchè è quello che processa meno jobs e raggiuge il warm up più tardi
+        return dummySingleServer.getTotalNumberOfJobsServed();
     }
 
     private boolean isDone() {
-       return dummyServer.isDone();
+
+        return dummyMultiServer.isDone() && dummySingleServer.isDone();
+    }
+
+    private void resetCenters(Rngs rngs) {
+        dummySingleServer.reset(rngs);
     }
 }

@@ -130,7 +130,7 @@ public abstract class MultiServer {
             spawnCompletionEvent(time, queue, serverId);
         }
 
-        spawnNextCenterEvent(time, queue);
+
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
@@ -146,7 +146,7 @@ public abstract class MultiServer {
         if (!warmup && jobServedPerBatch == batchSize) {
             saveBatchStats(time);
         }
-
+        spawnNextCenterEvent(time, queue);
         if (numberOfJobsInNode >= SERVERS) {
             spawnCompletionEvent(time, queue, serverId);
         } else {

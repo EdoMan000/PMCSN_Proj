@@ -105,8 +105,6 @@ public abstract class SingleServer {
         if (numberOfJobsInNode == 1) {
             spawnCompletionEvent(time, queue);
         }
-
-        spawnNextCenterEvent(time, queue);
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
@@ -123,7 +121,7 @@ public abstract class SingleServer {
         if (!warmup && jobServedPerBatch == batchSize ) {
             saveBatchStats(time);
         }
-        //spawnNextCenterEvent(time, queue);
+        spawnNextCenterEvent(time, queue);
         if (numberOfJobsInNode > 0) {
             spawnCompletionEvent(time, queue);
         }

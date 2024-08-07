@@ -128,13 +128,13 @@ public class AnalyticalComputation {
         List<AnalyticalResult> analyticalResults = new ArrayList<>();
 
         double lambda = 1 / config.getDouble("general", "interArrivalTime");
-/*
+
         analyticalResults.add(singleServer(
                 config.getString("dummy_SingleServer", "centerName"),
                 lambda,
                 config.getDouble("dummy_SingleServer", "meanServiceTime")));
 
- */
+
 
         analyticalResults.add(multiServer(
                 config.getString("dummy_MultiServer", "centerName"),

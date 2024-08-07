@@ -28,18 +28,12 @@ public class Dummy_SingleServer extends SingleServer {
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
 
-        EventType type = EventType.ARRIVAL;
-        MsqEvent event = new MsqEvent(type, getArrival());
-        queue.add(event);
-
     }
-
-
 
     @Override
     public void spawnCompletionEvent(MsqTime time, EventQueue queue) {
         double service = getService(streamindex);
-        MsqEvent event = new MsqEvent(EventType.DONE, time.current + service, service);
+        MsqEvent event = new MsqEvent(EventType.SECOND_CENTER_DONE, time.current + service, service);
         queue.add(event);
     }
 

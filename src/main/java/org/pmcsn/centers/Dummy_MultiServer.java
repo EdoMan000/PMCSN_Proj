@@ -20,7 +20,7 @@ public class Dummy_MultiServer extends MultiServer {
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
-        queue.add(new MsqEvent(EventType.ARRIVAL, getArrival()));
+        queue.add(new MsqEvent(EventType.ARRIVAL_SECOND_CENTER, time.current));
     }
 
     public void start(Rngs rngs, double sarrival){
@@ -34,7 +34,7 @@ public class Dummy_MultiServer extends MultiServer {
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId) {
         double service = getService(streamIndex);
         //generate a new completion event
-        MsqEvent event = new MsqEvent(EventType.DONE, time.current + service, service, serverId);
+        MsqEvent event = new MsqEvent(EventType.FIRST_CENTER_DONE, time.current + service, service, serverId);
         queue.add(event);
     }
 
@@ -49,5 +49,11 @@ public class Dummy_MultiServer extends MultiServer {
         rngs.selectStream(streamIndex + 1);
         sarrival += exponential(config.getDouble("general", "interArrivalTime"), rngs);
         return (sarrival);
+    }
+
+    public void generateNextArrival(EventQueue queue){
+        EventType type = EventType.ARRIVAL_FIRST_CENTER;
+        MsqEvent event = new MsqEvent(type, getArrival());
+        queue.add(event);
     }
 }
