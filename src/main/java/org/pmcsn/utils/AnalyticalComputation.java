@@ -133,9 +133,13 @@ public class AnalyticalComputation {
 
         double lambda = 1 / config.getDouble("general", "interArrivalTime");
 
+        double pFeedback = config.getDouble("comitatoCreditoSANTANDER", "pFeedback");
+        double pAcceptSysScoring = conf.getDouble("sysScoringAutomaticoSANTANDER", "pAccept");
+        double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
+
         analyticalResults.add(multiServer(
                 config.getString("repartoIstruttorieMAAC", "centerName"),
-                lambda,
+                lambda + (lambda*pAcceptSysScoring)*pFeedback,
                 config.getDouble("repartoIstruttorieMAAC", "meanServiceTime"),
                 config.getInt("repartoIstruttorieMAAC", "serversNumber")));
 
@@ -144,13 +148,11 @@ public class AnalyticalComputation {
                 lambda,
                 config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
 
-        double pAcceptSysScoring = conf.getDouble("sysScoringAutomaticoSANTANDER", "pAccept");
         analyticalResults.add(singleServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
                 lambda*pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
 
-        double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
         analyticalResults.add(singleServer(
                 config.getString("repartoLiquidazioniMAAC", "centerName"),
                 (lambda*pAcceptSysScoring)*pAcceptCredito,

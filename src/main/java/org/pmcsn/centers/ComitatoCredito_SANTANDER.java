@@ -20,6 +20,10 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
             EventType type = EventType.ARRIVAL_REPARTO_LIQUIDAZIONI;
             MsqEvent event = new MsqEvent(type, time.current);
             queue.add(event);
+        } else if(isFeedback(rngs, streamindex)){
+            EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
+            MsqEvent event = new MsqEvent(type, time.current);
+            queue.add(event);
         }
     }
 

@@ -151,9 +151,9 @@ public class PrintUtils {
     public static void printStartSimulationOptions() {
         System.out.println(BRIGHT_RED + "\nSelect simulation Type:" + RESET);
         System.out.println(BRIGHT_RED + "1" + RESET  + ". Basic Simulation");
-        System.out.println(BRIGHT_RED + "3" + RESET + ". Basic Simulation VERIFICATION");
-        System.out.println(BRIGHT_RED + "2" + RESET + ". Improved Model Simulation");
-        System.out.println(BRIGHT_RED + "3" + RESET + ". Improved Model Simulation VERIFICATION");
+        System.out.println(BRIGHT_RED + "2" + RESET + ". Basic Simulation VERIFICATION");
+        System.out.println(BRIGHT_RED + "3" + RESET + ". Improved Model Simulation");
+        System.out.println(BRIGHT_RED + "4" + RESET + ". Improved Model Simulation VERIFICATION");
 
         System.out.print(BRIGHT_RED + "Enter the simulation type number: " + RESET);
     }
