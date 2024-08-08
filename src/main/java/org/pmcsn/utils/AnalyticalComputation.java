@@ -128,21 +128,33 @@ public class AnalyticalComputation {
     public static List<AnalyticalResult> computeAnalyticalResults(String simulationType) {
         printDebug("Computing analytical results for simulation...");
         List<AnalyticalResult> analyticalResults = new ArrayList<>();
+        ConfigurationManager conf = new ConfigurationManager();
+
 
         double lambda = 1 / config.getDouble("general", "interArrivalTime");
 
-        analyticalResults.add(singleServer(
-                config.getString("dummy_SingleServer", "centerName"),
-                lambda,
-                config.getDouble("dummy_SingleServer", "meanServiceTime")));
-
-
-
         analyticalResults.add(multiServer(
-                config.getString("dummy_MultiServer", "centerName"),
+                config.getString("repartoIstruttorieMAAC", "centerName"),
                 lambda,
-                config.getDouble("dummy_MultiServer", "meanServiceTime"),
-                config.getInt("dummy_MultiServer", "serversNumber")));
+                config.getDouble("repartoIstruttorieMAAC", "meanServiceTime"),
+                config.getInt("repartoIstruttorieMAAC", "serversNumber")));
+
+        analyticalResults.add(singleServer(
+                config.getString("sysScoringAutomaticoSANTANDER", "centerName"),
+                lambda,
+                config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
+
+        double pAcceptSysScoring = conf.getDouble("sysScoringAutomaticoSANTANDER", "pAccept");
+        analyticalResults.add(singleServer(
+                config.getString("comitatoCreditoSANTANDER", "centerName"),
+                lambda*pAcceptSysScoring,
+                config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
+
+        double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
+        analyticalResults.add(singleServer(
+                config.getString("repartoLiquidazioniMAAC", "centerName"),
+                (lambda*pAcceptSysScoring)*pAcceptCredito,
+                config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
 
 
 

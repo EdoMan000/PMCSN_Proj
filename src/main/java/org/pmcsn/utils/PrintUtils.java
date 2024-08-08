@@ -8,20 +8,32 @@ import java.util.List;
 import java.util.Scanner;
 
 public class PrintUtils {
-    public static final String RESET = "\033[0m";
-    public static final String YELLOW = "\033[0;33m";
-    public static final String GREEN = "\033[0;32m";
-    public static final String RED = "\033[0;31m";
-    public static final String BLUE = "\033[0;34m";
+    //public static final String RESET = "\033[0m";
+
+    public static final String RESET = "\033[0;97m";
+
+    public static final String BRIGHT_YELLOW = "\033[0;93m";
+    public static final String BRIGHT_GREEN = "\033[0;92m";
+    public static final String BRIGHT_RED = "\033[0;91m";
+    public static final String BRIGHT_BLUE = "\033[0;94m";
+    public static final String BRIGHT_CYAN = "\033[0;96m";
+    public static final String BRIGHT_MAGENTA = "\033[0;95m";
+    public static final String BRIGHT_WHITE = "\033[0;97m";
+    public static final String BRIGHT_BLACK = "\033[0;90m";
 
     public static void printTitle() {
-        System.out.println(BLUE +
-                "███████ ██ ███    ███ ██    ██ ██       █████  ████████  ██████  ██████  \n" +
-                "██      ██ ████  ████ ██    ██ ██      ██   ██    ██    ██    ██ ██   ██ \n" +
-                "███████ ██ ██ ████ ██ ██    ██ ██      ███████    ██    ██    ██ ██████  \n" +
-                "     ██ ██ ██  ██  ██ ██    ██ ██      ██   ██    ██    ██    ██ ██   ██ \n" +
-                "███████ ██ ██      ██  ██████  ███████ ██   ██    ██     ██████  ██   ██ \n" + RESET);
+        System.out.println(BRIGHT_RED +
+                        "⠀⠀⠀⠀⠀⠀⠀⠀⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                        "⠀⠀⠀⠀⠀⠀⠀⠀⣿⣆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                        "⠀⠀⠀⠀⠀⠀⣦⠀⠘⢾⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀  ⣠⣤⣶⢶⣦⡤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀     ⢠⣤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀    ⠀⣤⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀\n" +
+                        "⠀⠀⠀⠀⡀⠀⢿⢧⠀⠈⢿⣃⡀⠀⠀⠀⠀⠀⠀ ⢸⡿⠁⠀⠀⠀⠁⠀⠀⠀ ⢀⣀⣀⣀⣀⡀⠀⢀⣀⣀⣀⣀⡀⠀ ⠀⢸⣻⣄⣀⣀⠀⠀⢀⣀⣀⣀⣀⡀⠀⢀⣀⣀⣀⣀⡀⠀⠀⠀⠀⢀⣀⣀⣀⣿⡃⠀⠀⠀ ⣀⣀⣀⡀⠀ ⠀ ⢀⣀⣀⣀⡀\n" +
+                        "⠀⣠⣶⡿⣷⠀⠈⢿⣳⡀⠈⣿⣻⢷⣦⡀⠀⠀⠈⠿⣷⣤⣀⠀⠀⠀ ⠀⣾⠿⠉⠉⠙⣯⠇⠀⢸⡿⠉⠉⠙⢿⣇⠀⢸⣻⠚⠙⠋⠀⣴⡿⠋⠉⠉⣿⠇⠀⢸⡿⠉⠉⠙⢻⣷⠀⠀⣼⡟⠋⠉⠙⣾⠇⠀ ⢰⡿⠋⠉⠙⢿⣆⠀ ⢸⡿⠉⠉⠁\n" +
+                        "⣰⡿⣯⡷⣿⢦⠀⠈⢿⢧⣰⢿⣻⣾⡽⣷⠀⠀⠀⠀⠀⠙⠙⠿⣶⣄⠀⢰⣿⠀⠀⠀⠀⣿⠆⠀ ⢸⡷⠀⠀⠀⢸⡿⠀⠸⣿⠀⠀⠀ ⢰⣿⠁⠀⠀⠀⣿⡆⠀ ⢸⣷⠀⠀⠀⢸⣟⠀⢰⣿⠁⠀⠀⠀ ⣿⡆⠀ ⣾⢧⣠⣄⣄⣼⣻⠀ ⢸⣳⠀⠀⠀\n" +
+                        "⠸⣟⣷⢿⣯⢿⣧⡀⠨⣿⢯⣟⡿⣾⡽⡟⠀⠀⠀⠀⠀⠀⠀⠀⢸⣯⠀⠸⣯⡀⠀⠀⠀⣿⡃⠀ ⢸⢿⠀⠀⠀⢸⡿⠀⠸⣿⡀⠀⠀ ⠸⣯⡄⠀⠀⠀⣿⡆⠀ ⢸⣾⠀⠀⠀⢸⣟⠀⠸⡷⡄⠀⠀ ⠀⣿⡆ ⠀⢻⣏⠉⠈⠉⠁⠉⠀ ⢸⣻⠀⠀⠀\n" +
+                        "⠀⠈⠋⠿⢾⣻⣽⣳⡼⣯⡿⣯⠿⠓⠋⠀⠀⠀⠸⢶⣶⢶⡶⠯⠋⠀⠀⠛⢿⢶⡶⠞⣷⠃⠀ ⢸⠿⠀⠀⠀⢸⢿⠀⠀⠻⢷⡶⡖⠀⠙⠽⣶⢶⠖⢯⡇⠀ ⢸⢷⠀⠀⠀⢸⣻⠀⠀⠙⠿⣶⢶⠖⡿⡆⠀  ⠈⠛⢷⢶⡶⡶⠆ ⠸⣟⠀⠀⠀\n" + RESET
+        );
     }
+
 
 
 
@@ -45,21 +57,21 @@ public class PrintUtils {
         ConfigurationManager configurationManager = new ConfigurationManager();
         int batchSize = configurationManager.getInt("general", "batchSize");
         int numBatches = configurationManager.getInt("general", "numBatches");
-        System.out.println(BLUE + "\n\n*******************************************************************************************************");
+        System.out.println(BRIGHT_RED + "\n\n*******************************************************************************************************");
         System.out.println("AUTOCORRELATION VALUES FOR " + centerName + " WITH [B:"+batchSize+"|K:"+numBatches+"]");
         System.out.println("*******************************************************************************************************" + RESET);
         for (BatchMetric batchMetric : batchMetrics) {
             String color = getAcfColor(batchMetric.acfValue);
             System.out.printf("%s: %s%.4f%s%n", batchMetric.name, color, batchMetric.acfValue, RESET);
         }
-        System.out.println(BLUE + "*******************************************************************************************************" + RESET);
+        System.out.println(BRIGHT_RED + "*******************************************************************************************************" + RESET);
     }
 
     private static String getAcfColor(double value) {
         if (value > 0.2) {
-            return RED;
+            return BRIGHT_RED;
         } else {
-            return GREEN;
+            return BRIGHT_GREEN;
         }
     }
 
@@ -68,32 +80,22 @@ public class PrintUtils {
     }
 
     public static void printFinalResults(List<Verification.VerificationResult> verificationResultList) {
-        String alreadyDoneCenterName = "";
-        int centerIndex = 1;
         for (Verification.VerificationResult verificationResult : verificationResultList) {
             String centerName = verificationResult.name.toUpperCase();
-            if (alreadyDoneCenterName.equalsIgnoreCase(centerName)) {
-                centerIndex++;
-                centerName = centerName + "_" + centerIndex;
-            } else {
-                centerIndex = 1;
-                centerName = centerName + "_" + centerIndex;
-            }
-            System.out.println(BLUE + "\n\n*******************************************************************************************************");
+            System.out.println(BRIGHT_RED + "\n\n*******************************************************************************************************");
             ConfigurationManager configurationManager = new ConfigurationManager();
             System.out.println("FINAL RESULTS FOR " + centerName +
                     " with " + (int) (100.0 * configurationManager.getDouble("general", "levelOfConfidence") + 0.5) +
                     "% confidence");
             System.out.println("*******************************************************************************************************" + RESET);
             printVerificationResult(verificationResult);
-            System.out.println(BLUE + "*******************************************************************************************************" + RESET);
-            alreadyDoneCenterName = verificationResult.name.toUpperCase();
+            System.out.println(BRIGHT_RED + "*******************************************************************************************************" + RESET);
         }
     }
 
     private static void printVerificationResult(Verification.VerificationResult result) {
-        String within = GREEN + "within";
-        String outside = RED + "outside";
+        String within = BRIGHT_GREEN + "within";
+        String outside = BRIGHT_RED + "outside";
 
         // Compute the colors and within/outside texts
         String responseTimeColor = getColor(result.comparisonResult.responseTimeDiff);
@@ -118,41 +120,42 @@ public class PrintUtils {
         String lambdaWithinOutside = result.isWithinInterval(result.comparisonResult.lambdaDiff, result.confidenceIntervals.getLambdaCI()) ? within : outside;
 
         // Print the results
-        System.out.println("E[Ts]: mean " + BLUE + result.meanStatistics.meanResponseTime + RESET + ", diff " + responseTimeColor + result.comparisonResult.responseTimeDiff + RESET + " is " + responseTimeWithinOutside + " the interval ±" + result.confidenceIntervals.getResponseTimeCI() + RESET);
-        System.out.println("E[Tq]: mean " + BLUE + result.meanStatistics.meanQueueTime + RESET + ", diff " + queueTimeColor + result.comparisonResult.queueTimeDiff + RESET + " is " + queueTimeWithinOutside + " the interval ±" + result.confidenceIntervals.getQueueTimeCI() + RESET);
-        System.out.println("E[s]: mean " + BLUE + result.meanStatistics.meanServiceTime + RESET + ", diff " + serviceTimeColor + result.comparisonResult.serviceTimeDiff + RESET + " is " + serviceTimeWithinOutside + " the interval ±" + result.confidenceIntervals.getServiceTimeCI() + RESET);
-        System.out.println("E[Ns]: mean " + BLUE + result.meanStatistics.meanSystemPopulation + RESET + ", diff " + systemPopulationColor + result.comparisonResult.systemPopulationDiff + RESET + " is " + systemPopulationWithinOutside + " the interval ±" + result.confidenceIntervals.getSystemPopulationCI() + RESET);
-        System.out.println("E[Nq]: mean " + BLUE + result.meanStatistics.meanQueuePopulation + RESET + ", diff " + queuePopulationColor + result.comparisonResult.queuePopulationDiff + RESET + " is " + queuePopulationWithinOutside + " the interval ±" + result.confidenceIntervals.getQueuePopulationCI() + RESET);
-        System.out.println("ρ: mean " + BLUE + result.meanStatistics.meanUtilization + RESET + ", diff " + utilizationColor + result.comparisonResult.utilizationDiff + RESET + " is " + utilizationWithinOutside + " the interval ±" + result.confidenceIntervals.getUtilizationCI() + RESET);
-        System.out.println("λ: mean " + BLUE + result.meanStatistics.lambda + RESET + ", diff " + lambdaColor + result.comparisonResult.lambdaDiff + RESET + " is " + lambdaWithinOutside + " the interval ±" + result.confidenceIntervals.getLambdaCI() + RESET);
+        System.out.println(BRIGHT_RED + "E[Ts]: mean " + RESET + result.meanStatistics.meanResponseTime + RESET + ", diff " + responseTimeColor + result.comparisonResult.responseTimeDiff + RESET + " is " + responseTimeWithinOutside + " the interval ±" + result.confidenceIntervals.getResponseTimeCI() + RESET);
+        System.out.println(BRIGHT_RED + "E[Tq]: mean " + RESET + result.meanStatistics.meanQueueTime + RESET + ", diff " + queueTimeColor + result.comparisonResult.queueTimeDiff + RESET + " is " + queueTimeWithinOutside + " the interval ±" + result.confidenceIntervals.getQueueTimeCI() + RESET);
+        System.out.println(BRIGHT_RED + "E[s]: mean " + RESET + result.meanStatistics.meanServiceTime + RESET + ", diff " + serviceTimeColor + result.comparisonResult.serviceTimeDiff + RESET + " is " + serviceTimeWithinOutside + " the interval ±" + result.confidenceIntervals.getServiceTimeCI() + RESET);
+        System.out.println(BRIGHT_RED + "E[Ns]: mean " + RESET + result.meanStatistics.meanSystemPopulation + RESET + ", diff " + systemPopulationColor + result.comparisonResult.systemPopulationDiff + RESET + " is " + systemPopulationWithinOutside + " the interval ±" + result.confidenceIntervals.getSystemPopulationCI() + RESET);
+        System.out.println(BRIGHT_RED + "E[Nq]: mean " + RESET + result.meanStatistics.meanQueuePopulation + RESET + ", diff " + queuePopulationColor + result.comparisonResult.queuePopulationDiff + RESET + " is " + queuePopulationWithinOutside + " the interval ±" + result.confidenceIntervals.getQueuePopulationCI() + RESET);
+        System.out.println(BRIGHT_RED + "ρ: mean " + RESET + result.meanStatistics.meanUtilization + RESET + ", diff " + utilizationColor + result.comparisonResult.utilizationDiff + RESET + " is " + utilizationWithinOutside + " the interval ±" + result.confidenceIntervals.getUtilizationCI() + RESET);
+        System.out.println(BRIGHT_RED + "λ: mean " + RESET + result.meanStatistics.lambda + RESET + ", diff " + lambdaColor + result.comparisonResult.lambdaDiff + RESET + " is " + lambdaWithinOutside + " the interval ±" + result.confidenceIntervals.getLambdaCI() + RESET);
     }
 
     private static String getColor(double value) {
         if (value < 0.5) {
-            return GREEN;
+            return BRIGHT_GREEN;
         } else if (value < 1) {
-            return YELLOW;
+            return BRIGHT_YELLOW;
         } else {
-            return RED;
+            return BRIGHT_RED;
         }
     }
 
     public static void printMainMenuOptions() {
         System.out.println("\nWelcome to Menara Airport Simulator!");
-        System.out.println(BLUE + "Please select an option:" + RESET);
-        System.out.println(BLUE + "1" + RESET + ". Start Simulation");
-        System.out.println(BLUE + "2" + RESET + ". Exit");
+        System.out.println(BRIGHT_RED + "Please select an option:" + RESET);
+        System.out.println(BRIGHT_RED + "1" + RESET + ". Start Simulation");
+        System.out.println(BRIGHT_RED + "2" + RESET + ". Exit");
 
-        System.out.print(BLUE + "Enter your choice >>> " + RESET);
+        System.out.print(BRIGHT_RED + "Enter your choice >>> " + RESET);
     }
 
     public static void printStartSimulationOptions() {
-        System.out.println(BLUE + "\nSelect simulation Type:" + RESET);
-        System.out.println(BLUE + "1" + RESET  + ". Basic Simulation");
-        System.out.println(BLUE + "2" + RESET + ". Improved Model Simulation");
-        System.out.println(BLUE + "3" + RESET + ". Batch Simulation (Verification)");
+        System.out.println(BRIGHT_RED + "\nSelect simulation Type:" + RESET);
+        System.out.println(BRIGHT_RED + "1" + RESET  + ". Basic Simulation");
+        System.out.println(BRIGHT_RED + "3" + RESET + ". Basic Simulation VERIFICATION");
+        System.out.println(BRIGHT_RED + "2" + RESET + ". Improved Model Simulation");
+        System.out.println(BRIGHT_RED + "3" + RESET + ". Improved Model Simulation VERIFICATION");
 
-        System.out.print(BLUE + "Enter the simulation type number: " + RESET);
+        System.out.print(BRIGHT_RED + "Enter the simulation type number: " + RESET);
     }
 
 
@@ -162,7 +165,7 @@ public class PrintUtils {
     }
 
     public static void pauseAndClear(Scanner scanner) {
-        System.out.println(BLUE + "\nPress Enter to return to the menu..." + RESET);
+        System.out.println(BRIGHT_RED + "\nPress Enter to return to the menu..." + RESET);
         scanner.nextLine();
         clearScreen();
     }
@@ -181,15 +184,15 @@ public class PrintUtils {
     }
 
     public static void printError(String errorMessage){
-        System.out.println(RED + errorMessage + RESET);
+        System.out.println(BRIGHT_MAGENTA + errorMessage + RESET);
     }
     public static void printSuccess(String successMessage){
-        System.out.println(GREEN + successMessage + RESET);
+        System.out.println(BRIGHT_GREEN + successMessage + RESET);
     }
     public static void printDebug(String warningMessage){
-        System.out.println(BLUE + warningMessage + RESET);
+        System.out.println(BRIGHT_RED + warningMessage + RESET);
     }
     public static void printWarning(String warningMessage){
-        System.out.println(YELLOW + warningMessage + RESET);
+        System.out.println(BRIGHT_YELLOW + warningMessage + RESET);
     }
 }

@@ -9,18 +9,18 @@ import org.pmcsn.model.MsqTime;
 
 import static org.pmcsn.utils.Distributions.exponential;
 
-public class Dummy_MultiServer extends MultiServer {
+public class RepartoIstruttorie_MAACFinance extends  MultiServer{
 
     private double sarrival;
     private boolean endOfArrivals;
 
-    public Dummy_MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential) {
+    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential) {
         super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential);
     }
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
-        queue.add(new MsqEvent(EventType.ARRIVAL_SECOND_CENTER, time.current));
+        queue.add(new MsqEvent(EventType.ARRIVAL_SCORING_AUTOMATICO, time.current));
     }
 
     public void start(Rngs rngs, double sarrival){
@@ -34,14 +34,21 @@ public class Dummy_MultiServer extends MultiServer {
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId) {
         double service = getService(streamIndex);
         //generate a new completion event
-        MsqEvent event = new MsqEvent(EventType.FIRST_CENTER_DONE, time.current + service, service, serverId);
+        MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_ISTRUTTORIE, time.current + service, service, serverId);
         queue.add(event);
     }
 
     @Override
     double getService(int streamIndex) {
         rngs.selectStream(streamIndex);
-        return exponential(meanServiceTime, rngs);
+        double serviceTime;
+        if(approximateServiceAsExponential){
+            serviceTime =  exponential(meanServiceTime, rngs);
+        } else {
+            // TODO: mettere il servizio effettivo
+            serviceTime = 0.0;
+        }
+        return serviceTime;
     }
 
     public double getArrival() {
@@ -52,7 +59,7 @@ public class Dummy_MultiServer extends MultiServer {
     }
 
     public void generateNextArrival(EventQueue queue){
-        EventType type = EventType.ARRIVAL_FIRST_CENTER;
+        EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
         MsqEvent event = new MsqEvent(type, getArrival());
         queue.add(event);
     }

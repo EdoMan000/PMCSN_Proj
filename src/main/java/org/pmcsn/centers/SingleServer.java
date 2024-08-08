@@ -16,7 +16,6 @@ public abstract class SingleServer {
      *  * Queue population
      */
 
-
     protected int streamindex;
     protected BasicStatistics statistics;
     protected BatchStatistics batchStatistics;
@@ -36,9 +35,6 @@ public abstract class SingleServer {
     protected double currentBatchStartTime = 0;
     protected boolean warmup = true;
     protected int numBatch = 0;
-
-
-    /////////////////////
     protected long jobServedPerBatch = 0;
 
     public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential) {

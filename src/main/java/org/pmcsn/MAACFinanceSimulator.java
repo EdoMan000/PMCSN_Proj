@@ -8,7 +8,7 @@ import org.pmcsn.utils.FileUtils;
 
 import static org.pmcsn.utils.PrintUtils.*;
 
-public class HiringSystemSimulator {
+public class MAACFinanceSimulator {
 
     public static void main(String[] args) throws Exception {
         FileUtils.deleteDirectory("csvFiles");
@@ -29,7 +29,7 @@ public class HiringSystemSimulator {
                 startSimulation(scanner);
                 break;
             case 2:
-                printError("Exiting Simulator. Goodbye!");
+                printError("Exiting MAAC Finance Simulator. Goodbye!");
                 System.exit(0);
                 break;
             default:
@@ -50,10 +50,13 @@ public class HiringSystemSimulator {
                 //basicRunner.runBasicSimulation(false, shouldTrackObservations);
                 break;
             case 2:
-                //improvedRunner.runImprovedModelSimulation();
+                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
                 break;
             case 3:
-                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
+                //improvedRunner.runImprovedModelSimulation();
+                break;
+            case 4:
+                //improvedRunner.runImprovedModelSimulation(); // Call BatchMeans main method
                 break;
             default:
                 printError("Invalid simulation type '" + simulationType + "'.");

@@ -1,8 +1,6 @@
 package org.pmcsn.controller;
 
-
-import org.pmcsn.centers.Dummy_MultiServer;
-import org.pmcsn.centers.Dummy_SingleServer;
+import org.pmcsn.centers.*;
 import org.pmcsn.configuration.CenterFactory;
 import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
@@ -13,7 +11,7 @@ import org.pmcsn.utils.Verification;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 import static org.pmcsn.utils.AnalyticalComputation.computeAnalyticalResults;
 import static org.pmcsn.utils.Comparison.compareResults;
@@ -21,18 +19,16 @@ import static org.pmcsn.utils.PrintUtils.*;
 import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
 public class BatchSimulationRunner {
-    private static final Logger logger = Logger.getLogger(BatchSimulationRunner.class.getName());
-    /*  STATISTICS OF INTEREST :
-     *  * Response times
-     *  * Population
-     */
 
     // Constants
     private static final int START = 0;
-    private static final int STOP = Integer.MAX_VALUE;
     private static final long SEED = 123456789L;
-    private Dummy_SingleServer dummySingleServer;
-    private Dummy_MultiServer dummyMultiServer;
+
+    // Centri
+    private RepartoIstruttorie_MAACFinance repartoIstruttorie;
+    private SysScoringAutomatico_SANTANDER scoringAutomatico;
+    private ComitatoCredito_SANTANDER comitatoCredito;
+    private RepartoLiquidazioni_MAACFinance repartoLiquidazioni;
 
     // We need to compute autocorrelation on the series
     // Number of jobs in single batch (B)
@@ -47,7 +43,7 @@ public class BatchSimulationRunner {
         ConfigurationManager config = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
-        warmupThreshold = (int) ((batchSize*batchesNumber)*0.2);
+        warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
     }
 
     public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential) throws Exception {
@@ -71,11 +67,11 @@ public class BatchSimulationRunner {
         EventQueue events = new EventQueue();
 
         // Initialize LuggageChecks
-        dummyMultiServer.start(rngs, START);
+        repartoIstruttorie.start(rngs, START);
 
         // Generate the first arrival
-        double time = dummyMultiServer.getArrival();
-        events.add(new MsqEvent(EventType.ARRIVAL_FIRST_CENTER, time));
+        double time = repartoIstruttorie.getArrival();
+        events.add(new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time));
 
         resetCenters(rngs);
 
@@ -96,7 +92,7 @@ public class BatchSimulationRunner {
 
 
             // Checking if still in warmup period
-            if (getMinimumNumberOfJobsServedByCenters() >= warmupThreshold && isWarmingUp) {
+            if (isWarmingUp && getMinimumNumberOfJobsServedByCenters() >= warmupThreshold ) {
                 printSuccess("WARMUP COMPLETED... Starting to collect statistics for centers from now on.");
                 isWarmingUp = false;
                 stopWarmup(msqTime);
@@ -119,38 +115,56 @@ public class BatchSimulationRunner {
     }
 
     private void stopWarmup(MsqTime time) {
-        dummyMultiServer.stopWarmup(time);
-        dummySingleServer.stopWarmup(time);
+        repartoIstruttorie.stopWarmup(time);
+        scoringAutomatico.stopWarmup(time);
+        comitatoCredito.stopWarmup(time);
+        repartoLiquidazioni.stopWarmup(time);
     }
 
     private List<BatchStatistics> getBatchStatistics() {
         List<BatchStatistics> batchStatistics = new ArrayList<>();
-        batchStatistics.add(dummyMultiServer.getBatchStatistics());
-        batchStatistics.add(dummySingleServer.getBatchStatistics());
+        batchStatistics.add(repartoIstruttorie.getBatchStatistics());
+        batchStatistics.add(scoringAutomatico.getBatchStatistics());
+        batchStatistics.add(comitatoCredito.getBatchStatistics());
+        batchStatistics.add(repartoLiquidazioni.getBatchStatistics());
         return batchStatistics;
     }
 
 
     private void initCenters(boolean approximateServiceAsExponential) {
         CenterFactory factory = new CenterFactory();
-        dummySingleServer = factory.createDummySingleServer(approximateServiceAsExponential);
-        dummyMultiServer = factory.createDummyMultiServer(approximateServiceAsExponential);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential);
     }
 
     private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {
         switch (event.type) {
-            case ARRIVAL_FIRST_CENTER:
-                dummyMultiServer.processArrival(event, msqTime, events);
-                dummyMultiServer.generateNextArrival(events);
+            case ARRIVAL_REPARTO_ISTRUTTORIE:
+                repartoIstruttorie.processArrival(event, msqTime, events);
+                repartoIstruttorie.generateNextArrival(events);
                 break;
-            case FIRST_CENTER_DONE:
-                dummyMultiServer.processCompletion(event, msqTime, events);
+            case COMPLETION_REPARTO_ISTRUTTORIE:
+                repartoIstruttorie.processCompletion(event, msqTime, events);
                 break;
-            case ARRIVAL_SECOND_CENTER:
-                dummySingleServer.processArrival(event, msqTime, events);
+            case ARRIVAL_SCORING_AUTOMATICO:
+                scoringAutomatico.processArrival(event, msqTime, events);
                 break;
-            case SECOND_CENTER_DONE:
-                dummySingleServer.processCompletion(event, msqTime, events);
+            case COMPLETION_SCORING_AUTOMATICO:
+                scoringAutomatico.processCompletion(event, msqTime, events);
+                break;
+            case ARRIVAL_COMITATO_CREDITO:
+                comitatoCredito.processArrival(event, msqTime, events);
+                break;
+            case COMPLETION_COMITATO_CREDITO:
+                comitatoCredito.processCompletion(event, msqTime, events);
+                break;
+            case ARRIVAL_REPARTO_LIQUIDAZIONI:
+                repartoLiquidazioni.processArrival(event, msqTime, events);
+                break;
+            case COMPLETION_REPARTO_LIQUIDAZIONI:
+                repartoLiquidazioni.processCompletion(event, msqTime, events);
                 break;
         }
     }
@@ -173,8 +187,10 @@ public class BatchSimulationRunner {
     private List<MeanStatistics> aggregateBatchMeanStatistics() {
         List<MeanStatistics> batchMeanStatisticsList = new ArrayList<>();
 
-        batchMeanStatisticsList.add(dummyMultiServer.getBatchMeanStatistics());
-        batchMeanStatisticsList.add(dummySingleServer.getBatchMeanStatistics());
+        batchMeanStatisticsList.add(repartoIstruttorie.getBatchMeanStatistics());
+        batchMeanStatisticsList.add(scoringAutomatico.getBatchMeanStatistics());
+        batchMeanStatisticsList.add(comitatoCredito.getBatchMeanStatistics());
+        batchMeanStatisticsList.add(repartoLiquidazioni.getBatchMeanStatistics());
 
         return batchMeanStatisticsList;
     }
@@ -182,8 +198,10 @@ public class BatchSimulationRunner {
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {
         List<ConfidenceIntervals> confidenceIntervalsList = new ArrayList<>();
 
-        confidenceIntervalsList.add(createConfidenceIntervals(dummyMultiServer.getBatchStatistics()));
-        confidenceIntervalsList.add(createConfidenceIntervals(dummySingleServer.getBatchStatistics()));
+        confidenceIntervalsList.add(createConfidenceIntervals(repartoIstruttorie.getBatchStatistics()));
+        confidenceIntervalsList.add(createConfidenceIntervals(scoringAutomatico.getBatchStatistics()));
+        confidenceIntervalsList.add(createConfidenceIntervals(comitatoCredito.getBatchStatistics()));
+        confidenceIntervalsList.add(createConfidenceIntervals(repartoLiquidazioni.getBatchStatistics()));
 
         return confidenceIntervalsList;
     }
@@ -199,27 +217,39 @@ public class BatchSimulationRunner {
     private void writeAllStats(String simulationType) {
         printDebug("Writing csv files with stats for all the centers.");
 
-        dummyMultiServer.writeBatchStats(simulationType);
-        dummySingleServer.writeBatchStats(simulationType);
+        repartoIstruttorie.writeBatchStats(simulationType);
+        scoringAutomatico.writeBatchStats(simulationType);
+        comitatoCredito.writeBatchStats(simulationType);
+        repartoLiquidazioni.writeBatchStats(simulationType);
 
     }
 
     private void updateAreas(MsqTime msqTime) {
-        dummyMultiServer.setArea(msqTime);
-        dummySingleServer.setArea(msqTime);
+        repartoIstruttorie.setArea(msqTime);
+        scoringAutomatico.setArea(msqTime);
+        comitatoCredito.setArea(msqTime);
+        repartoLiquidazioni.setArea(msqTime);
     }
 
     private long getMinimumNumberOfJobsServedByCenters() {
-        // qua ho messo solo il secondo perchè è quello che processa meno jobs e raggiuge il warm up più tardi
-        return dummySingleServer.getTotalNumberOfJobsServed();
+        return Stream.of(
+                repartoLiquidazioni.getTotalNumberOfJobsServed(),
+                scoringAutomatico.getTotalNumberOfJobsServed(),
+                comitatoCredito.getTotalNumberOfJobsServed(),
+                repartoIstruttorie.getTotalNumberOfJobsServed())
+                .min(Long::compare).orElseThrow();
     }
 
     private boolean isDone() {
-
-        return dummyMultiServer.isDone() && dummySingleServer.isDone();
+        return repartoIstruttorie.isDone()
+                && scoringAutomatico.isDone()
+                && comitatoCredito.isDone()
+                && repartoLiquidazioni.isDone();
     }
 
     private void resetCenters(Rngs rngs) {
-        dummySingleServer.reset(rngs);
+        scoringAutomatico.reset(rngs);
+        comitatoCredito.reset(rngs);
+        repartoLiquidazioni.reset(rngs);
     }
 }
