@@ -6,6 +6,7 @@ import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
 import java.util.Arrays;
+import java.util.List;
 
 public abstract class MultiServer {
     protected long numberOfJobsInNode = 0;
@@ -168,7 +169,7 @@ public abstract class MultiServer {
         }
         return s;
     }
-/*
+
     public void saveStats() {
         statistics.saveStats(area, sum, lastArrivalTime, lastCompletionTime, true);
     }
@@ -181,7 +182,7 @@ public abstract class MultiServer {
         return statistics.getMeanStatistics();
     }
 
- */
+
 
     public void writeBatchStats(String simulationType){
         batchStatistics.writeStats(simulationType);
@@ -199,7 +200,7 @@ public abstract class MultiServer {
         return batchStatistics.getMeanStatistics();
     }
 
-    /*
+
     public void updateObservations(List<Observations> observationsList, int run) {
         for (int i = 0; i < observationsList.size(); i++) {
             updateObservation(observationsList.get(i), run, i);
@@ -220,7 +221,7 @@ public abstract class MultiServer {
         observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
     }
 
-     */
+
 
     public boolean isDone() {
         return batchStatistics.isBatchRetrievalDone();

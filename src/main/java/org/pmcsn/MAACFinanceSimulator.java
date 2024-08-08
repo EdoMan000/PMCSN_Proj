@@ -3,6 +3,7 @@ package org.pmcsn;
 import java.util.Scanner;
 
 import org.pmcsn.configuration.ConfigurationManager;
+import org.pmcsn.controller.FiniteSimulationRunner;
 import org.pmcsn.controller.ModelVerificationBatchMeans;
 import org.pmcsn.utils.FileUtils;
 
@@ -41,13 +42,17 @@ public class MAACFinanceSimulator {
     private static void startSimulation(Scanner scanner) throws Exception {
         resetMenu();
         printStartSimulationOptions();
+
+
         int simulationType = scanner.nextInt();
         scanner.nextLine();  // Consume newline
         ConfigurationManager configurationManager = new ConfigurationManager();
-        //boolean shouldTrackObservations = configurationManager.getBoolean("general", "shouldTrackObservations");
+        boolean shouldTrackObservations = configurationManager.getBoolean("general", "shouldTrackObservations");
+        FiniteSimulationRunner basicRunner = new FiniteSimulationRunner();
+
         switch (simulationType) {
             case 1:
-                //basicRunner.runBasicSimulation(false, shouldTrackObservations);
+                basicRunner.runFiniteSimulation(false, shouldTrackObservations, false);
                 break;
             case 2:
                 ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method

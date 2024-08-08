@@ -137,7 +137,7 @@ public abstract class SingleServer {
         currentBatchStartTime = time.current;
     }
 
-    /*
+
     public void saveStats() {
         MsqSum[] sums = new MsqSum[1];
         sums[0] = this.sum;
@@ -156,7 +156,7 @@ public abstract class SingleServer {
         return this.statistics;
     }
 
-     */
+
 
     public void writeBatchStats(String simulationType){
         batchStatistics.writeStats(simulationType);
@@ -182,7 +182,7 @@ public abstract class SingleServer {
         }
     }
 
-    /*
+
     public void updateObservations(Observations observations, int run) {
         if (lastArrivalTime == 0 || lastCompletionTime == 0) {
             return;
@@ -193,7 +193,7 @@ public abstract class SingleServer {
         observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
     }
 
-     */
+
 
     public void stopWarmup(MsqTime time) {
         this.warmup = false;
