@@ -130,16 +130,16 @@ public class AnalyticalComputation {
         List<AnalyticalResult> analyticalResults = new ArrayList<>();
         ConfigurationManager conf = new ConfigurationManager();
 
-
-        double lambda = 1 / config.getDouble("general", "interArrivalTime");
-
         double pFeedback = config.getDouble("comitatoCreditoSANTANDER", "pFeedback");
         double pAcceptSysScoring = conf.getDouble("sysScoringAutomaticoSANTANDER", "pAccept");
         double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
 
+        double gamma = 1 / config.getDouble("general", "interArrivalTime");
+        double lambda = gamma / (1-(pFeedback * pAcceptSysScoring));
+
         analyticalResults.add(multiServer(
                 config.getString("repartoIstruttorieMAAC", "centerName"),
-                lambda + (lambda*pAcceptSysScoring)*pFeedback,
+                lambda,
                 config.getDouble("repartoIstruttorieMAAC", "meanServiceTime"),
                 config.getInt("repartoIstruttorieMAAC", "serversNumber")));
 
@@ -157,8 +157,6 @@ public class AnalyticalComputation {
                 config.getString("repartoLiquidazioniMAAC", "centerName"),
                 (lambda*pAcceptSysScoring)*pAcceptCredito,
                 config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
-
-
 
         writeAnalyticalResults(simulationType, analyticalResults);
 
