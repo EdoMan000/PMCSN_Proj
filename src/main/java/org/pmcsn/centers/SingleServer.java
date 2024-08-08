@@ -38,9 +38,9 @@ public abstract class SingleServer {
     protected long jobServedPerBatch = 0;
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
-    protected MsqEvent currEvent;
+    protected boolean isImprovedModel = false;
 
-    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential) {
+    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
@@ -50,11 +50,12 @@ public abstract class SingleServer {
         this.statistics = new BasicStatistics(centerName);
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
+        this.isImprovedModel = isImprovedModel;
     }
 
     //********************************** ABSTRACT METHODS *********************************************
-    abstract void spawnNextCenterEvent(MsqTime time, EventQueue queue);
-    abstract void spawnCompletionEvent(MsqTime time, EventQueue queue);
+    abstract void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
+    abstract void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
     abstract double getService(int streamIndex);
 
     //********************************** CONCRETE METHODS *********************************************
@@ -92,8 +93,6 @@ public abstract class SingleServer {
     }
 
     public void processArrival(MsqEvent arrival, MsqTime time, EventQueue queue){
-        currEvent = arrival;
-
         // increment the number of jobs in the node
         numberOfJobsInNode++;
 
@@ -104,13 +103,11 @@ public abstract class SingleServer {
         lastArrivalTime = arrival.time;
 
         if (numberOfJobsInNode == 1) {
-            spawnCompletionEvent(time, queue);
+            spawnCompletionEvent(time, queue, arrival);
         }
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
-        currEvent = completion;
-
         numberOfJobsInNode--;
         jobServedPerBatch++;
 
@@ -124,9 +121,9 @@ public abstract class SingleServer {
         if (!warmup && jobServedPerBatch == batchSize ) {
             saveBatchStats(time);
         }
-        spawnNextCenterEvent(time, queue);
+        spawnNextCenterEvent(time, queue, completion);
         if (numberOfJobsInNode > 0) {
-            spawnCompletionEvent(time, queue);
+            spawnCompletionEvent(time, queue, completion);
         }
 
         if(!warmup && !isDone()) totJobs++;

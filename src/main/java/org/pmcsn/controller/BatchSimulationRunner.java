@@ -46,8 +46,8 @@ public class BatchSimulationRunner {
         warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
     }
 
-    public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential) throws Exception {
-        initCenters(approximateServiceAsExponential);
+    public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential,  boolean isImprovedModel) throws Exception {
+        initCenters(approximateServiceAsExponential, isImprovedModel);
 
         String simulationType;
         if (approximateServiceAsExponential) {
@@ -133,12 +133,12 @@ public class BatchSimulationRunner {
     }
 
 
-    private void initCenters(boolean approximateServiceAsExponential) {
+    private void initCenters(boolean approximateServiceAsExponential,  boolean isImprovedModel) {
         CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential);
-        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel);
     }
 
     private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {

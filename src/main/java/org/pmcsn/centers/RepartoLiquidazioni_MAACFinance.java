@@ -9,17 +9,17 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class RepartoLiquidazioni_MAACFinance extends SingleServer {
 
-    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential);
+    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel);
     }
 
     @Override
-    public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
+    public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
 
     }
 
     @Override
-    public void spawnCompletionEvent(MsqTime time, EventQueue queue) {
+    public void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         double service = getService(streamindex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_LIQUIDAZIONI, time.current + service, service);
         event.applicant = currEvent.applicant;

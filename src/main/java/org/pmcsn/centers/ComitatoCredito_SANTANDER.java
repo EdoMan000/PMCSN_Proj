@@ -8,12 +8,12 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class ComitatoCredito_SANTANDER extends SingleServer {
 
-    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential);
+    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel);
     }
 
     @Override
-    public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
+    public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         if(isAccepetdComitato(rngs, streamindex)){
             EventType type = EventType.ARRIVAL_REPARTO_LIQUIDAZIONI;
             MsqEvent event = new MsqEvent(type, time.current);
@@ -29,7 +29,7 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
     }
 
     @Override
-    public void spawnCompletionEvent(MsqTime time, EventQueue queue) {
+    public void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         double service = getService(streamindex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_COMITATO_CREDITO, time.current + service, service);
         event.applicant = currEvent.applicant;

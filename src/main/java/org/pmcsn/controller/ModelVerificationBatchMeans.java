@@ -11,7 +11,7 @@ public class ModelVerificationBatchMeans {
 
     public static void runModelVerificationWithBatchMeansMethod() throws Exception {
         BatchSimulationRunner batchRunner = new BatchSimulationRunner();
-        List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true);
+        List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object
         for (BatchStatistics batchStatistics : batchStatisticsList) {

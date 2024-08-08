@@ -11,12 +11,12 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
     private double sarrival;
     private boolean endOfArrivals;
 
-    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential) {
-        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential);
+    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
+        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isImprovedModel);
     }
 
     @Override
-    public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
+    public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         MsqEvent event = new MsqEvent(EventType.ARRIVAL_SCORING_AUTOMATICO, time.current);
         event.applicant = currEvent.applicant;
         queue.add(event);
@@ -30,7 +30,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
     }
 
     @Override
-    public void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId) {
+    public void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId, MsqEvent currEvent) {
         double service = getService(streamIndex);
         //generate a new completion event
         MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_ISTRUTTORIE, time.current + service, service, serverId);

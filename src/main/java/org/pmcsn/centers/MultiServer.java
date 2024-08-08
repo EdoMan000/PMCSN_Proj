@@ -23,20 +23,16 @@ public abstract class MultiServer {
     protected int batchSize;
     protected int batchesNumber;
     private double currentBatchStartTime;
-
     protected MsqSum[] sum;
     protected MsqServer[] servers;
-
     protected BasicStatistics statistics;
     protected BatchStatistics batchStatistics;
-
     protected long jobServedPerBatch = 0;
-
     private boolean warmup = true;
+    protected boolean isImprovedModel = false;
 
-    protected MsqEvent currEvent;
 
-    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential) {
+    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
@@ -54,11 +50,12 @@ public abstract class MultiServer {
         this.statistics = new BasicStatistics(centerName);
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
+        this.isImprovedModel = isImprovedModel;
     }
 
     //********************************** ABSTRACT METHODS *********************************************
-    abstract void spawnNextCenterEvent(MsqTime time, EventQueue queue);
-    abstract void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId);
+    abstract void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
+    abstract void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId, MsqEvent currEvent);
     abstract double getService(int streamIndex);
 
     public void stopWarmup(MsqTime time) {
@@ -117,8 +114,6 @@ public abstract class MultiServer {
     }
 
     public void processArrival(MsqEvent arrival, MsqTime time, EventQueue queue){
-        currEvent = arrival;
-
         // increment the number of jobs in the node
         numberOfJobsInNode++;
 
@@ -131,15 +126,13 @@ public abstract class MultiServer {
         if (numberOfJobsInNode <= SERVERS) {
             int serverId = findOne();
             servers[serverId].running = true;
-            spawnCompletionEvent(time, queue, serverId);
+            spawnCompletionEvent(time, queue, serverId, arrival);
         }
 
 
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
-        currEvent = completion;
-
         numberOfJobsInNode--;
         jobServedPerBatch++;
 
@@ -152,9 +145,9 @@ public abstract class MultiServer {
         if (!warmup && jobServedPerBatch == batchSize) {
             saveBatchStats(time);
         }
-        spawnNextCenterEvent(time, queue);
+        spawnNextCenterEvent(time, queue, completion);
         if (numberOfJobsInNode >= SERVERS) {
-            spawnCompletionEvent(time, queue, serverId);
+            spawnCompletionEvent(time, queue, serverId, completion);
         } else {
             servers[serverId].lastCompletionTime = completion.time;
             servers[serverId].running = false;
