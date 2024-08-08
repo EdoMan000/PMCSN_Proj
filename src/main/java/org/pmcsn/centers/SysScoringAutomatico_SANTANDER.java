@@ -21,6 +21,7 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
             EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
             MsqEvent event = new MsqEvent(type, time.current);
             queue.add(event);
+            if(!warmup && !isDone()) acceptedJobs++;
         }
 
     }

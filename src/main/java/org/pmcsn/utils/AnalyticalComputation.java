@@ -135,7 +135,7 @@ public class AnalyticalComputation {
         double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
 
         double gamma = 1 / config.getDouble("general", "interArrivalTime");
-        double lambda = gamma / (1-(pFeedback * pAcceptSysScoring));
+        double lambda = gamma / (1 - (pFeedback * pAcceptSysScoring));
 
         analyticalResults.add(multiServer(
                 config.getString("repartoIstruttorieMAAC", "centerName"),

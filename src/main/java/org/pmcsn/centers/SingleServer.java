@@ -36,6 +36,9 @@ public abstract class SingleServer {
     protected boolean warmup = true;
     protected int numBatch = 0;
     protected long jobServedPerBatch = 0;
+    protected float acceptedJobs = 0 ;
+    protected float
+            totJobs = 0;
 
     public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential) {
         ConfigurationManager config  = new ConfigurationManager();
@@ -121,6 +124,8 @@ public abstract class SingleServer {
         if (numberOfJobsInNode > 0) {
             spawnCompletionEvent(time, queue);
         }
+
+        if(!warmup && !isDone()) totJobs++;
     }
 
     public void resetBatch(MsqTime time) {
@@ -154,6 +159,7 @@ public abstract class SingleServer {
 
     public void writeBatchStats(String simulationType){
         batchStatistics.writeStats(simulationType);
+        System.out.println(centerName +" Probability is " + acceptedJobs/totJobs);
     }
 
 
