@@ -34,6 +34,8 @@ public abstract class MultiServer {
 
     private boolean warmup = true;
 
+    protected MsqEvent currEvent;
+
     public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
@@ -115,6 +117,8 @@ public abstract class MultiServer {
     }
 
     public void processArrival(MsqEvent arrival, MsqTime time, EventQueue queue){
+        currEvent = arrival;
+
         // increment the number of jobs in the node
         numberOfJobsInNode++;
 
@@ -134,6 +138,8 @@ public abstract class MultiServer {
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
+        currEvent = completion;
+
         numberOfJobsInNode--;
         jobServedPerBatch++;
 

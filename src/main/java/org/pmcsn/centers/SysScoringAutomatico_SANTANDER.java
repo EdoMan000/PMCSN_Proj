@@ -16,8 +16,8 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
-
-        if(isAcceptedSysScoring(rngs, streamindex)){
+        //if(isAcceptedSysScoring(rngs, streamindex)){
+        if(currEvent.applicant.haCorrispondenzaInBancaDati && currEvent.applicant.haDatiFornitiValidi){
             EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
             MsqEvent event = new MsqEvent(type, time.current);
             queue.add(event);
@@ -30,6 +30,7 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
     public void spawnCompletionEvent(MsqTime time, EventQueue queue) {
         double service = getService(streamindex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_SCORING_AUTOMATICO, time.current + service, service);
+        event.applicant = currEvent.applicant;
         queue.add(event);
     }
 

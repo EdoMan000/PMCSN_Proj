@@ -4,7 +4,7 @@ import org.pmcsn.libraries.Rngs;
 
 import java.util.Random;
 
-class Applicant {
+public class Applicant {
     /*
     boolean isLavoroOk;
     boolean isRapportoRataRedditoOk;
@@ -12,12 +12,12 @@ class Applicant {
     boolean haRifiutiRecenti;
     boolean haCorrispondenzaInBancaDati;
      */
-    boolean haDatiFornitiValidi;
+    public boolean haDatiFornitiValidi;
 
-    boolean haCorrispondenzaInBancaDati;
+    public boolean haCorrispondenzaInBancaDati;
 
 
-    public Applicant(boolean haDatiFornitiValidi, boolean haCorrispondenzaInBancaDati) {
+    public Applicant() {
         Random rand = new Random();
         this.haDatiFornitiValidi = rand.nextBoolean();
         this.haCorrispondenzaInBancaDati = rand.nextBoolean();

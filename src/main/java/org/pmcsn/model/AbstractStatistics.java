@@ -103,14 +103,14 @@ public abstract class AbstractStatistics {
             }
 
             MeanStatistics meanStatistics = getMeanStatistics();
-            writeMeanStatisticsRow(meanStatistics, fileWriter, COMMA, DELIMITER);
+            //writeMeanStatisticsRow(meanStatistics, fileWriter, COMMA, DELIMITER);
 
             ConfidenceIntervals confidenceIntervals = new ConfidenceIntervals(
                     meanResponseTimeList, meanQueueTimeList, meanServiceTimeList,
                     meanSystemPopulationList, meanQueuePopulationList, meanUtilizationList, lambdaList
             );
 
-            writeConfidenceIntervalsRow(confidenceIntervals, fileWriter, COMMA, DELIMITER);
+            //writeConfidenceIntervalsRow(confidenceIntervals, fileWriter, COMMA, DELIMITER);
 
             fileWriter.flush();
         } catch (IOException e) {
@@ -144,12 +144,13 @@ public abstract class AbstractStatistics {
         String PREAMBLE = "± ";
         // Write confidence intervals row
         fileWriter.append("CONFIDENCE_INTERVALS").append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getLambdaCI())).append(COMMA)
+                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getResponseTimeCI())).append(COMMA)
                 .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getQueueTimeCI())).append(COMMA)
                 .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getServiceTimeCI())).append(COMMA)
                 .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getSystemPopulationCI())).append(COMMA)
                 .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getQueuePopulationCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getUtilizationCI())).append(DELIMITER);
+                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getUtilizationCI())).append(COMMA)
+                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getLambdaCI())).append(DELIMITER);
     }
 
     public void printLists() {

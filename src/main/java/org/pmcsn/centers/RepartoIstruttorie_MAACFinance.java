@@ -2,10 +2,7 @@ package org.pmcsn.centers;
 
 import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
-import org.pmcsn.model.EventQueue;
-import org.pmcsn.model.EventType;
-import org.pmcsn.model.MsqEvent;
-import org.pmcsn.model.MsqTime;
+import org.pmcsn.model.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
 
@@ -20,7 +17,9 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue) {
-        queue.add(new MsqEvent(EventType.ARRIVAL_SCORING_AUTOMATICO, time.current));
+        MsqEvent event = new MsqEvent(EventType.ARRIVAL_SCORING_AUTOMATICO, time.current);
+        event.applicant = currEvent.applicant;
+        queue.add(event);
     }
 
     public void start(Rngs rngs, double sarrival){
@@ -35,6 +34,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
         double service = getService(streamIndex);
         //generate a new completion event
         MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_ISTRUTTORIE, time.current + service, service, serverId);
+        event.applicant = currEvent.applicant;
         queue.add(event);
     }
 
@@ -61,6 +61,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
     public void generateNextArrival(EventQueue queue){
         EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
         MsqEvent event = new MsqEvent(type, getArrival());
+        event.applicant = new Applicant();
         queue.add(event);
     }
 }

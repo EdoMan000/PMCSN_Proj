@@ -71,7 +71,9 @@ public class BatchSimulationRunner {
 
         // Generate the first arrival
         double time = repartoIstruttorie.getArrival();
-        events.add(new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time));
+        MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
+        firstEvent.applicant = new Applicant();
+        events.add(firstEvent);
 
         resetCenters(rngs);
 

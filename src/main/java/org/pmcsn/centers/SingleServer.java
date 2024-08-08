@@ -37,8 +37,8 @@ public abstract class SingleServer {
     protected int numBatch = 0;
     protected long jobServedPerBatch = 0;
     protected float acceptedJobs = 0 ;
-    protected float
-            totJobs = 0;
+    protected float totJobs = 0;
+    protected MsqEvent currEvent;
 
     public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential) {
         ConfigurationManager config  = new ConfigurationManager();
@@ -92,6 +92,8 @@ public abstract class SingleServer {
     }
 
     public void processArrival(MsqEvent arrival, MsqTime time, EventQueue queue){
+        currEvent = arrival;
+
         // increment the number of jobs in the node
         numberOfJobsInNode++;
 
@@ -107,6 +109,8 @@ public abstract class SingleServer {
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
+        currEvent = completion;
+
         numberOfJobsInNode--;
         jobServedPerBatch++;
 

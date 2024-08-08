@@ -1,9 +1,7 @@
 package org.pmcsn.centers;
 
-import org.pmcsn.model.EventQueue;
-import org.pmcsn.model.EventType;
-import org.pmcsn.model.MsqEvent;
-import org.pmcsn.model.MsqTime;
+import org.pmcsn.model.*;
+
 import static org.pmcsn.utils.ProbabilitiesUtils.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
@@ -19,11 +17,13 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
         if(isAccepetdComitato(rngs, streamindex)){
             EventType type = EventType.ARRIVAL_REPARTO_LIQUIDAZIONI;
             MsqEvent event = new MsqEvent(type, time.current);
+            event.applicant = currEvent.applicant;
             queue.add(event);
             if(!warmup && !isDone()) acceptedJobs++;
         }else if(isFeedback(rngs, streamindex)){
             EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
             MsqEvent event = new MsqEvent(type, time.current);
+            event.applicant = new Applicant();
             queue.add(event);
         }
     }
@@ -32,6 +32,7 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
     public void spawnCompletionEvent(MsqTime time, EventQueue queue) {
         double service = getService(streamindex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_COMITATO_CREDITO, time.current + service, service);
+        event.applicant = currEvent.applicant;
         queue.add(event);
     }
 
