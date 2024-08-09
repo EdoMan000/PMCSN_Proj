@@ -68,6 +68,7 @@ public class BatchSimulationRunner {
 
         // Initialize LuggageChecks
         repartoIstruttorie.start(rngs, START);
+        repartoIstruttorie.setStop(Double.POSITIVE_INFINITY);
 
         // Generate the first arrival
         double time = repartoIstruttorie.getArrival();

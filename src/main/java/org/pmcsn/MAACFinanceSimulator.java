@@ -52,7 +52,7 @@ public class MAACFinanceSimulator {
 
         switch (simulationType) {
             case 1:
-                basicRunner.runFiniteSimulation(false, shouldTrackObservations, false);
+                basicRunner.runFiniteSimulation(true, shouldTrackObservations, false);
                 break;
             case 2:
                 ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method

@@ -29,23 +29,21 @@ public class FiniteSimulationRunner {
      */
 
     // Constants
+    private static final ConfigurationManager config = new ConfigurationManager();
     private static final int START = 0;
-    private static float STOP = 480; // 8 hours
+    private static double STOP = config.getDouble("general", "finiteSimObservationTime"); // 8 hours
     private static final long SEED = 123456789L;
 
-    private final ConfigurationManager config = new ConfigurationManager();
     private RepartoIstruttorie_MAACFinance repartoIstruttorie;
     private SysScoringAutomatico_SANTANDER scoringAutomatico;
     private ComitatoCredito_SANTANDER comitatoCredito;
     private RepartoLiquidazioni_MAACFinance repartoLiquidazioni;
     private final List<Observations> repartoIstruttorieObservations = new ArrayList<>();
-    private final List<Observations> scoringAutomaticoObservations = new ArrayList<>();
-    private final List<Observations> comitatoCreditoObservations = new ArrayList<>();
-    private final List<Observations> repartoLiquidazioniObservations = new ArrayList<>();
 
-    public void runFiniteSimulation(boolean approximateServiceAsExponential, boolean isImprovedModel) throws Exception {
-        runFiniteSimulation(approximateServiceAsExponential, true, isImprovedModel);
-    }
+    //TODO
+    private final Observations scoringAutomaticoObservations = null;
+    private final Observations comitatoCreditoObservations = null;
+    private final Observations repartoLiquidazioniObservations = null;
 
     public void runFiniteSimulation(boolean approximateServiceAsExponential, boolean shouldTrackObservations, boolean isImprovedModel) throws Exception {
         initCenters(approximateServiceAsExponential, isImprovedModel);
@@ -155,31 +153,41 @@ public class FiniteSimulationRunner {
 
     private void processCurrentEvent(boolean shouldTrackObservations, MsqEvent event, MsqTime msqTime, EventQueue events, int eventCount, int skip, int i) {
         switch (event.type) {
-            // TODO: non ho capito a che serve il should track observations
             case ARRIVAL_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processArrival(event, msqTime, events);
                 repartoIstruttorie.generateNextArrival(events);
                 break;
             case COMPLETION_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processCompletion(event, msqTime, events);
+                if (shouldTrackObservations && eventCount % skip == 0)
+                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
                 break;
             case ARRIVAL_SCORING_AUTOMATICO:
                 scoringAutomatico.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_SCORING_AUTOMATICO:
                 scoringAutomatico.processCompletion(event, msqTime, events);
+                //if (shouldTrackObservations && eventCount % skip == 0)
+                //TODO
+                    //scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
                 break;
             case ARRIVAL_COMITATO_CREDITO:
                 comitatoCredito.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_COMITATO_CREDITO:
                 comitatoCredito.processCompletion(event, msqTime, events);
+                //if (shouldTrackObservations && eventCount % skip == 0)
+                //TODO
+                    //comitatoCredito.updateObservations(comitatoCreditoObservations, i);
                 break;
             case ARRIVAL_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processCompletion(event, msqTime, events);
+                //if (shouldTrackObservations && eventCount % skip == 0)
+                //TODO
+                    //repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
                 break;
         }
     }
@@ -263,29 +271,31 @@ public class FiniteSimulationRunner {
         int runsNumber = config.getInt("general", "runsNumber");
 
         for (int j = 0; j < config.getInt("checkInDeskOthers", "serversNumber"); j++) {
-            repartoIstruttorieObservations.add(new Observations("%s_%d_%d".formatted(config.getString("repartoIstruttorieMAAC", "centerName"), j + 1), runsNumber));
+            repartoIstruttorieObservations.add(new Observations("%s_%d".formatted(config.getString("repartoIstruttorieMAAC", "centerName"), j + 1), runsNumber));
         }
 
-        scoringAutomaticoObservations.add(new Observations("%s_%d_%d".formatted(config.getString("sysScoringAutomaticoSANTANDER", "centerName")), runsNumber));
+        //scoringAutomaticoObservations.add(new Observations("%s".formatted(config.getString("sysScoringAutomaticoSANTANDER", "centerName")), runsNumber));
 
-        comitatoCreditoObservations.add(new Observations("%s_%d_%d".formatted(config.getString("comitatoCreditoSANTANDER", "centerName")), runsNumber));
+        //comitatoCreditoObservations.add(new Observations("%s".formatted(config.getString("comitatoCreditoSANTANDER", "centerName")), runsNumber));
 
-        repartoLiquidazioniObservations.add(new Observations("%s_%d_%d".formatted(config.getString("repartoLiquidazioniMAAC", "centerName")), runsNumber));
+        //repartoLiquidazioniObservations.add(new Observations("%s".formatted(config.getString("repartoLiquidazioniMAAC", "centerName")), runsNumber));
 
     }
 
+    //TODO
     private void resetObservations() {
         repartoIstruttorieObservations.forEach(Observations::reset);
-        scoringAutomaticoObservations.forEach(Observations::reset);
-        comitatoCreditoObservations.forEach(Observations::reset);
-        repartoLiquidazioniObservations.forEach(Observations::reset);
+        //scoringAutomaticoObservations.forEach(Observations::reset);
+        //comitatoCreditoObservations.forEach(Observations::reset);
+        //repartoLiquidazioniObservations.forEach(Observations::reset);
     }
 
+    //TODO
     private void writeObservations(String simulationType) {
         // Computing warm up period boundaries
         WelchPlot.writeObservations(simulationType, repartoIstruttorieObservations);
-        WelchPlot.writeObservations(simulationType, scoringAutomaticoObservations);
-        WelchPlot.writeObservations(simulationType, comitatoCreditoObservations);
-        WelchPlot.writeObservations(simulationType, repartoLiquidazioniObservations);
+        //WelchPlot.writeObservations(simulationType, scoringAutomaticoObservations);
+        //WelchPlot.writeObservations(simulationType, comitatoCreditoObservations);
+        //WelchPlot.writeObservations(simulationType, repartoLiquidazioniObservations);
     }
 }

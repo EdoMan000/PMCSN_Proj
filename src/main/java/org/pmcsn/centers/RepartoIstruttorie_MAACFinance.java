@@ -10,7 +10,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
 
     private double sarrival;
     private boolean endOfArrivals;
-    private float STOP = Float.POSITIVE_INFINITY;
+    private double STOP = Double.POSITIVE_INFINITY;
     private boolean isEndOfArrivals = false;
 
     public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
@@ -63,7 +63,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
     public void generateNextArrival(EventQueue queue){
         double time = getArrival();
 
-        if(STOP != Double.POSITIVE_INFINITY && time > STOP ){
+        if(time > STOP){
             // end of finite simulation
             isEndOfArrivals = true;
         } else {
@@ -73,7 +73,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
         }
     }
 
-    public void setStop(float stop) {
+    public void setStop(double stop) {
         this.STOP = stop;
     }
 
