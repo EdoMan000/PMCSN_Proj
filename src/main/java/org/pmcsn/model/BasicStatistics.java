@@ -6,10 +6,12 @@ import java.util.List;
 public class BasicStatistics extends AbstractStatistics {
 
     List<Double> probAccept;
+    List<Double> jobServed;
 
     public BasicStatistics(String centerName) {
         super(centerName);
         probAccept = new ArrayList<>();
+        jobServed = new ArrayList<>();
     }
 
     @Override
@@ -23,5 +25,13 @@ public class BasicStatistics extends AbstractStatistics {
 
     public void addProbAccept(double probAccept) {
         this.probAccept.add(probAccept);
+    }
+
+    public List<Double> getJobServed() {
+        return jobServed;
+    }
+
+    public void addJobServed(double value) {
+        jobServed.add(value);
     }
 }

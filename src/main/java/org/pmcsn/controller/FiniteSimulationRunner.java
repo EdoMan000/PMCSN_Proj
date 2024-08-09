@@ -19,6 +19,7 @@ import java.util.List;
 
 import static org.pmcsn.utils.AnalyticalComputation.computeAnalyticalResults;
 import static org.pmcsn.utils.Comparison.compareResults;
+import static org.pmcsn.utils.PrintUtils.BRIGHT_GREEN;
 import static org.pmcsn.utils.PrintUtils.printFinalResults;
 import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
@@ -49,9 +50,9 @@ public class FiniteSimulationRunner {
         initCenters(approximateServiceAsExponential, isImprovedModel);
         String simulationType;
         if(approximateServiceAsExponential){
-            simulationType = "BASIC_SIMULATION_EXPONENTIAL";
+            simulationType = "FINITE_SIMULATION_EXPONENTIAL";
         }else{
-            simulationType = "BASIC_SIMULATION";
+            simulationType = "FINITE_SIMULATION";
         }
         System.out.println("\nRUNNING " + simulationType + "...");
 
@@ -142,6 +143,9 @@ public class FiniteSimulationRunner {
             modelVerification(simulationType); // Computing and writing verifications stats csv
         }
 
+        System.out.println("");
+        System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ getMeanResponseTime() + " min");
+
         //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }
 
@@ -230,6 +234,13 @@ public class FiniteSimulationRunner {
         meanStatisticsList.add(comitatoCredito.getMeanStatistics());
         meanStatisticsList.add(repartoLiquidazioni.getMeanStatistics());
         return meanStatisticsList;
+    }
+
+    private double getMeanResponseTime(){
+        return repartoIstruttorie.getMeanStatistics().meanResponseTime+
+                scoringAutomatico.getMeanStatistics().meanResponseTime+
+                comitatoCredito.getMeanStatistics().meanResponseTime+
+                repartoLiquidazioni.getMeanStatistics().meanResponseTime;
     }
 
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {

@@ -26,6 +26,7 @@ public abstract class AbstractStatistics {
     public List<Double> meanUtilizationList = new ArrayList<>();
     public List<Double> meanQueuePopulationList = new ArrayList<>();
     public List<Double> meanResponseTimeList = new ArrayList<>();
+    MeanStatistics meanStatistics = null;
 
     private final String centerName;
 
@@ -34,7 +35,10 @@ public abstract class AbstractStatistics {
     }
 
     public MeanStatistics getMeanStatistics() {
-        return new MeanStatistics(this);
+        if(meanStatistics == null){
+            meanStatistics = new MeanStatistics(this);
+        }
+        return meanStatistics;
     }
 
     public String getCenterName() {

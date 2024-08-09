@@ -15,6 +15,7 @@ import java.util.List;
 
 import static org.pmcsn.utils.AnalyticalComputation.computeAnalyticalResults;
 import static org.pmcsn.utils.Comparison.compareResults;
+import static org.pmcsn.utils.PrintUtils.BRIGHT_GREEN;
 import static org.pmcsn.utils.PrintUtils.printFinalResults;
 import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
@@ -144,6 +145,8 @@ public class FiniteImprovedSimulationRunner {
             modelVerification(simulationType); // Computing and writing verifications stats csv
         }
 
+        System.out.println("");
+        System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ getMeanResponseTime() + " min");
         //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }
 
@@ -242,6 +245,14 @@ public class FiniteImprovedSimulationRunner {
         meanStatisticsList.add(comitatoCredito.getMeanStatistics());
         meanStatisticsList.add(repartoLiquidazioni.getMeanStatistics());
         return meanStatisticsList;
+    }
+
+    private double getMeanResponseTime(){
+        return preScoring.getMeanStatistics().meanResponseTime +
+                repartoIstruttorie.getMeanStatistics().meanResponseTime+
+                scoringAutomatico.getMeanStatistics().meanResponseTime+
+                comitatoCredito.getMeanStatistics().meanResponseTime+
+                repartoLiquidazioni.getMeanStatistics().meanResponseTime;
     }
 
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {

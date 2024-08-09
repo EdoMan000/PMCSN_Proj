@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.pmcsn.model.MeanStatistics.computeMean;
-import static org.pmcsn.utils.PrintUtils.BRIGHT_RED;
+import static org.pmcsn.utils.PrintUtils.*;
 
 public abstract class SingleServer {
 
@@ -158,15 +158,23 @@ public abstract class SingleServer {
         if(centerName.contains("SCORING")) {
             statistics.addProbAccept(acceptedJobs / totJobs);
         }
+        statistics.addJobServed(totJobs);
     }
 
     public void writeStats(String simulationType){
         statistics.writeStats(simulationType);
         List<Double> prob = statistics.getProbAccept();
+        List<Double> totJobsList = statistics.getJobServed();
+        System.out.println("");
+        System.out.println(BRIGHT_YELLOW+"**************************" + centerName + "**************************");
         if(!prob.isEmpty()){
             double avgValue = computeMean(prob);
-            System.out.println(BRIGHT_RED + "Average rate of acceptance of center " + centerName+ " is: " + avgValue);
+            System.out.println(BRIGHT_RED + "Average rate of acceptance is: " + avgValue);
         }
+        double avgJobServed = computeMean(totJobsList);
+        System.out.println(BRIGHT_BLUE + "Average Job Served : " + avgJobServed);
+        System.out.println(BRIGHT_BLUE + "Average service time : " + meanServiceTime);
+        System.out.println(BRIGHT_BLUE + "Total time spent: " + avgJobServed*meanServiceTime );
     }
 
     public MeanStatistics getMeanStatistics() {
