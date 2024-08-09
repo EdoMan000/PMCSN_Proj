@@ -39,8 +39,9 @@ public abstract class SingleServer {
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
     protected boolean isImprovedModel = false;
+    protected boolean isBatch = false;
 
-    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
+    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel, boolean isBatch) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
@@ -51,6 +52,7 @@ public abstract class SingleServer {
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
         this.isImprovedModel = isImprovedModel;
+        this.isBatch = isBatch;
     }
 
     //********************************** ABSTRACT METHODS *********************************************
@@ -109,9 +111,11 @@ public abstract class SingleServer {
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
         numberOfJobsInNode--;
-        jobServedPerBatch++;
 
-        if(!isDone()) totalNumberOfJobsServed++;
+        if(!isDone()){
+            totalNumberOfJobsServed++;
+            jobServedPerBatch++;
+        }
 
         sum.served++;
         sum.service += completion.service;
@@ -126,7 +130,7 @@ public abstract class SingleServer {
             spawnCompletionEvent(time, queue, completion);
         }
 
-        if(!warmup && !isDone()) totJobs++;
+        if(!isBatch || (!warmup && !isDone())) totJobs++;
     }
 
     public void resetBatch(MsqTime time) {
@@ -142,6 +146,8 @@ public abstract class SingleServer {
         MsqSum[] sums = new MsqSum[1];
         sums[0] = this.sum;
         statistics.saveStats(area, sums, lastArrivalTime, lastCompletionTime, false, currentBatchStartTime);
+        System.out.println(centerName +" Probability is " + acceptedJobs/totJobs);
+
     }
 
     public void writeStats(String simulationType){

@@ -9,8 +9,8 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class RepartoLiquidazioni_MAACFinance extends SingleServer {
 
-    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel);
+    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
     }
 
     @Override

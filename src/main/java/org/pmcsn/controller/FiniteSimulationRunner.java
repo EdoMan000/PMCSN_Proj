@@ -86,7 +86,8 @@ public class FiniteSimulationRunner {
             firstEvent.applicant = new Applicant();
             queue.add(firstEvent);
 
-            resetCenters(rngs); // Initialize other centers
+            // Initialize and reset other centers
+            resetCenters(rngs);
 
             MsqEvent event;
             int skip = 3;
@@ -94,12 +95,19 @@ public class FiniteSimulationRunner {
 
             // need to use OR because all the conditions should be false
             while (!repartoIstruttorie.isEndOfArrivals() || !queue.isEmpty() || number != 0) {
-                event = queue.pop(); // Retrieving next event to be processed
-                msqTime.next = event.time;
-                updateAreas(msqTime); // Updating areas
-                msqTime.current = msqTime.next; // Advancing the clock
 
-                processCurrentEvent(shouldTrackObservations, event, msqTime, queue, eventCount, skip, i); // Processing the event based on its type
+                // Retrieving next event to be processed
+                event = queue.pop();
+                msqTime.next = event.time;
+
+                // Updating areas
+                updateAreas(msqTime);
+
+                // Advancing the clock
+                msqTime.current = msqTime.next;
+
+                // Processing the event based on its type
+                processCurrentEvent(shouldTrackObservations, event, msqTime, queue, eventCount, skip, i);
 
                 eventCount++;
 
@@ -113,7 +121,6 @@ public class FiniteSimulationRunner {
             }
 
             //System.out.println("EVENT COUNT FOR RUN N°"+i+": " + eventCount);
-
             saveAllStats(); // Saving statistics for current run
 
             // Generating next seed
@@ -130,19 +137,22 @@ public class FiniteSimulationRunner {
         // Writing statistics csv with data from all runs
         writeAllStats(simulationType);
 
+
         if(approximateServiceAsExponential) {
             modelVerification(simulationType); // Computing and writing verifications stats csv
         }
+
+
 
         //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isImprovedModel) {
         CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel);
-        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel, false);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel, false);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel, false);
     }
 
     private void resetCenters(Rngs rngs) {

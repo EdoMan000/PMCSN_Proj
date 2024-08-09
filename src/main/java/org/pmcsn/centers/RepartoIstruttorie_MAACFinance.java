@@ -13,8 +13,8 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
     private double STOP = Double.POSITIVE_INFINITY;
     private boolean isEndOfArrivals = false;
 
-    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
-        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isImprovedModel);
+    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
+        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
     }
 
     @Override
@@ -66,10 +66,14 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
         if(time > STOP){
             // end of finite simulation
             isEndOfArrivals = true;
+            //System.out.println("Time is "+time);
+
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
             event.applicant = new Applicant();
             queue.add(event);
+
+            //System.out.println("Generated arrival" + time);
         }
     }
 

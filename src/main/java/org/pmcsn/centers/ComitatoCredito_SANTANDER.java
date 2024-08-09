@@ -8,8 +8,8 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class ComitatoCredito_SANTANDER extends SingleServer {
 
-    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel);
+    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel, boolean isBatch) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
     }
 
     @Override
@@ -21,10 +21,13 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
             queue.add(event);
             if(!warmup && !isDone()) acceptedJobs++;
         }else if(isFeedback(rngs, streamindex)){
+            /*
             EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
             MsqEvent event = new MsqEvent(type, time.current);
             event.applicant = new Applicant();
             queue.add(event);
+
+             */
         }
     }
 

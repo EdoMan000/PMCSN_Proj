@@ -12,7 +12,7 @@ import static org.pmcsn.utils.PrintUtils.*;
 public class MAACFinanceSimulator {
 
     public static void main(String[] args) throws Exception {
-        FileUtils.deleteDirectory("csvFiles");
+        //FileUtils.deleteDirectory("csvFiles");
         Scanner scanner = new Scanner(System.in);
 
         while (true) {

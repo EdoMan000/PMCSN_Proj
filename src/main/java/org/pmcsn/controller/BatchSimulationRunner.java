@@ -136,10 +136,10 @@ public class BatchSimulationRunner {
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isImprovedModel) {
         CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel);
-        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel, true);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel, true);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel, true);
     }
 
     private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {

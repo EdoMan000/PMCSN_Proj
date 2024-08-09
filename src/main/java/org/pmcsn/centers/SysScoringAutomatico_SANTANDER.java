@@ -10,8 +10,8 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class SysScoringAutomatico_SANTANDER extends  SingleServer {
 
-    public SysScoringAutomatico_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel);
+    public SysScoringAutomatico_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
     }
 
     @Override
@@ -21,7 +21,8 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
             EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
             MsqEvent event = new MsqEvent(type, time.current);
             queue.add(event);
-            if(!warmup && !isDone()) acceptedJobs++;
+
+            if( !isBatch || (!warmup && !isDone())) acceptedJobs++;
         }
 
     }

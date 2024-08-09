@@ -30,10 +30,11 @@ public abstract class MultiServer {
     protected BatchStatistics batchStatistics;
     protected long jobServedPerBatch = 0;
     private boolean warmup = true;
-    protected boolean isImprovedModel = false;
+    protected boolean isImprovedModel;
+    protected boolean isBatch;
 
 
-    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel) {
+    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
@@ -52,6 +53,7 @@ public abstract class MultiServer {
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
         this.isImprovedModel = isImprovedModel;
+        this.isBatch = isBatch;
     }
 
     //********************************** ABSTRACT METHODS *********************************************
@@ -135,9 +137,11 @@ public abstract class MultiServer {
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
         numberOfJobsInNode--;
-        jobServedPerBatch++;
 
-        if(!isDone()) totalNumberOfJobsServed++;
+        if(!isDone()){
+            totalNumberOfJobsServed++;
+            jobServedPerBatch++;
+        }
 
         int serverId = completion.serverId;
         sum[serverId].service += completion.service;
