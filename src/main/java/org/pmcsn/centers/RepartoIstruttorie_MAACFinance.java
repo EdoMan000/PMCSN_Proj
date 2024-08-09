@@ -48,7 +48,6 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
         if(approximateServiceAsExponential){
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
-            // TODO: mettere il servizio effettivo
             serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
         }
         return serviceTime;
@@ -65,16 +64,13 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
         double time = getArrival();
 
         if(time > STOP){
-            // end of finite simulation
             isEndOfArrivals = true;
-            //System.out.println("Time is "+time);
 
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
             event.applicant = new Applicant();
             queue.add(event);
 
-            //System.out.println("Generated arrival" + time);
         }
     }
 

@@ -3,6 +3,7 @@ package org.pmcsn;
 import java.util.Scanner;
 
 import org.pmcsn.configuration.ConfigurationManager;
+import org.pmcsn.controller.FiniteImprovedSimulationRunner;
 import org.pmcsn.controller.FiniteSimulationRunner;
 import org.pmcsn.controller.ModelVerificationBatchMeans;
 import org.pmcsn.utils.FileUtils;
@@ -49,6 +50,7 @@ public class MAACFinanceSimulator {
         ConfigurationManager configurationManager = new ConfigurationManager();
         boolean shouldTrackObservations = configurationManager.getBoolean("general", "shouldTrackObservations");
         FiniteSimulationRunner basicRunner = new FiniteSimulationRunner();
+        FiniteImprovedSimulationRunner improvedRunner = new FiniteImprovedSimulationRunner();
 
         switch (simulationType) {
             case 1:
@@ -58,7 +60,7 @@ public class MAACFinanceSimulator {
                 ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
                 break;
             case 3:
-                //improvedRunner.runImprovedModelSimulation();
+                improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, true);
                 break;
             case 4:
                 //improvedRunner.runImprovedModelSimulation(); // Call BatchMeans main method
