@@ -121,7 +121,8 @@ public class FiniteSimulationRunner {
             }
 
             //System.out.println("EVENT COUNT FOR RUN N°"+i+": " + eventCount);
-            saveAllStats(); // Saving statistics for current run
+            // Saving statistics for current run
+            saveAllStats();
 
             // Generating next seed
             rngs.selectStream(config.getInt("general", "seedStreamIndex"));
@@ -137,12 +138,9 @@ public class FiniteSimulationRunner {
         // Writing statistics csv with data from all runs
         writeAllStats(simulationType);
 
-
         if(approximateServiceAsExponential) {
             modelVerification(simulationType); // Computing and writing verifications stats csv
         }
-
-
 
         //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }

@@ -6,6 +6,7 @@ import org.pmcsn.model.MsqEvent;
 import org.pmcsn.model.MsqTime;
 
 import static org.pmcsn.utils.Distributions.exponential;
+import static org.pmcsn.utils.Distributions.uniform;
 
 public class RepartoLiquidazioni_MAACFinance extends SingleServer {
 
@@ -33,7 +34,7 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
             // TODO: mettere il servizio effettivo
-            serviceTime = 0.0;
+            serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
         }
         return serviceTime;
     }

@@ -4,6 +4,8 @@ import org.pmcsn.model.EventQueue;
 import org.pmcsn.model.EventType;
 import org.pmcsn.model.MsqEvent;
 import org.pmcsn.model.MsqTime;
+
+import static org.pmcsn.utils.Distributions.uniform;
 import static org.pmcsn.utils.ProbabilitiesUtils.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
@@ -42,7 +44,7 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
             // TODO: mettere il servizio effettivo
-            serviceTime = 0.0;
+            serviceTime = uniform(meanServiceTime-0.5, meanServiceTime+0.5, rngs);
         }
         return serviceTime;
     }

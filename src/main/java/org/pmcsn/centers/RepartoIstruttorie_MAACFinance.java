@@ -5,6 +5,7 @@ import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
+import static org.pmcsn.utils.Distributions.uniform;
 
 public class RepartoIstruttorie_MAACFinance extends  MultiServer{
 
@@ -48,7 +49,7 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
             // TODO: mettere il servizio effettivo
-            serviceTime = 0.0;
+            serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
         }
         return serviceTime;
     }

@@ -4,6 +4,13 @@ import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.pmcsn.model.MeanStatistics.computeMean;
+import static org.pmcsn.utils.PrintUtils.BRIGHT_RED;
+
 public abstract class SingleServer {
 
     /*  STATISTICS OF INTEREST :
@@ -71,6 +78,8 @@ public abstract class SingleServer {
         this.firstArrivalTime = Double.NEGATIVE_INFINITY;
         this.lastArrivalTime = 0;
         this.lastCompletionTime = 0;
+        this.acceptedJobs = 0;
+        this.totJobs = 0;
     }
 
     public long getNumberOfJobsInNode() {
@@ -146,12 +155,18 @@ public abstract class SingleServer {
         MsqSum[] sums = new MsqSum[1];
         sums[0] = this.sum;
         statistics.saveStats(area, sums, lastArrivalTime, lastCompletionTime, false, currentBatchStartTime);
-        System.out.println(centerName +" Probability is " + acceptedJobs/totJobs);
-
+        if(centerName.contains("SCORING")) {
+            statistics.addProbAccept(acceptedJobs / totJobs);
+        }
     }
 
     public void writeStats(String simulationType){
         statistics.writeStats(simulationType);
+        List<Double> prob = statistics.getProbAccept();
+        if(!prob.isEmpty()){
+            double avgValue = computeMean(prob);
+            System.out.println(BRIGHT_RED + "Average rate of acceptance of center " + centerName+ " is: " + avgValue);
+        }
     }
 
     public MeanStatistics getMeanStatistics() {

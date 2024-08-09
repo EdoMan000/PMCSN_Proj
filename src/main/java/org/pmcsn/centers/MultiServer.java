@@ -8,6 +8,9 @@ import org.pmcsn.model.*;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.pmcsn.model.MeanStatistics.computeMean;
+import static org.pmcsn.utils.PrintUtils.BRIGHT_RED;
+
 public abstract class MultiServer {
     protected long numberOfJobsInNode = 0;
     protected long totalNumberOfJobsServed = 0;
@@ -32,6 +35,8 @@ public abstract class MultiServer {
     private boolean warmup = true;
     protected boolean isImprovedModel;
     protected boolean isBatch;
+    protected float acceptedJobs = 0 ;
+    protected float totJobs = 0;
 
 
     public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
@@ -79,6 +84,8 @@ public abstract class MultiServer {
             sum[i].reset();
             servers[i].reset();
         }
+        this.acceptedJobs = 0;
+        this.totJobs = 0;
     }
 
     public void resetBatch(MsqTime time) {
@@ -157,6 +164,8 @@ public abstract class MultiServer {
             servers[serverId].lastCompletionTime = completion.time;
             servers[serverId].running = false;
         }
+
+        if(!isBatch || (!warmup && !isDone())) totJobs++;
     }
 
     public int findOne() {
@@ -176,10 +185,18 @@ public abstract class MultiServer {
 
     public void saveStats() {
         statistics.saveStats(area, sum, lastArrivalTime, lastCompletionTime, true);
+        if(centerName.contains("SCORING")) {
+            statistics.addProbAccept(acceptedJobs / totJobs);
+        }
     }
 
     public void writeStats(String simulationType){
         statistics.writeStats(simulationType);
+        List<Double> prob = statistics.getProbAccept();
+        if(!prob.isEmpty()){
+            double avgValue = computeMean(prob);
+            System.out.println(BRIGHT_RED + "Average rate of acceptance of center " + centerName+ " is: " + avgValue);
+        }
     }
 
     public MeanStatistics getMeanStatistics() {

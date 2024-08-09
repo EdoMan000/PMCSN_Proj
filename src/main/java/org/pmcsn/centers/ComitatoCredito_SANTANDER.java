@@ -2,6 +2,7 @@ package org.pmcsn.centers;
 
 import org.pmcsn.model.*;
 
+import static org.pmcsn.utils.Distributions.uniform;
 import static org.pmcsn.utils.ProbabilitiesUtils.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
@@ -46,7 +47,7 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
             // TODO: mettere il servizio effettivo
-            serviceTime = 0.0;
+            serviceTime = uniform(meanServiceTime-60, meanServiceTime+60, rngs);
         }
         return serviceTime;
     }
