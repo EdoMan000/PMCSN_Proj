@@ -37,6 +37,34 @@ public class ModelVerificationBatchMeans {
         }
     }
 
+    public static void runModelVerificationWithBatchMeansMethodImproved() throws Exception {
+        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner();
+        List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, true);
+
+        // Iterate over each BatchStatistics object
+        for (BatchStatistics batchStatistics : batchStatisticsList) {
+            // List of all metric lists for current BatchStatistics with their labels
+            List<BatchMetric> allBatchMetrics = List.of(
+                    new BatchMetric("E[Ts]", batchStatistics.meanResponseTimeList),
+                    new BatchMetric("E[Tq]", batchStatistics.meanQueueTimeList),
+                    new BatchMetric("E[s]", batchStatistics.meanServiceTimeList),
+                    new BatchMetric("E[Ns]", batchStatistics.meanSystemPopulationList),
+                    new BatchMetric("E[Nq]", batchStatistics.meanQueuePopulationList),
+                    new BatchMetric("ρ", batchStatistics.meanUtilizationList),
+                    new BatchMetric("λ", batchStatistics.lambdaList)
+            );
+
+            // Calculate ACF for each metric list
+            for (BatchMetric batchMetric : allBatchMetrics) {
+                double acfValue = Math.abs(acf(batchMetric.values));
+                batchMetric.setAcfValue(acfValue);
+            }
+
+            // Pass the metrics and the allOk status to the print function
+            printBatchStatisticsResult(batchStatistics.getCenterName(), allBatchMetrics);
+        }
+    }
+
     public static double acf(List<Double> data) {
         int k = data.size();
         double mean = 0.0;

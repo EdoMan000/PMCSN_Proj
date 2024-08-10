@@ -137,25 +137,80 @@ public class AnalyticalComputation {
         double gamma = 1 / config.getDouble("general", "interArrivalTime");
         double lambda = gamma / (1 - (pFeedback * pAcceptSysScoring));
 
+        // REPARTO ISTRUTTORIE
         analyticalResults.add(multiServer(
                 config.getString("repartoIstruttorieMAAC", "centerName"),
                 lambda,
                 config.getDouble("repartoIstruttorieMAAC", "meanServiceTime"),
                 config.getInt("repartoIstruttorieMAAC", "serversNumber")));
 
+        // SISTEMA SCORING AUTOMATICO
         analyticalResults.add(singleServer(
                 config.getString("sysScoringAutomaticoSANTANDER", "centerName"),
                 lambda,
                 config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
 
+        // COMITATO CREDITO
         analyticalResults.add(singleServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
                 lambda*pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
 
+        // REPARTO LIQUIDAZIONI
         analyticalResults.add(singleServer(
                 config.getString("repartoLiquidazioniMAAC", "centerName"),
                 (lambda*pAcceptSysScoring)*pAcceptCredito,
+                config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
+
+        writeAnalyticalResults(simulationType, analyticalResults);
+
+        return(analyticalResults);
+    }
+
+
+    public static List<AnalyticalResult> computeAnalyticalResultsImproved(String simulationType) {
+        printDebug("Computing analytical results for simulation...");
+        List<AnalyticalResult> analyticalResults = new ArrayList<>();
+        ConfigurationManager conf = new ConfigurationManager();
+
+        double pFeedback = config.getDouble("comitatoCreditoSANTANDER", "pFeedback");
+        double pAcceptSysScoring = 0.82;
+        double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
+        double pAcceptPreScoring = 0.18;
+
+        double gamma = 1 / config.getDouble("general", "interArrivalTime");
+        double lambda = gamma / (1 - (pFeedback * pAcceptSysScoring));
+
+        // PRE-SCORING (nel primo centro non c'è feedback ma entra il lambda originario che è gamma)
+        analyticalResults.add(multiServer(
+                config.getString("preScoringMAAC", "centerName"),
+                gamma,
+                config.getDouble("preScoringMAAC", "meanServiceTime"),
+                config.getInt("preScoringMAAC", "serversNumber")));
+
+        // REPARTO ISTRUTTORIE
+        analyticalResults.add(multiServer(
+                config.getString("repartoIstruttorieMAAC", "centerName"),
+                lambda*pAcceptPreScoring,
+                config.getDouble("repartoIstruttorieMAAC", "meanServiceTimeImproved"),
+                config.getInt("repartoIstruttorieMAAC", "serversNumberImproved")));
+
+        // SISTEMA SCORING AUTOMATICO
+        analyticalResults.add(singleServer(
+                config.getString("sysScoringAutomaticoSANTANDER", "centerName"),
+                lambda*pAcceptPreScoring,
+                config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
+
+        // COMITATO CREDITO
+        analyticalResults.add(singleServer(
+                config.getString("comitatoCreditoSANTANDER", "centerName"),
+                lambda*pAcceptPreScoring*pAcceptSysScoring,
+                config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
+
+        // REPARTO LIQUIDAZIONI
+        analyticalResults.add(singleServer(
+                config.getString("repartoLiquidazioniMAAC", "centerName"),
+                (lambda*pAcceptPreScoring*pAcceptSysScoring)*pAcceptCredito,
                 config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
 
         writeAnalyticalResults(simulationType, analyticalResults);
