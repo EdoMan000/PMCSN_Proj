@@ -206,9 +206,8 @@ public abstract class SingleServer {
         MsqSum[] s = new MsqSum[1];
         s[0] = sum;
         batchStatistics.saveStats(area, s, lastArrivalTime, lastCompletionTime, false, currentBatchStartTime);
-        if (getJobsServed() % batchSize == 0) {
-            resetBatch(time);
-        }
+        resetBatch(time);
+
     }
 
 

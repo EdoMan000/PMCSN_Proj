@@ -37,7 +37,8 @@ public class ProbabilitiesUtils {
     }
 
     private static boolean generateProbability(double beta, Rngs rngs, int streamIndex) {
-        rngs.selectStream(streamIndex);
+        // streamIndex + 2 to avoid overlapping (service streamIndex, new arrival streamIndex + 1)
+        rngs.selectStream(streamIndex + 2);
         return rngs.random() < beta;
     }
 }

@@ -22,13 +22,10 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
             queue.add(event);
             if(!warmup && !isDone()) acceptedJobs++;
         }else if(isFeedback(rngs, streamindex)){
-            /*
             EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
             MsqEvent event = new MsqEvent(type, time.current);
             event.applicant = new Applicant();
             queue.add(event);
-
-             */
         }
     }
 
