@@ -39,7 +39,7 @@ public class ModelVerificationBatchMeans {
 
     public static void runModelVerificationWithBatchMeansMethodImproved() throws Exception {
         BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner();
-        List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, true);
+        List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object
         for (BatchStatistics batchStatistics : batchStatisticsList) {

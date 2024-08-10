@@ -12,8 +12,8 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class SysScoringAutomatico_SANTANDER extends  SingleServer {
 
-    public SysScoringAutomatico_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
+    public SysScoringAutomatico_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature,  boolean isBatch) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
     }
 
     @Override
@@ -43,7 +43,6 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
         if(approximateServiceAsExponential){
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
-            // TODO: mettere il servizio effettivo
             serviceTime = uniform(meanServiceTime-0.5, meanServiceTime+0.5, rngs);
         }
         return serviceTime;

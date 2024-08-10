@@ -14,8 +14,8 @@ public class RepartoIstruttorie_MAACFinance extends  MultiServer{
     private double STOP = Double.POSITIVE_INFINITY;
     private boolean isEndOfArrivals = false;
 
-    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
-        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
+    public RepartoIstruttorie_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature,  boolean isBatch) {
+        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
     }
 
     @Override

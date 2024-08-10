@@ -60,10 +60,13 @@ public class MAACFinanceSimulator {
                 ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
                 break;
             case 3:
-                improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, true);
+                improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, false);
                 break;
             case 4:
                 ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethodImproved();
+                break;
+            case 5:
+                improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, true);
                 break;
             default:
                 printError("Invalid simulation type '" + simulationType + "'.");

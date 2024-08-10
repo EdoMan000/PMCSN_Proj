@@ -46,8 +46,8 @@ public class BatchSimulationRunner {
         warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
     }
 
-    public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential,  boolean isImprovedModel) throws Exception {
-        initCenters(approximateServiceAsExponential, isImprovedModel);
+    public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential,  boolean isDigitalSignature) throws Exception {
+        initCenters(approximateServiceAsExponential, isDigitalSignature);
 
         String simulationType;
         if (approximateServiceAsExponential) {
@@ -134,12 +134,12 @@ public class BatchSimulationRunner {
     }
 
 
-    private void initCenters(boolean approximateServiceAsExponential,  boolean isImprovedModel) {
+    private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
         CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel, true);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel, true);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel, true);
-        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel, true);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isDigitalSignature, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isDigitalSignature, true);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, true);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, true);
     }
 
     private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {

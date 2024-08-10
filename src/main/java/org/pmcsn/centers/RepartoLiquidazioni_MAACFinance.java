@@ -10,8 +10,8 @@ import static org.pmcsn.utils.Distributions.uniform;
 
 public class RepartoLiquidazioni_MAACFinance extends SingleServer {
 
-    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
+    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature,  boolean isBatch) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
     }
 
     @Override
@@ -33,7 +33,6 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
         if(approximateServiceAsExponential){
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
-            // TODO: mettere il servizio effettivo
             serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
         }
         return serviceTime;

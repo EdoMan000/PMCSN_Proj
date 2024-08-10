@@ -9,8 +9,8 @@ import static org.pmcsn.utils.Distributions.exponential;
 
 public class ComitatoCredito_SANTANDER extends SingleServer {
 
-    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel, boolean isBatch) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isImprovedModel, isBatch);
+    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
     }
 
     @Override
@@ -43,7 +43,6 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
         if(approximateServiceAsExponential){
             serviceTime =  exponential(meanServiceTime, rngs);
         } else {
-            // TODO: mettere il servizio effettivo
             serviceTime = uniform(meanServiceTime-60, meanServiceTime+60, rngs);
         }
         return serviceTime;

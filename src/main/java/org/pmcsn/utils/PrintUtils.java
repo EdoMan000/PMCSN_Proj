@@ -154,6 +154,7 @@ public class PrintUtils {
         System.out.println(BRIGHT_RED + "2" + RESET + ". Basic Simulation VERIFICATION");
         System.out.println(BRIGHT_RED + "3" + RESET + ". Improved Model Simulation");
         System.out.println(BRIGHT_RED + "4" + RESET + ". Improved Model Simulation VERIFICATION");
+        System.out.println(BRIGHT_RED + "5" + RESET + ". Improved Model Simulation with Digital Signature");
 
         System.out.print(BRIGHT_RED + "Enter the simulation type number: " + RESET);
     }

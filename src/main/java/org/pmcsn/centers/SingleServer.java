@@ -4,8 +4,6 @@ import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.pmcsn.model.MeanStatistics.computeMean;
@@ -45,10 +43,10 @@ public abstract class SingleServer {
     protected long jobServedPerBatch = 0;
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
-    protected boolean isImprovedModel = false;
+    protected boolean isDigitalSignature;
     protected boolean isBatch = false;
 
-    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel, boolean isBatch) {
+    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
@@ -58,7 +56,7 @@ public abstract class SingleServer {
         this.statistics = new BasicStatistics(centerName);
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
-        this.isImprovedModel = isImprovedModel;
+        this.isDigitalSignature = isDigitalSignature;
         this.isBatch = isBatch;
     }
 

@@ -46,8 +46,8 @@ public class FiniteSimulationRunner {
     private final Observations comitatoCreditoObservations = null;
     private final Observations repartoLiquidazioniObservations = null;
 
-    public void runFiniteSimulation(boolean approximateServiceAsExponential, boolean shouldTrackObservations, boolean isImprovedModel) throws Exception {
-        initCenters(approximateServiceAsExponential, isImprovedModel);
+    public void runFiniteSimulation(boolean approximateServiceAsExponential, boolean shouldTrackObservations, boolean isDigitalSignature) throws Exception {
+        initCenters(approximateServiceAsExponential, isDigitalSignature);
         String simulationType;
         if(approximateServiceAsExponential){
             simulationType = "FINITE_SIMULATION_EXPONENTIAL";
@@ -149,12 +149,12 @@ public class FiniteSimulationRunner {
         //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }
 
-    private void initCenters(boolean approximateServiceAsExponential,  boolean isImprovedModel) {
+    private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
         CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isImprovedModel, false);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isImprovedModel, false);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isImprovedModel, false);
-        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isImprovedModel, false);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isDigitalSignature, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isDigitalSignature, false);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, false);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
     }
 
     private void resetCenters(Rngs rngs) {
@@ -237,6 +237,10 @@ public class FiniteSimulationRunner {
     }
 
     private double getMeanResponseTime(){
+        System.out.println("Average response time in REPARTO ISTRUTTORIE: "+ repartoIstruttorie.getMeanStatistics().meanResponseTime);
+        System.out.println("Average response time in SISTEMA SCORING AUTOMATICO: "+ scoringAutomatico.getMeanStatistics().meanResponseTime);
+        System.out.println("Average response time in COMITATO CREDITO: " + comitatoCredito.getMeanStatistics().meanResponseTime);
+        System.out.println("Average response time in REPARTO LIQUIDAZIONI: "+repartoLiquidazioni.getMeanStatistics().meanResponseTime);
         return repartoIstruttorie.getMeanStatistics().meanResponseTime+
                 scoringAutomatico.getMeanStatistics().meanResponseTime+
                 comitatoCredito.getMeanStatistics().meanResponseTime+

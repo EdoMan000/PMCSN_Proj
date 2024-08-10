@@ -33,13 +33,13 @@ public abstract class MultiServer {
     protected BatchStatistics batchStatistics;
     protected long jobServedPerBatch = 0;
     private boolean warmup = true;
-    protected boolean isImprovedModel;
+    protected boolean isDigitalSignature;
     protected boolean isBatch;
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
 
 
-    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isImprovedModel,  boolean isBatch) {
+    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
         ConfigurationManager config  = new ConfigurationManager();
         batchSize = config.getInt("general", "batchSize");
         batchesNumber = config.getInt("general", "numBatches");
@@ -57,7 +57,7 @@ public abstract class MultiServer {
         this.statistics = new BasicStatistics(centerName);
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
-        this.isImprovedModel = isImprovedModel;
+        this.isDigitalSignature = isDigitalSignature;
         this.isBatch = isBatch;
     }
 
