@@ -1,5 +1,6 @@
 package org.pmcsn.model;
 
+import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 
 import java.util.Random;

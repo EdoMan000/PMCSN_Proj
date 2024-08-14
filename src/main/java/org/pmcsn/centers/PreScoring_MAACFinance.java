@@ -74,7 +74,7 @@ public class PreScoring_MAACFinance extends MultiServer{
 
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-            event.applicant = new Applicant();
+            event.applicant = new Applicant(rngs);
             queue.add(event);
         }
     }
