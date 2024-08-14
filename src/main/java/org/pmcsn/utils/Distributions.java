@@ -4,11 +4,6 @@ import org.pmcsn.libraries.Rngs;
 
 public class Distributions {
 
-    public static double getWalkingTime(Rngs rngs){
-        rngs.selectStream(239);
-        return uniform(5, 10, rngs);
-    }
-
     public static double erlang(long k, double b, Rngs rngs)
         /* ==================================================
          * Returns an Erlang distributed positive real number.

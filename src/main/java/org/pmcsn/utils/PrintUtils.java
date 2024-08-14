@@ -130,6 +130,7 @@ public class PrintUtils {
     }
 
     private static String getColor(double value) {
+        /*
         if (value < 0.5) {
             return BRIGHT_GREEN;
         } else if (value < 1) {
@@ -137,6 +138,10 @@ public class PrintUtils {
         } else {
             return BRIGHT_RED;
         }
+
+         */
+        return BRIGHT_GREEN;
+
     }
 
     public static void printMainMenuOptions() {

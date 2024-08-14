@@ -15,6 +15,9 @@
  */
 package org.pmcsn.libraries;
 
+import org.pmcsn.configuration.ConfigurationManager;
+import org.pmcsn.utils.ProbabilitiesUtils;
+
 import java.text.DecimalFormat;
 
 
@@ -81,8 +84,9 @@ class Ssq3 {
           t.last      = t.current;
           t.arrival   = INFINITY;
         }
-        if (number == 1)
+        if (number == 1) {
           t.completion = t.current + s.getService(r);
+        }
       }
       else {                                        /* process a completion */
         index++;
@@ -143,4 +147,15 @@ class Ssq3 {
     return (uniform(1.0, 2.0, r));
   }
 
+
+  public static boolean isFeedback(Rngs rngs, int streamIndex){
+    ConfigurationManager conf = new ConfigurationManager();
+    return generateProbability(0.20, rngs, streamIndex);
+  }
+
+  private static boolean generateProbability(double beta, Rngs rngs, int streamIndex) {
+    // streamIndex + 2 to avoid overlapping (service streamIndex, new arrival streamIndex + 1)
+    rngs.selectStream(streamIndex + 2);
+    return rngs.random() < beta;
+  }
 }

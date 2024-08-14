@@ -95,10 +95,6 @@ public abstract class MultiServer {
         currentBatchStartTime = time.current;
     }
 
-    public long getJobsServed() {
-        return Arrays.stream(sum).mapToLong(x -> x.served).sum();
-    }
-
     public long getTotalNumberOfJobsServed(){
         return totalNumberOfJobsServed;
     }
@@ -115,12 +111,14 @@ public abstract class MultiServer {
         return numberOfJobsInNode;
     }
 
-    public void setArea(MsqTime time){
-        double width = time.next - time.current;
-        area.incNodeArea(width * numberOfJobsInNode);
-        long busyServers = Arrays.stream(servers).filter(x -> x.running).count();
-        area.incQueueArea(width * (numberOfJobsInNode - busyServers));
-        area.incServiceArea(width);
+    public void setArea(MsqTime time) {
+        if (numberOfJobsInNode > 0) {
+            double width = time.next - time.current;
+            area.incNodeArea(width * numberOfJobsInNode);
+            long busyServers = Arrays.stream(servers).filter(x -> x.running).count();
+            area.incQueueArea(width * (numberOfJobsInNode - busyServers));
+            area.incServiceArea(width);
+        }
     }
 
     public void processArrival(MsqEvent arrival, MsqTime time, EventQueue queue){
@@ -138,8 +136,6 @@ public abstract class MultiServer {
             servers[serverId].running = true;
             spawnCompletionEvent(time, queue, serverId, arrival);
         }
-
-
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {
@@ -211,8 +207,6 @@ public abstract class MultiServer {
         return statistics.getMeanStatistics();
     }
 
-
-
     public void writeBatchStats(String simulationType){
         batchStatistics.writeStats(simulationType);
     }
@@ -221,14 +215,11 @@ public abstract class MultiServer {
         // the number of jobs served cannot be 0 since the method is invoked in processCompletion()
         batchStatistics.saveStats(area, sum, lastArrivalTime, lastCompletionTime, true, currentBatchStartTime);
         resetBatch(time);
-
     }
-
 
     public MeanStatistics getBatchMeanStatistics() {
         return batchStatistics.getMeanStatistics();
     }
-
 
     public void updateObservations(List<Observations> observationsList, int run) {
         for (int i = 0; i < observationsList.size(); i++) {
@@ -249,8 +240,6 @@ public abstract class MultiServer {
         double meanResponseTime = meanNodePopulation / lambda;
         observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
     }
-
-
 
     public boolean isDone() {
         return batchStatistics.isBatchRetrievalDone();

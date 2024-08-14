@@ -84,7 +84,6 @@ public class AnalyticalComputation {
     public static AnalyticalResult singleServer(String centerName, double lambda, double Es) {
         double rho = lambda * Es;
         double Etq, Enq, Ets, Ens;
-
         if (rho >= 1) {
             Etq = Double.POSITIVE_INFINITY;
             Enq = Double.POSITIVE_INFINITY;
@@ -96,10 +95,7 @@ public class AnalyticalComputation {
             Ets = Etq + Es;
             Ens = Ets * lambda;
         }
-
-        AnalyticalResult analyticalResult = new AnalyticalResult(lambda, rho, Etq, Enq, Ets, Ens, centerName, Es);
-        //printResult(analyticalResult);
-        return analyticalResult;
+        return new AnalyticalResult(lambda, rho, Etq, Enq, Ets, Ens, centerName, Es);
     }
 
     public static AnalyticalResult multiServer(String centerName, double lambda, double Esi, int numServers) {
@@ -119,10 +115,7 @@ public class AnalyticalComputation {
             Ets = Etq + Esi;
             Ens = Ets * lambda;
         }
-
-        AnalyticalResult analyticalResult = new AnalyticalResult(lambda, rho, Etq, Enq, Ets, Ens, centerName, Esi);
-        //printResult(result);
-        return analyticalResult;
+        return new AnalyticalResult(lambda, rho, Etq, Enq, Ets, Ens, centerName, Esi);
     }
 
     public static List<AnalyticalResult> computeAnalyticalResults(String simulationType) {
@@ -131,11 +124,17 @@ public class AnalyticalComputation {
         ConfigurationManager conf = new ConfigurationManager();
 
         double pFeedback = config.getDouble("comitatoCreditoSANTANDER", "pFeedback");
+        //double pFeedback = 0.05;
         double pAcceptSysScoring = conf.getDouble("sysScoringAutomaticoSANTANDER", "pAccept");
         double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
 
         double gamma = 1 / config.getDouble("general", "interArrivalTime");
         double lambda = gamma / (1 - (pFeedback * pAcceptSysScoring));
+        // w≈0.00350072, x≈0.0128231, y≈0.0128231, z≈0.00538572
+        double l1 = 0.0128231;
+        double l2 = 0.0128231;
+        double l3 = 0.00538572;
+        double l4 = 0.00350072;
 
         // REPARTO ISTRUTTORIE
         analyticalResults.add(multiServer(

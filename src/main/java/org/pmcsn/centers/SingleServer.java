@@ -21,7 +21,7 @@ public abstract class SingleServer {
      *  * Queue population
      */
 
-    protected int streamindex;
+    protected int streamIndex;
     protected BasicStatistics statistics;
     protected BatchStatistics batchStatistics;
     protected final Area area = new Area();
@@ -52,7 +52,7 @@ public abstract class SingleServer {
         batchesNumber = config.getInt("general", "numBatches");
         this.centerName = centerName;
         this.meanServiceTime = meanServiceTime;
-        this.streamindex = streamIndex;
+        this.streamIndex = streamIndex;
         this.statistics = new BasicStatistics(centerName);
         this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
@@ -61,9 +61,9 @@ public abstract class SingleServer {
     }
 
     //********************************** ABSTRACT METHODS *********************************************
-    abstract void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
-    abstract void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
-    abstract double getService(int streamIndex);
+    protected abstract void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
+    protected abstract void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent);
+    protected abstract double getService(int streamIndex);
 
     //********************************** CONCRETE METHODS *********************************************
 
@@ -82,10 +82,6 @@ public abstract class SingleServer {
 
     public long getNumberOfJobsInNode() {
         return numberOfJobsInNode;
-    }
-
-    public long getJobsServed(){
-        return sum.served;
     }
 
     public long getTotalNumberOfJobsServed(){
@@ -130,6 +126,12 @@ public abstract class SingleServer {
 
         // If not in warm up then saving the statistics (OF CURRENT BATCH!!!)
         if (!warmup && jobServedPerBatch == batchSize ) {
+//            if (centerName.contains("CREDITO")) {
+//                System.out.printf("Queue Population=%d%n", Math.max(numberOfJobsInNode - 1, 0));
+//                System.out.printf("Queue Area=%f%n", area.getQueueArea());
+//                System.out.printf("E[Nq]=%f%n", area.getQueueArea()/(lastCompletionTime-currentBatchStartTime));
+//                System.out.printf("Interval=%f%n",lastCompletionTime-currentBatchStartTime );
+//            }
             saveBatchStats(time);
         }
         spawnNextCenterEvent(time, queue, completion);
@@ -163,7 +165,7 @@ public abstract class SingleServer {
         statistics.writeStats(simulationType);
         List<Double> prob = statistics.getProbAccept();
         List<Double> totJobsList = statistics.getJobServed();
-        System.out.println("");
+        System.out.println();
         System.out.println(BRIGHT_YELLOW+"**************************" + centerName + "**************************");
         if(!prob.isEmpty()){
             double avgValue = computeMean(prob);
@@ -182,8 +184,6 @@ public abstract class SingleServer {
     public BasicStatistics getStatistics() {
         return this.statistics;
     }
-
-
 
     public void writeBatchStats(String simulationType){
         batchStatistics.writeStats(simulationType);
@@ -205,9 +205,16 @@ public abstract class SingleServer {
         s[0] = sum;
         batchStatistics.saveStats(area, s, lastArrivalTime, lastCompletionTime, false, currentBatchStartTime);
         resetBatch(time);
-
     }
 
+    public void stopWarmup(MsqTime time) {
+        this.warmup = false;
+        resetBatch(time);
+    }
+
+    public boolean isDone() {
+        return batchStatistics.isBatchRetrievalDone();
+    }
 
     public void updateObservations(Observations observations, int run) {
         if (lastArrivalTime == 0 || lastCompletionTime == 0) {
@@ -219,14 +226,11 @@ public abstract class SingleServer {
         observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
     }
 
-
-
-    public void stopWarmup(MsqTime time) {
-        this.warmup = false;
-        resetBatch(time);
+    public float getTotalNumberOfJobs() {
+        return totJobs;
     }
 
-    public boolean isDone() {
-        return batchStatistics.isBatchRetrievalDone();
+    public float getAcceptedJobs() {
+        return acceptedJobs;
     }
 }

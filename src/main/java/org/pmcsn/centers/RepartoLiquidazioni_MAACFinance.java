@@ -21,7 +21,7 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
 
     @Override
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
-        double service = getService(streamindex);
+        double service = getService(streamIndex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_LIQUIDAZIONI, time.current + service, service);
         event.applicant = currEvent.applicant;
         queue.add(event);

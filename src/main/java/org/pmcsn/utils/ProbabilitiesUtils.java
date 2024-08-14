@@ -10,9 +10,9 @@ public class ProbabilitiesUtils {
         return generateProbability(conf.getDouble("sysScoringAutomaticoSANTANDER", "pAccept"), rngs, streamIndex);
     }
 
-    public static boolean isAccepetdComitato(Rngs rngs, int streamIndex) {
+    public static boolean isAcceptedComitato(Rngs rngs, int streamIndex) {
         ConfigurationManager conf = new ConfigurationManager();
-        return generateProbability(conf.getDouble("comitatoCreditoSANTANDER", "pAccept"), rngs, streamIndex);
+        return generateProbability(0.06, conf.getDouble("comitatoCreditoSANTANDER", "pAccept") + 0.06, rngs, streamIndex);
     }
 
     public static boolean isFeedback(Rngs rngs, int streamIndex){
@@ -37,8 +37,13 @@ public class ProbabilitiesUtils {
     }
 
     private static boolean generateProbability(double beta, Rngs rngs, int streamIndex) {
+        return generateProbability(0, beta, rngs, streamIndex);
+    }
+
+    private static boolean generateProbability(double alpha, double beta, Rngs rngs, int streamIndex) {
         // streamIndex + 2 to avoid overlapping (service streamIndex, new arrival streamIndex + 1)
         rngs.selectStream(streamIndex + 2);
-        return rngs.random() < beta;
+        double r = rngs.random();
+        return r >= alpha && r < beta;
     }
 }

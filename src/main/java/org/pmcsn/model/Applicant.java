@@ -1,5 +1,7 @@
 package org.pmcsn.model;
 
+import org.pmcsn.libraries.Rngs;
+
 import java.util.Random;
 
 public class Applicant {
@@ -9,11 +11,11 @@ public class Applicant {
     boolean haContrattoIndeterminato;
     boolean haRichiesteORifiutiRecenti;
     boolean haCorrispondenzaInBancaDati;
-
+    
     public Applicant() {
         // RIFIUTO O RICHIESTE RECENTE -> preventivi su internet che vengono rifiutati o sono comunque sulla banca dati CRIEF
         // e quindi risulta una richiesta con rifiuto o richieste multiple con una somma totale dei vari contratti
-        // troppo elevata e quindi non si può pensare ad un altro contratto
+        // troppo elevata e quindi non si può pensare a un altro contratto
 
         // TIPO DI CONTRATTO -> spesso le persone credono di essere in regola ma non gli vengono versati i contributi (rip sistema italiano dei contratti)
         // spesso quindi si presentano con contratti che danno poche garanzie

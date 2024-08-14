@@ -6,11 +6,11 @@ import org.pmcsn.model.MsqEvent;
 import org.pmcsn.model.MsqTime;
 
 import static org.pmcsn.utils.Distributions.uniform;
-import static org.pmcsn.utils.ProbabilitiesUtils.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
+import static org.pmcsn.utils.ProbabilitiesUtils.isAcceptedSysScoring;
 
-public class SysScoringAutomatico_SANTANDER extends  SingleServer {
+public class SysScoringAutomatico_SANTANDER extends SingleServer {
 
     public SysScoringAutomatico_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature,  boolean isBatch) {
         super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
@@ -18,22 +18,22 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
-        //if(isAcceptedSysScoring(rngs, streamindex)){
+        // if (isAcceptedSysScoring(rngs, streamIndex)) {
         if(currEvent.applicant.hasValidaData() && currEvent.applicant.hasCorrespondingData()){
             EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
             MsqEvent event = new MsqEvent(type, time.current);
+            event.isFeedback = currEvent.isFeedback;
             queue.add(event);
-
             if( !isBatch || (!warmup && !isDone())) acceptedJobs++;
         }
-
     }
 
     @Override
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
-        double service = getService(streamindex);
+        double service = getService(streamIndex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_SCORING_AUTOMATICO, time.current + service, service);
         event.applicant = currEvent.applicant;
+        event.isFeedback = currEvent.isFeedback;
         queue.add(event);
     }
 
@@ -41,7 +41,7 @@ public class SysScoringAutomatico_SANTANDER extends  SingleServer {
         rngs.selectStream(streamIndex);
         double serviceTime;
         if(approximateServiceAsExponential){
-            serviceTime =  exponential(meanServiceTime, rngs);
+            serviceTime = exponential(meanServiceTime, rngs);
         } else {
             serviceTime = uniform(meanServiceTime-0.5, meanServiceTime+0.5, rngs);
         }

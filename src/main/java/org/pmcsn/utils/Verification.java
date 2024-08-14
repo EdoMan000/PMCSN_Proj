@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Verification {
-
     public static class VerificationResult {
         public String name;
         public Comparison.ComparisonResult comparisonResult;

@@ -8,6 +8,7 @@ public class MsqEvent {
     public int nodeId;
     public boolean hasPriority = false;     //if the event has priority
     public Applicant applicant;
+    public boolean isFeedback;
 
     public MsqEvent(EventType type, double time, double service, int serverId, int nodeId,  boolean hasPriority) {
         this.type = type;

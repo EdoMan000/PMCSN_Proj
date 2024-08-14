@@ -78,6 +78,8 @@ public class BatchSimulationRunner {
 
         resetCenters(rngs);
 
+        boolean stopWarmup = false;
+
         // the terminating condition is that all the centers have processed all the jobs
         while(!isDone()) {
             // Retrieving next event to be processed
@@ -87,8 +89,15 @@ public class BatchSimulationRunner {
             // Updating areas
             updateAreas(msqTime);
 
+            MsqTime currentTime = new MsqTime();
+            currentTime.current = msqTime.current;
             // Advancing the clock
             msqTime.current = msqTime.next;
+
+            if (stopWarmup) {
+                stopWarmup(currentTime);
+                stopWarmup = false;
+            }
 
             // Processing the event based on its type
             processCurrentEvent(event, msqTime, events);
@@ -98,9 +107,15 @@ public class BatchSimulationRunner {
             if (isWarmingUp && getMinimumNumberOfJobsServedByCenters() >= warmupThreshold ) {
                 printSuccess("WARMUP COMPLETED... Starting to collect statistics for centers from now on.");
                 isWarmingUp = false;
-                stopWarmup(msqTime);
+                stopWarmup = true;
             }
         }
+
+        System.out.printf("Number of feedbacks Reparto istruttorie = %d%n", repartoIstruttorie.feedback);
+        System.out.printf("Number of feedbacks creati Comitato = %d%n", comitatoCredito.feedbackCreated);
+        System.out.printf("Number of feedbacks ricevuti Comitato = %d%n", comitatoCredito.feedback);
+        System.out.printf("pFeedback = %f%n", comitatoCredito.feedbackCreated / comitatoCredito.getTotalNumberOfJobs());
+        System.out.printf("pFeedback = %f%n", comitatoCredito.getAcceptedJobs() / comitatoCredito.getTotalNumberOfJobs());
 
         // The batch simulation has now ended. Time to collect the statistics
         printSuccess(simulationType + " HAS JUST FINISHED.");
@@ -219,7 +234,6 @@ public class BatchSimulationRunner {
 
     private void writeAllStats(String simulationType) {
         printDebug("Writing csv files with stats for all the centers.");
-
         repartoIstruttorie.writeBatchStats(simulationType);
         scoringAutomatico.writeBatchStats(simulationType);
         comitatoCredito.writeBatchStats(simulationType);
