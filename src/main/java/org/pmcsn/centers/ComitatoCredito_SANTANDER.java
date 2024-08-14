@@ -3,7 +3,6 @@ package org.pmcsn.centers;
 import org.pmcsn.model.*;
 
 import static org.pmcsn.utils.Distributions.uniform;
-import static org.pmcsn.utils.ProbabilitiesUtils.*;
 
 import static org.pmcsn.utils.Distributions.exponential;
 
@@ -38,7 +37,7 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
             EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
             MsqEvent event = new MsqEvent(type, time.current);
             //TODO: ci va applicant vecchio?
-            event.applicant = new Applicant();
+            event.applicant = new Applicant(rngs);
             event.isFeedback = true;
             if(!warmup && !isDone()) feedbackCreated++;
             queue.add(event);

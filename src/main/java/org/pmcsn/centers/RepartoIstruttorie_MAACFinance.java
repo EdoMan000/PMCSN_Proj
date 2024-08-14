@@ -67,7 +67,7 @@ public class RepartoIstruttorie_MAACFinance extends MultiServer {
             isEndOfArrivals = true;
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
-            event.applicant = new Applicant();
+            event.applicant = new Applicant(rngs);
             queue.add(event);
         }
     }
