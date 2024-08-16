@@ -6,7 +6,7 @@ import static org.pmcsn.utils.Distributions.uniform;
 
 import static org.pmcsn.utils.Distributions.exponential;
 
-public class ComitatoCredito_SANTANDER extends SingleServer {
+public class ComitatoCredito_SANTANDER extends InfiniteServer {
     public int feedback = 0;
     public int feedbackCreated = 0;
 
@@ -38,6 +38,7 @@ public class ComitatoCredito_SANTANDER extends SingleServer {
             MsqEvent event = new MsqEvent(type, time.current);
             //TODO: ci va applicant vecchio?
             event.applicant = new Applicant(rngs);
+            // event.applicant = currEvent.applicant.copy(rngs);
             event.isFeedback = true;
             if(!warmup && !isDone()) feedbackCreated++;
             queue.add(event);

@@ -62,6 +62,7 @@ public class AnalyticalComputation {
 
     public static AnalyticalResult infiniteServer(String centerName, double lambda, double Es) {
         double rho = lambda * Es;
+        rho = 1 - Math.exp(-rho);
         double Etq, Enq, Ets, Ens;
 
         if (rho >= 1) {
@@ -75,7 +76,6 @@ public class AnalyticalComputation {
             Ets = Es;
             Ens = Ets * lambda;
         }
-
         AnalyticalResult analyticalResult = new AnalyticalResult(lambda, rho, Etq, Enq, Ets, Ens, centerName, Es);
         //printResult(analyticalResult);
         return analyticalResult;
@@ -145,7 +145,7 @@ public class AnalyticalComputation {
                 config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
 
         // COMITATO CREDITO
-        analyticalResults.add(singleServer(
+        analyticalResults.add(infiniteServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
                 lambda*pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
@@ -196,7 +196,7 @@ public class AnalyticalComputation {
                 config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
 
         // COMITATO CREDITO
-        analyticalResults.add(singleServer(
+        analyticalResults.add(infiniteServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
                 lambda*pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
@@ -247,7 +247,8 @@ public class AnalyticalComputation {
     public static void main(String[] args) {
         FileUtils.deleteDirectory("csvFiles");
         String simulationType = "ANALYTICAL";
-        writeAnalyticalResults(simulationType, computeAnalyticalResults(simulationType));
+        //writeAnalyticalResults(simulationType, computeAnalyticalResults(simulationType));
+        writeAnalyticalResults(simulationType, computeAnalyticalResultsImproved(simulationType));
     }
 
 }

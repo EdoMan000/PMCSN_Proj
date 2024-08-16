@@ -7,6 +7,14 @@ import java.util.Random;
 
 public class Applicant {
 
+    public Applicant(boolean haAnzianitaDiLavoro, boolean isRapportoRataRedditoOk, boolean haContrattoIndeterminato, boolean haRichiesteORifiutiRecenti, boolean haCorrispondenzaInBancaDati) {
+        this.haAnzianitaDiLavoro = haAnzianitaDiLavoro;
+        this.isRapportoRataRedditoOk = isRapportoRataRedditoOk;
+        this.haContrattoIndeterminato = haContrattoIndeterminato;
+        this.haRichiesteORifiutiRecenti = haRichiesteORifiutiRecenti;
+        this.haCorrispondenzaInBancaDati = haCorrispondenzaInBancaDati;
+    }
+
     boolean haAnzianitaDiLavoro;
     boolean isRapportoRataRedditoOk;
     boolean haContrattoIndeterminato;
@@ -31,9 +39,12 @@ public class Applicant {
         this.haContrattoIndeterminato = rngs.random() < 0.85;
         this.haAnzianitaDiLavoro = rngs.random() < 0.889;
         this.isRapportoRataRedditoOk = rngs.random() < 0.75;
+
         this.haCorrispondenzaInBancaDati = rngs.random() < 0.82;
     }
-    
+
+
+
     public Applicant() {
         // RIFIUTO O RICHIESTE RECENTE -> preventivi su internet che vengono rifiutati o sono comunque sulla banca dati CRIEF
         // e quindi risulta una richiesta con rifiuto o richieste multiple con una somma totale dei vari contratti
@@ -62,8 +73,54 @@ public class Applicant {
                 !haRichiesteORifiutiRecenti;
     }
 
+    public Applicant copy(Rngs rngs) {
+        ConfigurationManager config = new ConfigurationManager();
+        int streamIndex = config.getInt("general", "applicantStreamIndex");
+        rngs.selectStream(streamIndex);
+        return new Applicant(haAnzianitaDiLavoro,
+                isRapportoRataRedditoOk,
+                haContrattoIndeterminato,
+                haRichiesteORifiutiRecenti,
+                rngs.random() < 0.82);
+    }
+
     public boolean hasCorrespondingData(){
         return haCorrispondenzaInBancaDati;
     }
 
+    public static void main(String[] args) {
+        System.out.println(testHasValidData(16384*64));
+    }
+
+    public static double testHasValidData(double n) {
+        Rngs rngs = new Rngs();
+        ConfigurationManager config = new ConfigurationManager();
+        rngs.selectStream(config.getInt("general", "applicantStreamIndex"));
+        double s = 0.0;
+        for (int i = 0; i < n; i++) {
+            Applicant applicant = new Applicant(rngs);
+            if(applicant.hasValidaData()){
+                s += 1;
+            }
+        }
+        return s / n;
+    }
+
+    public static double testProbabilityCC(double n) {
+        Rngs rngs = new Rngs();
+        ConfigurationManager config = new ConfigurationManager();
+        rngs.selectStream(config.getInt("general", "applicantStreamIndex"));
+        double s = 0.0;
+        double m = 0.0;
+        for (int i = 0; i < n; i++) {
+            Applicant applicant = new Applicant(rngs);
+            if(applicant.hasValidaData()) {
+                m += 1;
+                if (applicant.hasCorrespondingData()) {
+                    s += 1;
+                }
+            }
+        }
+        return s / m;
+    }
 }
