@@ -35,12 +35,12 @@ public class CenterFactory {
                 approximateServiceAsExponential, isDigitalSignature, isBatch);
     }
 
-    public SysScoringAutomatico_SANTANDER createSysScoringAutomatico(boolean approximateServiceAsExponential,  boolean isDigitalSignature, boolean isBatch) {
+    public SysScoringAutomatico_SANTANDER createSysScoringAutomatico(boolean isImprovedSimulation, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
         return new SysScoringAutomatico_SANTANDER(
                 configurationManager.getString("sysScoringAutomaticoSANTANDER", "centerName"),
                 configurationManager.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime"),
                 configurationManager.getInt("sysScoringAutomaticoSANTANDER", "streamIndex"),
-                approximateServiceAsExponential, isDigitalSignature, isBatch);
+                approximateServiceAsExponential, isDigitalSignature, isBatch, isImprovedSimulation);
     }
 
     public ComitatoCredito_SANTANDER createComitatoCredito(boolean approximateServiceAsExponential,  boolean isDigitalSignature, boolean isBatch) {

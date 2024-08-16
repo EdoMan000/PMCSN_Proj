@@ -156,7 +156,7 @@ public class FiniteImprovedSimulationRunner {
         CenterFactory factory = new CenterFactory();
         preScoring = factory.createPreScoring(approximateServiceAsExponential, isDigitalSignature, false);
         repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, isDigitalSignature, false);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isDigitalSignature, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, isDigitalSignature, false);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, false);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
     }

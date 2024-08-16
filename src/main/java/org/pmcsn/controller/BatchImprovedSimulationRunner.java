@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import static org.pmcsn.utils.AnalyticalComputation.computeAnalyticalResults;
 import static org.pmcsn.utils.AnalyticalComputation.computeAnalyticalResultsImproved;
 import static org.pmcsn.utils.Comparison.compareResults;
 import static org.pmcsn.utils.PrintUtils.*;
@@ -143,7 +142,7 @@ public class BatchImprovedSimulationRunner {
         CenterFactory factory = new CenterFactory();
         preScoring = factory.createPreScoring(approximateServiceAsExponential, isDigitalSignature, true);
         repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, isDigitalSignature, true);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isDigitalSignature, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, isDigitalSignature, true);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, true);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, true);
     }

@@ -8,29 +8,20 @@ import org.pmcsn.model.MsqTime;
 import static org.pmcsn.utils.Distributions.uniform;
 
 import static org.pmcsn.utils.Distributions.exponential;
-import static org.pmcsn.utils.ProbabilitiesUtils.isAcceptedSysScoring;
 
 public class SysScoringAutomatico_SANTANDER extends SingleServer {
+    private final boolean isImprovedSimulation;
 
-    public SysScoringAutomatico_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature,  boolean isBatch) {
+    public SysScoringAutomatico_SANTANDER(
+            String centerName,
+            double meanServiceTime,
+            int streamIndex,
+            boolean approximateServiceAsExponential,
+            boolean isDigitalSignature,
+            boolean isBatch,
+            boolean isImprovedSimulation) {
         super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
-    }
-
-    @Override
-    public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
-        // if (isAcceptedSysScoring(rngs, streamIndex)) {
-        /*rngs.selectStream(streamIndex + 3);
-        double p = rngs.random();
-        if (p < 0.80) {
-
-         */
-        if(currEvent.applicant.hasCorrespondingData()){
-            EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
-            MsqEvent event = new MsqEvent(type, time.current);
-            event.isFeedback = currEvent.isFeedback;
-            queue.add(event);
-            if( !isBatch || (!warmup && !isDone())) acceptedJobs++;
-        }
+        this.isImprovedSimulation = isImprovedSimulation;
     }
 
     @Override
@@ -42,6 +33,25 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
         queue.add(event);
     }
 
+    @Override
+    public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
+        if (isImprovedSimulation && currEvent.applicant.hasCorrespondingData()) {
+            baseSpawnNextCenterEvent(time, queue, currEvent);
+        } else if (!isImprovedSimulation && currEvent.applicant.hasValidaData() && currEvent.applicant.hasCorrespondingData()){
+            baseSpawnNextCenterEvent(time, queue, currEvent);
+        }
+    }
+
+    private void baseSpawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
+        EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
+        MsqEvent event = new MsqEvent(type, time.current);
+        event.isFeedback = currEvent.isFeedback;
+        event.applicant = currEvent.applicant;
+        queue.add(event);
+        if( !isBatch || (!warmup && !isDone())) acceptedJobs++;
+    }
+
+     @Override
     protected double getService(int streamIndex) {
         rngs.selectStream(streamIndex);
         double serviceTime;

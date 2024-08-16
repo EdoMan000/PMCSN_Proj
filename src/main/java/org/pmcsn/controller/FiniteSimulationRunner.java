@@ -152,7 +152,7 @@ public class FiniteSimulationRunner {
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
         CenterFactory factory = new CenterFactory();
         repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isDigitalSignature, false);
-        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, isDigitalSignature, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(false, approximateServiceAsExponential, isDigitalSignature, false);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, false);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
     }
