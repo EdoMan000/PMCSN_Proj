@@ -178,7 +178,7 @@ public class AnalyticalComputation {
         double pAcceptPreScoring = 0.18;
 
         double gamma = 1 / config.getDouble("general", "interArrivalTime");
-        double lambda = gamma / (1 - (pFeedback * pAcceptSysScoring));
+        double lambda = (gamma*pAcceptPreScoring) / (1 - (pFeedback * pAcceptSysScoring));
 
         // PRE-SCORING (nel primo centro non c'è feedback ma entra il lambda originario che è gamma)
         analyticalResults.add(multiServer(
@@ -190,26 +190,26 @@ public class AnalyticalComputation {
         // REPARTO ISTRUTTORIE
         analyticalResults.add(multiServer(
                 config.getString("repartoIstruttorieMAAC", "centerName"),
-                lambda*pAcceptPreScoring,
+                lambda,
                 config.getDouble("repartoIstruttorieMAAC", "meanServiceTimeImproved"),
                 config.getInt("repartoIstruttorieMAAC", "serversNumberImproved")));
 
         // SISTEMA SCORING AUTOMATICO
         analyticalResults.add(singleServer(
                 config.getString("sysScoringAutomaticoSANTANDER", "centerName"),
-                lambda*pAcceptPreScoring,
+                lambda,
                 config.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime")));
 
         // COMITATO CREDITO
         analyticalResults.add(singleServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
-                lambda*pAcceptPreScoring*pAcceptSysScoring,
+                lambda*pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
 
         // REPARTO LIQUIDAZIONI
         analyticalResults.add(singleServer(
                 config.getString("repartoLiquidazioniMAAC", "centerName"),
-                (lambda*pAcceptPreScoring*pAcceptSysScoring)*pAcceptCredito,
+                (lambda*pAcceptSysScoring)*pAcceptCredito,
                 config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
 
         writeAnalyticalResults(simulationType, analyticalResults);
