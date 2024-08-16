@@ -130,11 +130,6 @@ public class AnalyticalComputation {
 
         double gamma = 1 / config.getDouble("general", "interArrivalTime");
         double lambda = gamma / (1 - (pFeedback * pAcceptSysScoring));
-        // w≈0.00350072, x≈0.0128231, y≈0.0128231, z≈0.00538572
-        double l1 = 0.0128231;
-        double l2 = 0.0128231;
-        double l3 = 0.00538572;
-        double l4 = 0.00350072;
 
         // REPARTO ISTRUTTORIE
         analyticalResults.add(multiServer(
@@ -175,7 +170,7 @@ public class AnalyticalComputation {
         double pFeedback = config.getDouble("comitatoCreditoSANTANDER", "pFeedback");
         double pAcceptSysScoring = 0.82;
         double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
-        double pAcceptPreScoring = 0.18;
+        double pAcceptPreScoring = 0.51;
 
         double gamma = 1 / config.getDouble("general", "interArrivalTime");
         double lambda = (gamma*pAcceptPreScoring) / (1 - (pFeedback * pAcceptSysScoring));

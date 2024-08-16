@@ -21,7 +21,10 @@ public class PreScoring_MAACFinance extends MultiServer{
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
-        if(currEvent.applicant.hasValidaData()) {
+        //if(currEvent.applicant.hasValidaData()) {
+        rngs.selectStream(streamIndex + 3);
+        double p = rngs.random();
+        if (p < 0.51) {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time.current);
             event.applicant = currEvent.applicant;
             queue.add(event);
