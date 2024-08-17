@@ -22,9 +22,6 @@ public class PreScoring_MAACFinance extends MultiServer{
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         if(currEvent.applicant.hasValidaData()) {
-//        rngs.selectStream(streamIndex + 3);
-//        double p = rngs.random();
-//        if (p < 0.51) {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time.current);
             event.applicant = currEvent.applicant;
             queue.add(event);
@@ -42,7 +39,6 @@ public class PreScoring_MAACFinance extends MultiServer{
     @Override
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, int serverId, MsqEvent currEvent) {
         double service = getService(streamIndex);
-        //generate a new completion event
         MsqEvent event = new MsqEvent(EventType.COMPLETION_PRE_SCORING, time.current + service, service, serverId);
         event.applicant = currEvent.applicant;
         queue.add(event);
@@ -54,7 +50,7 @@ public class PreScoring_MAACFinance extends MultiServer{
         rngs.selectStream(streamIndex);
         double serviceTime;
         if(approximateServiceAsExponential){
-            serviceTime =  exponential(meanServiceTime, rngs);
+            serviceTime = exponential(meanServiceTime, rngs);
         } else {
             serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
         }
@@ -70,11 +66,8 @@ public class PreScoring_MAACFinance extends MultiServer{
 
     public void generateNextArrival(EventQueue queue){
         double time = getArrival();
-
         if(time > STOP){
-            // end of finite simulation
             isEndOfArrivals = true;
-
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
             event.applicant = new Applicant(rngs);

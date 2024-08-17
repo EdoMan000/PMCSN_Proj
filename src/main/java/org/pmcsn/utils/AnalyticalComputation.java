@@ -147,13 +147,13 @@ public class AnalyticalComputation {
         // COMITATO CREDITO
         analyticalResults.add(infiniteServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
-                lambda*pAcceptSysScoring,
+                lambda * pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
 
         // REPARTO LIQUIDAZIONI
         analyticalResults.add(singleServer(
                 config.getString("repartoLiquidazioniMAAC", "centerName"),
-                (lambda*pAcceptSysScoring)*pAcceptCredito,
+                lambda * pAcceptSysScoring * pAcceptCredito,
                 config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
 
         writeAnalyticalResults(simulationType, analyticalResults);
@@ -198,13 +198,13 @@ public class AnalyticalComputation {
         // COMITATO CREDITO
         analyticalResults.add(infiniteServer(
                 config.getString("comitatoCreditoSANTANDER", "centerName"),
-                lambda*pAcceptSysScoring,
+                lambda * pAcceptSysScoring,
                 config.getDouble("comitatoCreditoSANTANDER", "meanServiceTime")));
 
         // REPARTO LIQUIDAZIONI
         analyticalResults.add(singleServer(
                 config.getString("repartoLiquidazioniMAAC", "centerName"),
-                (lambda*pAcceptSysScoring)*pAcceptCredito,
+                lambda * pAcceptSysScoring * pAcceptCredito,
                 config.getDouble("repartoLiquidazioniMAAC", "meanServiceTime")));
 
         writeAnalyticalResults(simulationType, analyticalResults);

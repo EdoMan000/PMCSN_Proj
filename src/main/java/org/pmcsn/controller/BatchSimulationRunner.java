@@ -111,11 +111,9 @@ public class BatchSimulationRunner {
             }
         }
 
-        System.out.printf("Number of feedbacks Reparto istruttorie = %d%n", repartoIstruttorie.feedback);
-        System.out.printf("Number of feedbacks creati Comitato = %d%n", comitatoCredito.feedbackCreated);
-        System.out.printf("Number of feedbacks ricevuti Comitato = %d%n", comitatoCredito.feedback);
+        System.out.printf("pControlloAutomatico = %f%n", scoringAutomatico.getAcceptedJobs() / scoringAutomatico.getTotalNumberOfJobs());
         System.out.printf("pFeedback = %f%n", comitatoCredito.feedbackCreated / comitatoCredito.getTotalNumberOfJobs());
-        System.out.printf("pFeedback = %f%n", comitatoCredito.getAcceptedJobs() / comitatoCredito.getTotalNumberOfJobs());
+        System.out.printf("pComitato = %f%n", comitatoCredito.getAcceptedJobs() / comitatoCredito.getTotalNumberOfJobs());
 
         // The batch simulation has now ended. Time to collect the statistics
         printSuccess(simulationType + " HAS JUST FINISHED.");

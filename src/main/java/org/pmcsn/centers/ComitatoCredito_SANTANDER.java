@@ -26,7 +26,6 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         rngs.selectStream(streamIndex + 1);
         double p = rngs.random();
-        //if (p >= 0.06 && p < 0.71) {
         if (p >= 0.06 && p < 0.71) {
             EventType type = EventType.ARRIVAL_REPARTO_LIQUIDAZIONI;
             MsqEvent event = new MsqEvent(type, time.current);
@@ -36,9 +35,8 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
         } else if (p >= 0 && p < 0.06) {
             EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
             MsqEvent event = new MsqEvent(type, time.current);
-            //TODO: ci va applicant vecchio?
-            event.applicant = new Applicant(rngs);
-            // event.applicant = currEvent.applicant.copy(rngs);
+            // event.applicant = new Applicant(rngs);
+            event.applicant = currEvent.applicant.copy(rngs);
             event.isFeedback = true;
             if(!warmup && !isDone()) feedbackCreated++;
             queue.add(event);

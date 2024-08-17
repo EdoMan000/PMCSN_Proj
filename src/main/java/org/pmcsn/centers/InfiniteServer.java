@@ -45,7 +45,7 @@ public abstract class InfiniteServer {
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
     protected boolean isDigitalSignature;
-    protected boolean isBatch = false;
+    protected boolean isBatch;
 
     public InfiniteServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
         ConfigurationManager config  = new ConfigurationManager();
@@ -125,12 +125,6 @@ public abstract class InfiniteServer {
 
         // If not in warm up then saving the statistics (OF CURRENT BATCH!!!)
         if (!warmup && jobServedPerBatch == batchSize ) {
-//            if (centerName.contains("CREDITO")) {
-//                System.out.printf("Queue Population=%d%n", Math.max(numberOfJobsInNode - 1, 0));
-//                System.out.printf("Queue Area=%f%n", area.getQueueArea());
-//                System.out.printf("E[Nq]=%f%n", area.getQueueArea()/(lastCompletionTime-currentBatchStartTime));
-//                System.out.printf("Interval=%f%n",lastCompletionTime-currentBatchStartTime );
-//            }
             saveBatchStats(time);
         }
         spawnNextCenterEvent(time, queue, completion);
