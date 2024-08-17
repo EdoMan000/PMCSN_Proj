@@ -36,7 +36,7 @@ public class Applicant {
         this.haAnzianitaDiLavoro = rngs.random() < 0.889;
         this.isRapportoRataRedditoOk = rngs.random() < 0.75;
         this.haRichiesteORifiutiRecenti = rngs.random() < 0.1;
-        this.haContrattoIndeterminato = rngs.random() < 0.85;
+        this.haContrattoIndeterminato = rngs.random() < 0.84989;
         this.haCorrispondenzaInBancaDati = rngs.random() < 0.82;
     }
 
@@ -55,7 +55,7 @@ public class Applicant {
                 isRapportoRataRedditoOk,
                 haContrattoIndeterminato,
                 haRichiesteORifiutiRecenti,
-                rngs.random() <= 0.82);
+                rngs.random() < 0.82);
     }
 
     public boolean hasCorrespondingData(){
@@ -63,8 +63,6 @@ public class Applicant {
     }
 
     public static void main(String[] args) {
-        System.out.println(testHasValidData(4096*128));
-        System.out.println(testHasCorrespondingData(4096*128));
         System.out.println(testProbabilityCC(4096*128));
     }
 
