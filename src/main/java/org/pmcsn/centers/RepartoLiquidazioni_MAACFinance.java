@@ -31,7 +31,7 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
         rngs.selectStream(streamIndex);
         double serviceTime;
         if(approximateServiceAsExponential){
-            serviceTime =  exponential(meanServiceTime, rngs);
+            serviceTime = exponential(meanServiceTime, rngs);
         } else {
             serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
         }

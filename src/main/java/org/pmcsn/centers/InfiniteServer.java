@@ -224,4 +224,7 @@ public abstract class InfiniteServer {
         return acceptedJobs;
     }
 
+    public String getCenterName() {
+        return centerName;
+    }
 }

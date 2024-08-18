@@ -76,7 +76,6 @@ public class ConfidenceIntervals {
 
         ConfigurationManager configurationManager = new ConfigurationManager();
         double levelOfConfidence = configurationManager.getDouble("general", "levelOfConfidence");
-
         if (n > 1) {
             u = 1.0 - 0.5 * (1.0 - levelOfConfidence); /* interval parameter */
             t = rvms.idfStudent(n - 1, u); /* critical value of t */

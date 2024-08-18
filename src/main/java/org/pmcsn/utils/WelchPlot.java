@@ -16,26 +16,32 @@ import java.util.stream.Collectors;
 public class WelchPlot {
     private WelchPlot() {}
 
-    public static void writeObservations(List<List<Observations>> checkinDeskOthersObservations, String simulationType) {
-        for (List<Observations> observations : checkinDeskOthersObservations) {
-            writeObservations(simulationType, observations);
-        }
-    }
-
     public static void writeObservations(String simulationType, List<Observations> observationsList) {
         String path = "csvFiles/%s/observations/".formatted(simulationType);
         FileUtils.createDirectoryIfNotExists(path);
         File parent = new File(path);
         for (Observations o : observationsList) {
             File file = new File(parent, "%s.data".formatted(o.getCenterName()));
-            try (FileWriter fileWriter = new FileWriter(file, true)) {
-                StringBuilder row = new StringBuilder();
-                o.getPoints().forEach(p -> row.append(p.toString()).append(","));
-                fileWriter.write(row.append("\n").toString());
-                fileWriter.flush();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            writeRow(file, o);
+        }
+    }
+
+    public static void writeObservations(String simulationType, Observations observations) {
+        String path = "csvFiles/%s/observations/".formatted(simulationType);
+        FileUtils.createDirectoryIfNotExists(path);
+        File parent = new File(path);
+        File file = new File(parent, "%s.data".formatted(observations.getCenterName()));
+        writeRow(file, observations);
+    }
+
+    private static void writeRow(File file, Observations observations) {
+        try (FileWriter fileWriter = new FileWriter(file, true)) {
+            StringBuilder row = new StringBuilder();
+            observations.getPoints().forEach(p -> row.append(p.toString()).append(","));
+            fileWriter.write(row.append("\n").toString());
+            fileWriter.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

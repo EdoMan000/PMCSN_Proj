@@ -227,4 +227,8 @@ public abstract class SingleServer {
     public float getAcceptedJobs() {
         return acceptedJobs;
     }
+
+    public String getCenterName() {
+        return centerName;
+    }
 }

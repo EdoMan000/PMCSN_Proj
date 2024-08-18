@@ -252,4 +252,12 @@ public abstract class MultiServer {
     public float getAcceptedJobs() {
         return acceptedJobs;
     }
+
+    public String getCenterName() {
+        return centerName;
+    }
+
+    public int getServersNumber() {
+        return servers.length;
+    }
 }
