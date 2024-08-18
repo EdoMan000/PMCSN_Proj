@@ -32,7 +32,7 @@ public abstract class MultiServer {
     protected BasicStatistics statistics;
     protected BatchStatistics batchStatistics;
     protected long jobServedPerBatch = 0;
-    private boolean warmup = true;
+    protected boolean warmup = true;
     protected boolean isDigitalSignature;
     protected boolean isBatch;
     protected float acceptedJobs = 0 ;
@@ -67,7 +67,7 @@ public abstract class MultiServer {
     abstract double getService(int streamIndex);
 
     public void stopWarmup(MsqTime time) {
-        warmup = false;
+        this.warmup = false;
         resetBatch(time);
     }
 
@@ -243,5 +243,13 @@ public abstract class MultiServer {
 
     public boolean isDone() {
         return batchStatistics.isBatchRetrievalDone();
+    }
+
+    public float getTotalNumberOfJobs() {
+        return totJobs;
+    }
+
+    public float getAcceptedJobs() {
+        return acceptedJobs;
     }
 }

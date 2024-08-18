@@ -25,7 +25,7 @@ public class PreScoring_MAACFinance extends MultiServer{
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time.current);
             event.applicant = currEvent.applicant;
             queue.add(event);
-            acceptedJobs++;
+            if(!isBatch || (!warmup && !isDone())) acceptedJobs++;
         }
     }
 

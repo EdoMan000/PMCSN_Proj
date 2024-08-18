@@ -31,14 +31,14 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
             MsqEvent event = new MsqEvent(type, time.current);
             event.applicant = currEvent.applicant;
             queue.add(event);
-            if(!warmup && !isDone()) acceptedJobs++;
+            if(!isBatch || (!warmup && !isDone())) acceptedJobs++;
         } else if (p >= 0 && p < 0.06) {
             EventType type = EventType.ARRIVAL_REPARTO_ISTRUTTORIE;
             MsqEvent event = new MsqEvent(type, time.current);
             // event.applicant = new Applicant(rngs);
             event.applicant = currEvent.applicant.copy(rngs);
             event.isFeedback = true;
-            if(!warmup && !isDone()) feedbackCreated++;
+            if(!isBatch || (!warmup && !isDone())) feedbackCreated++;
             queue.add(event);
         }
     }
