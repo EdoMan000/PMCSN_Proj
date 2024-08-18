@@ -4,13 +4,51 @@ import org.pmcsn.model.BatchStatistics;
 import org.pmcsn.model.BatchMetric;
 
 import java.util.List;
+import java.util.Scanner;
 
-import static org.pmcsn.utils.PrintUtils.printBatchStatisticsResult;
+import static org.pmcsn.utils.PrintUtils.*;
 
 public class ModelVerificationBatchMeans {
 
+    public static void main(String[] args) throws Exception {
+        //FileUtils.deleteDirectory("csvFiles");
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+
+            clearScreen();
+            System.out.println("\nACS printer");
+            System.out.println(BRIGHT_RED + "Please select an option:" + RESET);
+            System.out.println(BRIGHT_RED + "1" + RESET + ". Acs values for basic model simulation");
+            System.out.println(BRIGHT_RED + "2" + RESET + ". Acf values for improved model simulation");
+            System.out.println(BRIGHT_RED + "3" + RESET + ". Exit");
+
+            System.out.print(BRIGHT_RED + "Enter your choice >>> " + RESET);
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    runModelVerificationWithBatchMeansMethod();
+                    break;
+                case 2:
+                    runModelVerificationWithBatchMeansMethodImproved();
+                    break;
+                case 3:
+                    printError("Exiting ACS printer.");
+                    System.exit(0);
+                    break;
+                default:
+                    printError("Invalid choice '" + choice + "'. Please try again.");
+                    pauseAndClear(scanner);
+            }
+
+        }
+    }
+
     public static void runModelVerificationWithBatchMeansMethod() throws Exception {
-        BatchSimulationRunner batchRunner = new BatchSimulationRunner();
+        BatchSimulationRunner batchRunner = new BatchSimulationRunner(4096, 128);
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object
@@ -38,7 +76,7 @@ public class ModelVerificationBatchMeans {
     }
 
     public static void runModelVerificationWithBatchMeansMethodImproved() throws Exception {
-        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner();
+        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner(4096, 128);
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object

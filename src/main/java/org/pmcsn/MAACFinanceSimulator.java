@@ -1,11 +1,11 @@
 package org.pmcsn;
 
+import java.util.List;
 import java.util.Scanner;
 
 import org.pmcsn.configuration.ConfigurationManager;
-import org.pmcsn.controller.FiniteImprovedSimulationRunner;
-import org.pmcsn.controller.FiniteSimulationRunner;
-import org.pmcsn.controller.ModelVerificationBatchMeans;
+import org.pmcsn.controller.*;
+import org.pmcsn.model.BatchStatistics;
 import org.pmcsn.utils.FileUtils;
 
 import static org.pmcsn.utils.PrintUtils.*;
@@ -50,6 +50,8 @@ public class MAACFinanceSimulator {
         ConfigurationManager configurationManager = new ConfigurationManager();
         boolean shouldTrackObservations = configurationManager.getBoolean("general", "shouldTrackObservations");
         FiniteSimulationRunner basicRunner = new FiniteSimulationRunner();
+        BatchSimulationRunner batchRunner = new BatchSimulationRunner(configurationManager.getInt("general", "batchSize"), configurationManager.getInt("general", "numBatches"));
+        BatchImprovedSimulationRunner batchImprovedRunner = new BatchImprovedSimulationRunner(configurationManager.getInt("general", "batchSize"), configurationManager.getInt("general", "numBatches"));
         FiniteImprovedSimulationRunner improvedRunner = new FiniteImprovedSimulationRunner();
 
         switch (simulationType) {
@@ -57,13 +59,13 @@ public class MAACFinanceSimulator {
                 basicRunner.runFiniteSimulation(false, shouldTrackObservations, false);
                 break;
             case 2:
-                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
+                batchRunner.runBatchSimulation(true, false);
                 break;
             case 3:
                 improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, false);
                 break;
             case 4:
-                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethodImproved();
+                batchImprovedRunner.runBatchSimulation(true, false);
                 break;
             case 5:
                 improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, true);

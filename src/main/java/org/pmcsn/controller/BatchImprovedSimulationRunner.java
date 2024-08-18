@@ -41,10 +41,10 @@ public class BatchImprovedSimulationRunner {
     private boolean isWarmingUp = true;
 
 
-    public BatchImprovedSimulationRunner() {
+    public BatchImprovedSimulationRunner(int batchSize, int batchesNumber) {
         ConfigurationManager config = new ConfigurationManager();
-        batchSize = config.getInt("general", "batchSize");
-        batchesNumber = config.getInt("general", "numBatches");
+        this.batchSize = batchSize;
+        this.batchesNumber = batchesNumber;
         warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
     }
 
