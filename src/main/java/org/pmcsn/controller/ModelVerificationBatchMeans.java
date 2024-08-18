@@ -1,5 +1,6 @@
 package org.pmcsn.controller;
 
+import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.model.BatchStatistics;
 import org.pmcsn.model.BatchMetric;
 
@@ -10,7 +11,11 @@ import static org.pmcsn.utils.PrintUtils.printBatchStatisticsResult;
 public class ModelVerificationBatchMeans {
 
     public static void runModelVerificationWithBatchMeansMethod() throws Exception {
-        BatchSimulationRunner batchRunner = new BatchSimulationRunner();
+        ConfigurationManager config = new ConfigurationManager();
+        int batchSize = config.getInt("general", "batchSize");
+        int batchesNumber = config.getInt("general", "numBatches");
+        int warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
+        BatchSimulationRunner batchRunner = new BatchSimulationRunner(batchSize, batchesNumber, warmupThreshold);
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object
@@ -38,7 +43,12 @@ public class ModelVerificationBatchMeans {
     }
 
     public static void runModelVerificationWithBatchMeansMethodImproved() throws Exception {
-        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner();
+        ConfigurationManager config = new ConfigurationManager();
+        int batchSize = config.getInt("general", "batchSizeImproved");
+        int batchesNumber = config.getInt("general", "numBatchesImproved");
+        int warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentageImproved"));
+
+        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner(batchSize, batchesNumber, warmupThreshold);
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object

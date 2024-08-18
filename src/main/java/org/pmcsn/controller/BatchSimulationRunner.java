@@ -39,11 +39,10 @@ public class BatchSimulationRunner {
     private boolean isWarmingUp = true;
 
 
-    public BatchSimulationRunner() {
-        ConfigurationManager config = new ConfigurationManager();
-        batchSize = config.getInt("general", "batchSize");
-        batchesNumber = config.getInt("general", "numBatches");
-        warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
+    public BatchSimulationRunner(int batchSize, int batchesNumber, int warmupThreshold) {
+        this.batchSize = batchSize;
+        this.batchesNumber = batchesNumber;
+        this.warmupThreshold = warmupThreshold;
     }
 
     public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential,  boolean isDigitalSignature) throws Exception {

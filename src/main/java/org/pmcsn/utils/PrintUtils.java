@@ -145,7 +145,7 @@ public class PrintUtils {
     }
 
     public static void printMainMenuOptions() {
-        System.out.println("\nWelcome to Menara Airport Simulator!");
+        System.out.println("\nWelcome to MAAC Finance Simulator!");
         System.out.println(BRIGHT_RED + "Please select an option:" + RESET);
         System.out.println(BRIGHT_RED + "1" + RESET + ". Start Simulation");
         System.out.println(BRIGHT_RED + "2" + RESET + ". Exit");
