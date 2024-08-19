@@ -53,12 +53,9 @@ public class PrintUtils {
         return sb.toString();
     }
 
-    public static void printBatchStatisticsResult(String centerName, List<BatchMetric> batchMetrics) {
-        ConfigurationManager configurationManager = new ConfigurationManager();
-        int batchSize = configurationManager.getInt("general", "batchSize");
-        int numBatches = configurationManager.getInt("general", "numBatches");
+    public static void printBatchStatisticsResult(String centerName, List<BatchMetric> batchMetrics, int batchSize, int numBatches) {
         System.out.println(BRIGHT_RED + "\n\n*******************************************************************************************************");
-        System.out.println("AUTOCORRELATION VALUES FOR " + centerName + " WITH [B:"+batchSize+"|K:"+numBatches+"]");
+        System.out.println("AUTOCORRELATION VALUES FOR " + centerName + " [B:"+batchSize+"|K:"+numBatches+"]");
         System.out.println("*******************************************************************************************************" + RESET);
         for (BatchMetric batchMetric : batchMetrics) {
             String color = getAcfColor(batchMetric.acfValue);
@@ -79,14 +76,14 @@ public class PrintUtils {
         System.out.printf("%s: %s%n", name, values.toString());
     }
 
-    public static void printFinalResults(List<Verification.VerificationResult> verificationResultList) {
+    public static void printFinalResults(List<Verification.VerificationResult> verificationResultList, int batchSize, int numBatches) {
         for (Verification.VerificationResult verificationResult : verificationResultList) {
             String centerName = verificationResult.name.toUpperCase();
             System.out.println(BRIGHT_RED + "\n\n*******************************************************************************************************");
             ConfigurationManager configurationManager = new ConfigurationManager();
             System.out.println("FINAL RESULTS FOR " + centerName +
                     " with " + (int) (100.0 * configurationManager.getDouble("general", "levelOfConfidence") + 0.5) +
-                    "% confidence");
+                    "% confidence" + " [B:"+batchSize+"|K:"+numBatches+"]");
             System.out.println("*******************************************************************************************************" + RESET);
             printVerificationResult(verificationResult);
             System.out.println(BRIGHT_RED + "*******************************************************************************************************" + RESET);

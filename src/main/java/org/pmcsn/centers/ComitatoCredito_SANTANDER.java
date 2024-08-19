@@ -10,8 +10,8 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
     public int feedback = 0;
     public int feedbackCreated = 0;
 
-    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
+    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
     }
 
     @Override

@@ -153,11 +153,11 @@ public class FiniteImprovedSimulationRunner {
     }
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
-        CenterFactory factory = new CenterFactory();
-        preScoring = factory.createPreScoring(approximateServiceAsExponential, isDigitalSignature, false);
-        repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, isDigitalSignature, false);
-        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, isDigitalSignature, false);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, false);
+        CenterFactory factory = new CenterFactory(true);
+        preScoring = factory.createPreScoring(approximateServiceAsExponential, false);
+        repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, false);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, false);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
     }
 
@@ -235,7 +235,7 @@ public class FiniteImprovedSimulationRunner {
 
         List<Verification.VerificationResult> verificationResultList = verifyConfidenceIntervals(simulationType, meanStatisticsList, comparisonResultList, confidenceIntervalsList);
 
-        printFinalResults(verificationResultList);
+        printFinalResults(verificationResultList, 0, 0);
     }
 
     private List<MeanStatistics> aggregateMeanStatistics() {

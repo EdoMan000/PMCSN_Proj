@@ -25,7 +25,6 @@ public abstract class MultiServer {
     protected boolean approximateServiceAsExponential;
     protected Rngs rngs;
     protected int batchSize;
-    protected int batchesNumber;
     private double currentBatchStartTime;
     protected MsqSum[] sum;
     protected MsqServer[] servers;
@@ -33,16 +32,13 @@ public abstract class MultiServer {
     protected BatchStatistics batchStatistics;
     protected long jobServedPerBatch = 0;
     protected boolean warmup = true;
-    protected boolean isDigitalSignature;
     protected boolean isBatch;
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
 
 
-    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
-        ConfigurationManager config  = new ConfigurationManager();
-        batchSize = config.getInt("general", "batchSize");
-        batchesNumber = config.getInt("general", "numBatches");
+    public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
+        this.batchSize = batchSize;
         this.centerName = centerName;
         this.meanServiceTime = meanServiceTime;
         this.SERVERS = serversNumber;
@@ -55,9 +51,8 @@ public abstract class MultiServer {
         }
         this.area = new Area();
         this.statistics = new BasicStatistics(centerName);
-        this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
+        this.batchStatistics = new BatchStatistics(centerName, numBatches);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
-        this.isDigitalSignature = isDigitalSignature;
         this.isBatch = isBatch;
     }
 

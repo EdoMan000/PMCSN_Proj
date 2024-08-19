@@ -15,8 +15,8 @@ public class PreScoring_MAACFinance extends MultiServer{
     private boolean isEndOfArrivals = false;
 
 
-    public PreScoring_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature,  boolean isBatch) {
-        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
+    public PreScoring_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
+        super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
     }
 
     @Override

@@ -2,7 +2,6 @@ package org.pmcsn.controller;
 
 import org.pmcsn.centers.*;
 import org.pmcsn.configuration.CenterFactory;
-import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 import org.pmcsn.utils.AnalyticalComputation;
@@ -34,14 +33,14 @@ public class BatchSimulationRunner {
     // Number of jobs in single batch (B)
     private final int batchSize;
     // Number of batches (K >= 40)
-    private final int batchesNumber;
+    private final int numBatches;
     private final int warmupThreshold;
     private boolean isWarmingUp = true;
 
 
-    public BatchSimulationRunner(int batchSize, int batchesNumber, int warmupThreshold) {
+    public BatchSimulationRunner(int batchSize, int numBatches, int warmupThreshold) {
         this.batchSize = batchSize;
-        this.batchesNumber = batchesNumber;
+        this.numBatches = numBatches;
         this.warmupThreshold = warmupThreshold;
     }
 
@@ -147,10 +146,10 @@ public class BatchSimulationRunner {
 
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
-        CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isDigitalSignature, true);
-        scoringAutomatico = factory.createSysScoringAutomatico(false, approximateServiceAsExponential, isDigitalSignature, true);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, true);
+        CenterFactory factory = new CenterFactory(false);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(false, approximateServiceAsExponential, true);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, true);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, true);
     }
 
@@ -196,7 +195,7 @@ public class BatchSimulationRunner {
 
         List<Verification.VerificationResult> verificationResultList = verifyConfidenceIntervals(simulationType, batchMeanStatisticsList, comparisonResultList, confidenceIntervalsList);
 
-        printFinalResults(verificationResultList);
+        printFinalResults(verificationResultList, batchSize, numBatches);
     }
 
     private List<MeanStatistics> aggregateBatchMeanStatistics() {

@@ -36,27 +36,22 @@ public abstract class SingleServer {
     protected MsqSum sum = new MsqSum();
     protected boolean approximateServiceAsExponential;
     protected int batchSize;
-    protected int batchesNumber;
     protected double currentBatchStartTime = 0;
     protected boolean warmup = true;
     protected int numBatch = 0;
     protected long jobServedPerBatch = 0;
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
-    protected boolean isDigitalSignature;
     protected boolean isBatch;
 
-    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isDigitalSignature, boolean isBatch) {
-        ConfigurationManager config  = new ConfigurationManager();
-        batchSize = config.getInt("general", "batchSize");
-        batchesNumber = config.getInt("general", "numBatches");
+    public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
+        this.batchSize = batchSize;
         this.centerName = centerName;
         this.meanServiceTime = meanServiceTime;
         this.streamIndex = streamIndex;
         this.statistics = new BasicStatistics(centerName);
-        this.batchStatistics = new BatchStatistics(centerName, batchesNumber);
+        this.batchStatistics = new BatchStatistics(centerName, numBatches);
         this.approximateServiceAsExponential = approximateServiceAsExponential;
-        this.isDigitalSignature = isDigitalSignature;
         this.isBatch = isBatch;
     }
 

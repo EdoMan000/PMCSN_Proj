@@ -17,10 +17,11 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
             double meanServiceTime,
             int streamIndex,
             boolean approximateServiceAsExponential,
-            boolean isDigitalSignature,
             boolean isBatch,
-            boolean isImprovedSimulation) {
-        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isDigitalSignature, isBatch);
+            boolean isImprovedSimulation,
+            int batchSize,
+            int numBatches) {
+        super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
         this.isImprovedSimulation = isImprovedSimulation;
     }
 

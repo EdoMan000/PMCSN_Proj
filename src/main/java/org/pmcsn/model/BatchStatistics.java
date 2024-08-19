@@ -4,17 +4,17 @@ import java.util.List;
 
 public class BatchStatistics extends AbstractStatistics {
     private int batchRetrievalDone = 0;
-    private final int batchesNumber;
+    private final int numBatches;
 
-    public BatchStatistics(String centerName, int batchesNumber) {
+    public BatchStatistics(String centerName, int numBatches) {
         super(centerName);
-        this.batchesNumber = batchesNumber;
+        this.numBatches = numBatches;
     }
 
     @Override
     void add(Index index, List<Double> list, double value) {
         list.add(value);
-        if(list.size() >= batchesNumber) {
+        if(list.size() >= numBatches) {
             batchRetrievalDone++;
         }
     }

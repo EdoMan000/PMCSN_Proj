@@ -2,7 +2,6 @@ package org.pmcsn.controller;
 
 import org.pmcsn.centers.*;
 import org.pmcsn.configuration.CenterFactory;
-import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 import org.pmcsn.utils.AnalyticalComputation;
@@ -36,14 +35,14 @@ public class BatchImprovedSimulationRunner {
     // Number of jobs in single batch (B)
     private final int batchSize;
     // Number of batches (K >= 40)
-    private final int batchesNumber;
+    private final int numBatches;
     private final int warmupThreshold;
     private boolean isWarmingUp = true;
 
 
-    public BatchImprovedSimulationRunner(int batchSize, int batchesNumber, int warmupThreshold) {
+    public BatchImprovedSimulationRunner(int batchSize, int numBatches, int warmupThreshold) {
         this.batchSize = batchSize;
-        this.batchesNumber = batchesNumber;
+        this.numBatches = numBatches;
         this.warmupThreshold = warmupThreshold;
     }
 
@@ -138,11 +137,11 @@ public class BatchImprovedSimulationRunner {
 
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
-        CenterFactory factory = new CenterFactory();
-        preScoring = factory.createPreScoring(approximateServiceAsExponential, isDigitalSignature, true);
-        repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, isDigitalSignature, true);
-        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, isDigitalSignature, true);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, true);
+        CenterFactory factory = new CenterFactory(true);
+        preScoring = factory.createPreScoring(approximateServiceAsExponential, true);
+        repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, true);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, true);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, true);
     }
 
@@ -194,7 +193,7 @@ public class BatchImprovedSimulationRunner {
 
         List<Verification.VerificationResult> verificationResultList = verifyConfidenceIntervals(simulationType, batchMeanStatisticsList, comparisonResultList, confidenceIntervalsList);
 
-        printFinalResults(verificationResultList);
+        printFinalResults(verificationResultList, batchSize, numBatches);
     }
 
     private List<MeanStatistics> aggregateBatchMeanStatistics() {

@@ -139,10 +139,10 @@ public class FiniteSimulationRunner {
     }
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
-        CenterFactory factory = new CenterFactory();
-        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, isDigitalSignature, false);
-        scoringAutomatico = factory.createSysScoringAutomatico(false, approximateServiceAsExponential, isDigitalSignature, false);
-        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, isDigitalSignature, false);
+        CenterFactory factory = new CenterFactory(false);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(false, approximateServiceAsExponential, false);
+        comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, false);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
     }
 
@@ -209,7 +209,7 @@ public class FiniteSimulationRunner {
 
         List<Verification.VerificationResult> verificationResultList = verifyConfidenceIntervals(simulationType, meanStatisticsList, comparisonResultList, confidenceIntervalsList);
 
-        printFinalResults(verificationResultList);
+        printFinalResults(verificationResultList, 0, 0);
     }
 
     private List<MeanStatistics> aggregateMeanStatistics() {

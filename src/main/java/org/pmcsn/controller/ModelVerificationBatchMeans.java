@@ -13,9 +13,9 @@ public class ModelVerificationBatchMeans {
     public static void runModelVerificationWithBatchMeansMethod() throws Exception {
         ConfigurationManager config = new ConfigurationManager();
         int batchSize = config.getInt("general", "batchSize");
-        int batchesNumber = config.getInt("general", "numBatches");
-        int warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentage"));
-        BatchSimulationRunner batchRunner = new BatchSimulationRunner(batchSize, batchesNumber, warmupThreshold);
+        int numBatches = config.getInt("general", "numBatches");
+        int warmupThreshold = (int) ((batchSize*numBatches)*config.getDouble("general", "warmupPercentage"));
+        BatchSimulationRunner batchRunner = new BatchSimulationRunner(batchSize, numBatches, warmupThreshold);
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object
@@ -38,17 +38,17 @@ public class ModelVerificationBatchMeans {
             }
 
             // Pass the metrics and the allOk status to the print function
-            printBatchStatisticsResult(batchStatistics.getCenterName(), allBatchMetrics);
+            printBatchStatisticsResult(batchStatistics.getCenterName(), allBatchMetrics, batchSize, numBatches);
         }
     }
 
     public static void runModelVerificationWithBatchMeansMethodImproved() throws Exception {
         ConfigurationManager config = new ConfigurationManager();
         int batchSize = config.getInt("general", "batchSizeImproved");
-        int batchesNumber = config.getInt("general", "numBatchesImproved");
-        int warmupThreshold = (int) ((batchSize*batchesNumber)*config.getDouble("general", "warmupPercentageImproved"));
+        int numBatches = config.getInt("general", "numBatchesImproved");
+        int warmupThreshold = (int) ((batchSize*numBatches)*config.getDouble("general", "warmupPercentageImproved"));
 
-        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner(batchSize, batchesNumber, warmupThreshold);
+        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner(batchSize, numBatches, warmupThreshold);
         List<BatchStatistics> batchStatisticsList = batchRunner.runBatchSimulation(true, false);
 
         // Iterate over each BatchStatistics object
@@ -71,7 +71,7 @@ public class ModelVerificationBatchMeans {
             }
 
             // Pass the metrics and the allOk status to the print function
-            printBatchStatisticsResult(batchStatistics.getCenterName(), allBatchMetrics);
+            printBatchStatisticsResult(batchStatistics.getCenterName(), allBatchMetrics, batchSize, numBatches);
         }
     }
 
