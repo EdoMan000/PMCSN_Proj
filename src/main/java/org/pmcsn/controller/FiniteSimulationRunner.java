@@ -85,7 +85,6 @@ public class FiniteSimulationRunner {
             MsqEvent event;
             int skip = 1;
             int eventCount = 0;
-
             // need to use OR because all the conditions should be false
             while (!repartoIstruttorie.isEndOfArrivals() || !queue.isEmpty() || number != 0) {
 

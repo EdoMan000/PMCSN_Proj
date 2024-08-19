@@ -39,13 +39,11 @@ public class FiniteImprovedSimulationRunner {
     private SysScoringAutomatico_SANTANDER scoringAutomatico;
     private ComitatoCredito_SANTANDER comitatoCredito;
     private RepartoLiquidazioni_MAACFinance repartoLiquidazioni;
+    private final List<Observations> preScoringObservations = new ArrayList<>();
     private final List<Observations> repartoIstruttorieObservations = new ArrayList<>();
-
-    //TODO
-    private final Observations preScoringObservations = null;
-    private final Observations scoringAutomaticoObservations = null;
-    private final Observations comitatoCreditoObservations = null;
-    private final Observations repartoLiquidazioniObservations = null;
+    private Observations scoringAutomaticoObservations;
+    private Observations comitatoCreditoObservations;
+    private Observations repartoLiquidazioniObservations;
 
 
     public void runImprovedModelSimulation(boolean approximateServiceAsExponential, boolean shouldTrackObservations, boolean isDigitalSignature) throws Exception {
@@ -65,11 +63,11 @@ public class FiniteImprovedSimulationRunner {
         seeds[0] = SEED;
         Rngs rngs = new Rngs();
 
+        int runsNumber = config.getInt("general", "runsNumber");
         if (shouldTrackObservations) {
-            initObservations();
+            initObservations(runsNumber);
         }
 
-        int runsNumber = config.getInt("general", "runsNumber");
         for (int i = 0; i < runsNumber; i++) {
             double sarrival = START;
             long number = 1;
@@ -137,7 +135,7 @@ public class FiniteImprovedSimulationRunner {
         System.out.println(simulationType + " HAS JUST FINISHED.");
 
         if (shouldTrackObservations) {
-            WelchPlot.welchPlot("csvFiles/BASIC_SIMULATION_EXPONENTIAL/observations");
+            WelchPlot.welchPlot("csvFiles/%s/observations".formatted(simulationType));
         }
 
         // Writing statistics csv with data from all runs
@@ -147,7 +145,7 @@ public class FiniteImprovedSimulationRunner {
             modelVerification(simulationType); // Computing and writing verifications stats csv
         }
 
-        System.out.println("");
+        System.out.println();
         System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ getMeanResponseTime() + " min");
         //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }
@@ -176,41 +174,45 @@ public class FiniteImprovedSimulationRunner {
                 break;
             case COMPLETION_PRE_SCORING:
                 preScoring.processCompletion(event, msqTime, events);
+                if (shouldTrackObservations && eventCount % skip == 0) {
+                    preScoring.updateObservations(preScoringObservations, i);
+                }
                 break;
             case ARRIVAL_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0)
+                if (shouldTrackObservations && eventCount % skip == 0) {
                     repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
+                }
                 break;
             case ARRIVAL_SCORING_AUTOMATICO:
                 scoringAutomatico.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_SCORING_AUTOMATICO:
                 scoringAutomatico.processCompletion(event, msqTime, events);
-                //if (shouldTrackObservations && eventCount % skip == 0)
-                //TODO
-                //scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
+                if (shouldTrackObservations && eventCount % skip == 0) {
+                    scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
+                }
                 break;
             case ARRIVAL_COMITATO_CREDITO:
                 comitatoCredito.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_COMITATO_CREDITO:
                 comitatoCredito.processCompletion(event, msqTime, events);
-                //if (shouldTrackObservations && eventCount % skip == 0)
-                //TODO
-                //comitatoCredito.updateObservations(comitatoCreditoObservations, i);
+                if (shouldTrackObservations && eventCount % skip == 0) {
+                    comitatoCredito.updateObservations(comitatoCreditoObservations, i);
+                }
                 break;
             case ARRIVAL_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processCompletion(event, msqTime, events);
-                //if (shouldTrackObservations && eventCount % skip == 0)
-                //TODO
-                //repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
+                if (shouldTrackObservations && eventCount % skip == 0) {
+                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
+                }
                 break;
         }
     }
@@ -307,37 +309,32 @@ public class FiniteImprovedSimulationRunner {
         repartoLiquidazioni.setArea(msqTime);
     }
 
-
-    // TODO: capire se è corretto
-    private void initObservations() {
-        int runsNumber = config.getInt("general", "runsNumber");
-
-        for (int j = 0; j < config.getInt("checkInDeskOthers", "serversNumber"); j++) {
-            repartoIstruttorieObservations.add(new Observations("%s_%d".formatted(config.getString("repartoIstruttorieMAAC", "centerName"), j + 1), runsNumber));
+    private void initObservations(int runsNumber) {
+        for (int i = 0; i < preScoring.getServersNumber(); i++) {
+            preScoringObservations.add(new Observations("%s_%d".formatted(preScoring.getCenterName(), i + 1), runsNumber));
         }
-
-        //scoringAutomaticoObservations.add(new Observations("%s".formatted(config.getString("sysScoringAutomaticoSANTANDER", "centerName")), runsNumber));
-
-        //comitatoCreditoObservations.add(new Observations("%s".formatted(config.getString("comitatoCreditoSANTANDER", "centerName")), runsNumber));
-
-        //repartoLiquidazioniObservations.add(new Observations("%s".formatted(config.getString("repartoLiquidazioniMAAC", "centerName")), runsNumber));
-
+        for (int i = 0; i < repartoIstruttorie.getServersNumber(); i++) {
+            repartoIstruttorieObservations.add(new Observations("%s_%d".formatted(repartoIstruttorie.getCenterName(), i + 1), runsNumber));
+        }
+        scoringAutomaticoObservations = new Observations(scoringAutomatico.getCenterName(), runsNumber);
+        comitatoCreditoObservations = new Observations(comitatoCredito.getCenterName(), runsNumber);
+        repartoLiquidazioniObservations = new Observations(repartoLiquidazioni.getCenterName(), runsNumber);
     }
 
-    //TODO
     private void resetObservations() {
+        preScoringObservations.forEach(Observations::reset);
         repartoIstruttorieObservations.forEach(Observations::reset);
-        //scoringAutomaticoObservations.forEach(Observations::reset);
-        //comitatoCreditoObservations.forEach(Observations::reset);
-        //repartoLiquidazioniObservations.forEach(Observations::reset);
+        scoringAutomaticoObservations.reset();
+        comitatoCreditoObservations.reset();
+        repartoLiquidazioniObservations.reset();
     }
 
-    //TODO
     private void writeObservations(String simulationType) {
         // Computing warm up period boundaries
+        WelchPlot.writeObservations(simulationType, preScoringObservations);
         WelchPlot.writeObservations(simulationType, repartoIstruttorieObservations);
-        //WelchPlot.writeObservations(simulationType, scoringAutomaticoObservations);
-        //WelchPlot.writeObservations(simulationType, comitatoCreditoObservations);
-        //WelchPlot.writeObservations(simulationType, repartoLiquidazioniObservations);
+        WelchPlot.writeObservations(simulationType, scoringAutomaticoObservations);
+        WelchPlot.writeObservations(simulationType, comitatoCreditoObservations);
+        WelchPlot.writeObservations(simulationType, repartoLiquidazioniObservations);
     }
 }
