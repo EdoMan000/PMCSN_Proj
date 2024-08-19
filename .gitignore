@@ -40,5 +40,6 @@ build/
 csvFiles/*
 csvFiles/
 *.csv
+pmcsn-venv/*
 
 *.png
