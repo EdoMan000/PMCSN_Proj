@@ -34,8 +34,17 @@ public class PrintUtils {
         );
     }
 
+    public static void printStats(String centerName, double avgAcceptanceRate, double avgJobServed, double meanServiceTime) {
+        System.out.println(BRIGHT_YELLOW + "\n**************************" + centerName + "**************************" + RESET);
 
+        if (avgAcceptanceRate > 0) {
+            System.out.println(BRIGHT_BLUE + "Average rate of acceptance is: " + avgAcceptanceRate + RESET);
+        }
 
+        System.out.println(BRIGHT_BLUE + "Average Job Served : " + avgJobServed + RESET);
+        System.out.println(BRIGHT_BLUE + "Average service time : " + meanServiceTime + RESET);
+        System.out.println(BRIGHT_BLUE + "Total time spent: " + avgJobServed * meanServiceTime + RESET);
+    }
 
     public static String formatList(List<Double> list) {
         if (list.isEmpty()) {

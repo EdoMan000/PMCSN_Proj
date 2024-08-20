@@ -150,20 +150,17 @@ public abstract class SingleServer {
         statistics.addJobServed(totJobs);
     }
 
-    public void writeStats(String simulationType){
+    public void writeStats(String simulationType) {
         statistics.writeStats(simulationType);
         List<Double> prob = statistics.getProbAccept();
         List<Double> totJobsList = statistics.getJobServed();
-        System.out.println();
-        System.out.println(BRIGHT_YELLOW+"**************************" + centerName + "**************************");
-        if(!prob.isEmpty()){
-            double avgValue = computeMean(prob);
-            System.out.println(BRIGHT_RED + "Average rate of acceptance is: " + avgValue);
-        }
+
+        // Compute the necessary values
+        double avgAcceptanceRate = prob.isEmpty() ? 0 : computeMean(prob);
         double avgJobServed = computeMean(totJobsList);
-        System.out.println(BRIGHT_BLUE + "Average Job Served : " + avgJobServed);
-        System.out.println(BRIGHT_BLUE + "Average service time : " + meanServiceTime);
-        System.out.println(BRIGHT_BLUE + "Total time spent: " + avgJobServed*meanServiceTime );
+
+        // Print all the stats
+        printStats(centerName, avgAcceptanceRate, avgJobServed, meanServiceTime);
     }
 
     public MeanStatistics getMeanStatistics() {
