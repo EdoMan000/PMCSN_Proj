@@ -2,9 +2,7 @@ package org.pmcsn.centers;
 
 import org.pmcsn.model.*;
 
-import static org.pmcsn.utils.Distributions.uniform;
-
-import static org.pmcsn.utils.Distributions.exponential;
+import static org.pmcsn.utils.Distributions.*;
 
 public class ComitatoCredito_SANTANDER extends InfiniteServer {
     public int feedback = 0;

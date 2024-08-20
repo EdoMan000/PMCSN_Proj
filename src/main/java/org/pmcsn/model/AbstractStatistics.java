@@ -57,13 +57,13 @@ public abstract class AbstractStatistics {
         double meanSystemPopulation = area.getNodeArea() / (lastCompletionTime - currentBatchStartTime);
         add(Index.SystemPopulation, meanSystemPopulationList, meanSystemPopulation);
         // mean response time (E[Ts])
-        double meanResponseTime = meanSystemPopulation / lambda;
+        double meanResponseTime = area.getNodeArea() / numberOfJobsServed;
         add(Index.ResponseTime, meanResponseTimeList, meanResponseTime);
         // mean queue population (E[Nq])
         double meanQueuePopulation = area.getQueueArea() / (lastCompletionTime - currentBatchStartTime);
         add(Index.QueuePopulation, meanQueuePopulationList, meanQueuePopulation);
         // mean wait time (E[Tq])
-        double meanQueueTime = meanQueuePopulation / lambda;
+        double meanQueueTime = area.getQueueArea() / numberOfJobsServed;
         add(Index.QueueTime, meanQueueTimeList, meanQueueTime);
         double meanServiceTime;
         double utilization;

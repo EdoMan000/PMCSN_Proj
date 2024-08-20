@@ -186,8 +186,7 @@ public abstract class MultiServer {
         statistics.writeStats(simulationType);
         List<Double> prob = statistics.getProbAccept();
         List<Double> totJobsList = statistics.getJobServed();
-        System.out.println("");
-        System.out.println(BRIGHT_YELLOW+"**************************" + centerName + "**************************");
+        System.out.println(BRIGHT_YELLOW+"\n**************************" + centerName + "**************************");
         if(!prob.isEmpty()){
             double avgValue = computeMean(prob);
             System.out.println(BRIGHT_RED + "Average rate of acceptance is: " + avgValue);
