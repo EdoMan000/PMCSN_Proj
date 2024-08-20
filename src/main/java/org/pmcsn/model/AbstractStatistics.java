@@ -59,18 +59,15 @@ public abstract class AbstractStatistics {
         // mean response time (E[Ts])
         double meanResponseTime = area.getNodeArea() / numberOfJobsServed;
         add(Index.ResponseTime, meanResponseTimeList, meanResponseTime);
-        double meanQueuePopulation;
-        double meanQueueTime;
+        // mean queue population (E[Nq])
+        double meanQueuePopulation = area.getQueueArea() / (lastCompletionTime - currentBatchStartTime);
+        add(Index.QueuePopulation, meanQueuePopulationList, meanQueuePopulation);
+        // mean wait time (E[Tq])
+        double meanQueueTime = area.getQueueArea() / numberOfJobsServed;
+        add(Index.QueueTime, meanQueueTimeList, meanQueueTime);
         double meanServiceTime;
         double utilization;
         if (isMultiServer) {
-            double queueArea = area.getNodeArea();
-            for (MsqSum s : sum) {
-                queueArea -= s.service;
-            }
-            // mean queue population (E[Nq])
-            meanQueuePopulation = queueArea / (lastCompletionTime - currentBatchStartTime);
-            meanQueueTime = queueArea / numberOfJobsServed;
             // mean service time (E[s])
             meanServiceTime = Arrays.stream(sum)
                     .filter(s -> s.served > 0)
@@ -79,17 +76,11 @@ public abstract class AbstractStatistics {
             // mean utilization (ρ)
             utilization = (lambda * meanServiceTime) / sum.length;
         } else {
-            // mean queue population (E[Nq])
-            meanQueuePopulation = area.getQueueArea() / (lastCompletionTime - currentBatchStartTime);
-            // mean wait time (E[Tq])
-            meanQueueTime = area.getQueueArea() / numberOfJobsServed;
             // mean service time (E[s])
             meanServiceTime = sum[0].service / sum[0].served;
             // mean utilization (ρ)
             utilization = area.getServiceArea() / (lastCompletionTime - currentBatchStartTime);
         }
-        add(Index.QueuePopulation, meanQueuePopulationList, meanQueuePopulation);
-        add(Index.QueueTime, meanQueueTimeList, meanQueueTime);
         add(Index.Utilization, meanUtilizationList, utilization);
         add(Index.ServiceTime, meanServiceTimeList, meanServiceTime);
     }
