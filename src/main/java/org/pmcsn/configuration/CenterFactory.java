@@ -6,8 +6,10 @@ public class CenterFactory {
     private final ConfigurationManager configurationManager = new ConfigurationManager();
     private static int batchSize;
     private static int numBatches;
+    private final boolean isImprovedSimulation;
 
     public CenterFactory(boolean isImprovedSimulation) {
+        this.isImprovedSimulation = isImprovedSimulation;
         ConfigurationManager config = new ConfigurationManager();
         if (isImprovedSimulation) {
             batchSize = config.getInt("general", "batchSizeImproved");
@@ -59,7 +61,7 @@ public class CenterFactory {
                 configurationManager.getString("comitatoCreditoSANTANDER", "centerName"),
                 configurationManager.getDouble("comitatoCreditoSANTANDER", "meanServiceTime"),
                 configurationManager.getInt("comitatoCreditoSANTANDER", "streamIndex"),
-                approximateServiceAsExponential, isBatch, batchSize, numBatches);
+                approximateServiceAsExponential, isBatch, batchSize, numBatches, isImprovedSimulation);
     }
 
     public RepartoLiquidazioni_MAACFinance createRepartoLiquidazioni(boolean approximateServiceAsExponential,  boolean isDigitalSignature, boolean isBatch) {

@@ -1,6 +1,5 @@
 package org.pmcsn.centers;
 
-import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
@@ -8,7 +7,6 @@ import java.util.List;
 
 import static org.pmcsn.model.MeanStatistics.computeMean;
 import static org.pmcsn.utils.PrintUtils.*;
-import static org.pmcsn.utils.PrintUtils.BRIGHT_BLUE;
 
 public abstract class InfiniteServer {
 
@@ -103,7 +101,6 @@ public abstract class InfiniteServer {
         lastArrivalTime = arrival.time;
 
         spawnCompletionEvent(time, queue, arrival);
-
     }
 
     public void processCompletion(MsqEvent completion, MsqTime time, EventQueue queue) {

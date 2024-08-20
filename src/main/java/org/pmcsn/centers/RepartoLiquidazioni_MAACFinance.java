@@ -9,7 +9,6 @@ import static org.pmcsn.utils.Distributions.exponential;
 import static org.pmcsn.utils.Distributions.uniform;
 
 public class RepartoLiquidazioni_MAACFinance extends SingleServer {
-
     public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
         super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
     }
@@ -23,7 +22,6 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         double service = getService(streamIndex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_LIQUIDAZIONI, time.current + service, service);
-        event.applicant = currEvent.applicant;
         queue.add(event);
     }
 

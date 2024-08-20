@@ -1,12 +1,10 @@
 package org.pmcsn.centers;
 
 
-import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.pmcsn.model.MeanStatistics.computeMean;
 import static org.pmcsn.utils.PrintUtils.*;
@@ -35,6 +33,7 @@ public abstract class MultiServer {
     protected boolean isBatch;
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
+    protected Deque<Applicant> info;
 
 
     public MultiServer(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
@@ -45,6 +44,7 @@ public abstract class MultiServer {
         this.streamIndex = streamIndex;
         this.sum =  new MsqSum[SERVERS];
         this.servers = new MsqServer[SERVERS];
+        this.info = new ArrayDeque<>();
         for(int i=0; i<SERVERS ; i++){
             sum[i] = new MsqSum();
             servers[i] = new MsqServer();
@@ -123,11 +123,12 @@ public abstract class MultiServer {
             firstArrivalTime = arrival.time;
         }
         lastArrivalTime = arrival.time;
-
         if (numberOfJobsInNode <= SERVERS) {
             int serverId = findOne();
             servers[serverId].running = true;
             spawnCompletionEvent(time, queue, serverId, arrival);
+        } else {
+            info.addFirst(arrival.applicant);
         }
     }
 
@@ -145,6 +146,9 @@ public abstract class MultiServer {
         lastCompletionTime = completion.time;
         if (!warmup && jobServedPerBatch == batchSize) {
             saveBatchStats(time);
+        }
+        if (completion.applicant == null) {
+            completion.applicant = info.poll();
         }
         spawnNextCenterEvent(time, queue, completion);
         if (numberOfJobsInNode >= SERVERS) {

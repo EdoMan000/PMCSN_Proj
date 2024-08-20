@@ -21,9 +21,9 @@ public class ConfigurationManager {
 
     public boolean getBoolean(String section, String key) {
         String value = properties.getProperty(section + "." + key);
-        if ("true".equalsIgnoreCase(value)) {
+        if ("true".equalsIgnoreCase(value) || "1".equals(value)) {
             return true;
-        } else if ("false".equalsIgnoreCase(value)) {
+        } else if ("false".equalsIgnoreCase(value) || "0".equals(value)) {
             return false;
         } else {
             throw new IllegalArgumentException("Key not found: " + section + "." + key);

@@ -1,9 +1,10 @@
 package org.pmcsn.centers;
 
-import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 import static org.pmcsn.model.MeanStatistics.computeMean;
@@ -43,6 +44,7 @@ public abstract class SingleServer {
     protected float acceptedJobs = 0 ;
     protected float totJobs = 0;
     protected boolean isBatch;
+    protected Deque<Applicant> info = new ArrayDeque<>();
 
     public SingleServer(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
         this.batchSize = batchSize;
@@ -104,6 +106,8 @@ public abstract class SingleServer {
 
         if (numberOfJobsInNode == 1) {
             spawnCompletionEvent(time, queue, arrival);
+        } else {
+            info.addFirst(arrival.applicant);
         }
     }
 
@@ -122,6 +126,9 @@ public abstract class SingleServer {
         // If not in warm up then saving the statistics (OF CURRENT BATCH!!!)
         if (!warmup && jobServedPerBatch == batchSize ) {
             saveBatchStats(time);
+        }
+        if (completion.applicant == null) {
+            completion.applicant = info.poll();
         }
         spawnNextCenterEvent(time, queue, completion);
         if (numberOfJobsInNode > 0) {

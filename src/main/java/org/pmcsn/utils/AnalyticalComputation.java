@@ -168,7 +168,7 @@ public class AnalyticalComputation {
         ConfigurationManager conf = new ConfigurationManager();
 
         double pFeedback = config.getDouble("comitatoCreditoSANTANDER", "pFeedback");
-        double pAcceptSysScoring = 0.82023203;
+        double pAcceptSysScoring = 0.82;
         double pAcceptCredito = conf.getDouble("comitatoCreditoSANTANDER", "pAccept");
         double pAcceptPreScoring = 0.51;
 

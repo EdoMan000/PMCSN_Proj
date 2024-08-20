@@ -22,7 +22,6 @@ public class RepartoIstruttorie_MAACFinance extends MultiServer {
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         MsqEvent event = new MsqEvent(EventType.ARRIVAL_SCORING_AUTOMATICO, time.current);
         event.applicant = currEvent.applicant;
-        event.isFeedback = currEvent.isFeedback;
         queue.add(event);
     }
 
@@ -37,8 +36,9 @@ public class RepartoIstruttorie_MAACFinance extends MultiServer {
         double service = getService(streamIndex);
         //generate a new completion event
         MsqEvent event = new MsqEvent(EventType.COMPLETION_REPARTO_ISTRUTTORIE, time.current + service, service, serverId);
-        event.applicant = currEvent.applicant;
-        event.isFeedback = currEvent.isFeedback;
+        if (currEvent.type == EventType.ARRIVAL_REPARTO_ISTRUTTORIE) {
+            event.applicant = currEvent.applicant;
+        }
         queue.add(event);
     }
 
@@ -67,7 +67,7 @@ public class RepartoIstruttorie_MAACFinance extends MultiServer {
             isEndOfArrivals = true;
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
-            event.applicant = new Applicant(rngs);
+            event.applicant = Applicant.createBaseApplicant(rngs);
             queue.add(event);
         }
     }

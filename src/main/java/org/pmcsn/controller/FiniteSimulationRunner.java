@@ -76,7 +76,7 @@ public class FiniteSimulationRunner {
             //generating first arrival
             double time = repartoIstruttorie.getArrival();
             MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
-            firstEvent.applicant = new Applicant(rngs);
+            firstEvent.applicant = Applicant.createBaseApplicant(rngs);
             queue.add(firstEvent);
 
             // Initialize and reset other centers

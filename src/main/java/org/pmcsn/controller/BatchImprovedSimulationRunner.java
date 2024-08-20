@@ -73,7 +73,7 @@ public class BatchImprovedSimulationRunner {
         // Generate the first arrival
         double time = preScoring.getArrival();
         MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-        firstEvent.applicant = new Applicant(rngs);
+        firstEvent.applicant = Applicant.createImprovedApplicant(rngs);
         events.add(firstEvent);
 
         resetCenters(rngs);

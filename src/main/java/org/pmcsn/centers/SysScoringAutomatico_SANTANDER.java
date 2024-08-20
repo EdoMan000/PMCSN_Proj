@@ -29,16 +29,17 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
     public void spawnCompletionEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         double service = getService(streamIndex);
         MsqEvent event = new MsqEvent(EventType.COMPLETION_SCORING_AUTOMATICO, time.current + service, service);
-        event.applicant = currEvent.applicant;
-        event.isFeedback = currEvent.isFeedback;
+        if (currEvent.type == EventType.ARRIVAL_SCORING_AUTOMATICO) {
+            event.applicant = currEvent.applicant;
+        }
         queue.add(event);
     }
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
-        if (isImprovedSimulation && currEvent.applicant.hasCorrespondingData()) {
+        if (isImprovedSimulation && currEvent.applicant.isAcceptedBySysScoring()) {
             baseSpawnNextCenterEvent(time, queue, currEvent);
-        } else if (!isImprovedSimulation && currEvent.applicant.hasValidaData() && currEvent.applicant.hasCorrespondingData()){
+        } else if (!isImprovedSimulation && currEvent.applicant.isAcceptedBySysScoring()){
             baseSpawnNextCenterEvent(time, queue, currEvent);
         }
     }
@@ -46,10 +47,9 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
     private void baseSpawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
         MsqEvent event = new MsqEvent(type, time.current);
-        event.isFeedback = currEvent.isFeedback;
         event.applicant = currEvent.applicant;
         queue.add(event);
-        if( !isBatch || (!warmup && !isDone())) acceptedJobs++;
+        if (!isBatch || (!warmup && !isDone())) acceptedJobs++;
     }
 
      @Override
