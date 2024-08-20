@@ -107,13 +107,11 @@ public abstract class MultiServer {
     }
 
     public void setArea(MsqTime time) {
-        if (numberOfJobsInNode > 0) {
-            double width = time.next - time.current;
-            area.incNodeArea(width * numberOfJobsInNode);
-            long busyServers = Arrays.stream(servers).filter(x -> x.running).count();
-            area.incQueueArea(width * (numberOfJobsInNode - busyServers));
-            area.incServiceArea(width);
-        }
+        double width = time.next - time.current;
+        area.incNodeArea(width * numberOfJobsInNode);
+        long busyServers = Arrays.stream(servers).filter(x -> x.running).count();
+        area.incQueueArea(width * (numberOfJobsInNode - busyServers));
+        area.incServiceArea(width);
     }
 
     public void processArrival(MsqEvent arrival, MsqTime time, EventQueue queue){
