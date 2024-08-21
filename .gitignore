@@ -43,3 +43,5 @@ csvFiles/
 pmcsn-venv/*
 
 *.png
+*.svg
+*.tex

@@ -1,10 +1,16 @@
 package org.pmcsn.centers;
 
+import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
 import static org.pmcsn.utils.Distributions.*;
 
 public class ComitatoCredito_SANTANDER extends InfiniteServer {
+    enum Route {
+        FEEDBACK,
+        ACCEPTED,
+        REJECTED
+    }
     private final boolean isImprovedSimulation;
     public int feedback = 0;
     public int feedbackCreated = 0;
@@ -17,8 +23,8 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
         MsqEvent event;
-        switch (currEvent.applicant.getNextRoute()) {
-            case -1:
+        switch (getNextRoute()) {
+            case FEEDBACK:
                 event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time.current);
                 if (isImprovedSimulation) {
                     event.applicant = currEvent.applicant.improvedFeedback(rngs);
@@ -28,15 +34,25 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
                 queue.add(event);
                 if (!isBatch || (!warmup && !isDone())) acceptedJobs++;
                 break;
-            case 0:
+            case ACCEPTED:
                 event = new MsqEvent(EventType.ARRIVAL_REPARTO_LIQUIDAZIONI, time.current);
                 event.applicant = currEvent.applicant;
                 queue.add(event);
                 break;
-            case 1:
+            case REJECTED:
                 break;
-            default:
-                throw new IllegalArgumentException("Invalid route " + currEvent.applicant.getNextRoute());
+        }
+    }
+
+    private Route getNextRoute() {
+        rngs.selectStream(streamIndex + 1);
+        double x = rngs.random();
+        if (x < 0.06) {
+            return Route.FEEDBACK;
+        } else if (x >= 0.06 && x < 0.71) {
+            return Route.ACCEPTED;
+        } else {
+            return Route.REJECTED;
         }
     }
 
