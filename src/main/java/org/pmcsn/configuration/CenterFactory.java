@@ -24,18 +24,24 @@ public class CenterFactory {
     public RepartoIstruttorie_MAACFinance createRepartoIstruttorie(boolean approximateServiceAsExponential, boolean isBatch) {
         int serversNumber;
         double meanServiceTime;
+        double sigma;
+        double truncationPoint;
         if (isImprovedSimulation) {
             serversNumber = configurationManager.getInt("repartoIstruttorieMAAC", "serversNumberImproved");
             meanServiceTime = configurationManager.getDouble("repartoIstruttorieMAAC", "meanServiceTimeImproved");
+            sigma = configurationManager.getDouble("repartoIstruttorieMAAC", "sigma");
+            truncationPoint = configurationManager.getDouble("repartoIstruttorieMAAC", "truncationPointImproved");
         } else {
             serversNumber = configurationManager.getInt("repartoIstruttorieMAAC", "serversNumber");
             meanServiceTime = configurationManager.getDouble("repartoIstruttorieMAAC", "meanServiceTime");
+            sigma = configurationManager.getDouble("repartoIstruttorieMAAC", "sigmaImproved");
+            truncationPoint = configurationManager.getDouble("repartoIstruttorieMAAC", "truncationPoint");
         }
         return new RepartoIstruttorie_MAACFinance(
                 configurationManager.getString("repartoIstruttorieMAAC", "centerName"),
                 meanServiceTime,
-                configurationManager.getDouble("repartoIstruttorieMAAC", "sigma"),
-                configurationManager.getDouble("repartoIstruttorieMAAC", "truncationPoint"),
+                sigma,
+                truncationPoint,
                 serversNumber,
                 configurationManager.getInt("repartoIstruttorieMAAC", "streamIndex"),
                 approximateServiceAsExponential,
@@ -86,17 +92,23 @@ public class CenterFactory {
 
     public RepartoLiquidazioni_MAACFinance createRepartoLiquidazioni(boolean approximateServiceAsExponential,  boolean isDigitalSignature, boolean isBatch) {
         double meanServiceTime;
+        double sigma;
+        double truncationPoint;
         if (isDigitalSignature) {
             meanServiceTime = configurationManager.getDouble("repartoLiquidazioniMAAC", "meanServiceTimeWithDigitalSignature");
+            sigma = configurationManager.getDouble("repartoLiquidazioniMAAC", "sigmaWithDigitalSignature");
+            truncationPoint = configurationManager.getDouble("repartoLiquidazioniMAAC", "truncationPointWithDigitalSignature");
         } else {
             meanServiceTime = configurationManager.getDouble("repartoLiquidazioniMAAC", "meanServiceTime");
+            sigma = configurationManager.getDouble("repartoLiquidazioniMAAC", "sigma");
+            truncationPoint = configurationManager.getDouble("repartoLiquidazioniMAAC", "truncationPoint");
 
         }
         return new RepartoLiquidazioni_MAACFinance(
                 configurationManager.getString("repartoLiquidazioniMAAC", "centerName"),
                 meanServiceTime,
-                configurationManager.getDouble("repartoLiquidazioniMAAC", "sigma"),
-                configurationManager.getDouble("repartoLiquidazioniMAAC", "truncationPoint"),
+                sigma,
+                truncationPoint,
                 configurationManager.getInt("repartoLiquidazioniMAAC", "streamIndex"),
                 approximateServiceAsExponential,
                 isBatch,

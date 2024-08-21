@@ -16,33 +16,22 @@ public class Applicant {
         ConfigurationManager config = new ConfigurationManager();
         int streamIndex = config.getInt("general", "applicantStreamIndex");
         rngs.selectStream(streamIndex);
-        boolean haRichiesteORifiutiRecenti = rngs.random() <= 0.1;
-        boolean haAnzianitaDiLavoro = rngs.random() <= 0.889;
-        boolean isRapportoRataRedditoOk = rngs.random() <= 0.75;
-        boolean haContrattoIndeterminato = rngs.random() <= 0.84989;
-        boolean haCorrispondenzaInBancaDati = rngs.random() <= P_C;
-        return new Applicant(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti, haCorrispondenzaInBancaDati);
+        boolean haRichiesteORifiutiRecenti = rngs.random() <= 0.1; // Problema più frequente
+        boolean haContrattoIndeterminato = rngs.random() <= 0.75; // Secondo problema più comune
+        boolean haAnzianitaDiLavoro = rngs.random() <= 0.84989; // Problema meno comune
+        boolean isRapportoRataRedditoOk = rngs.random() <= 0.889; // Problema raro
+        return new Applicant(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti);
     }
 
-/*
-    Per mappare i motivi di rifiuto delle richieste di credito in quattro variabili booleane con probabilità differenti,
-    dove ciascuna rappresenta un problema specifico, possiamo attribuire le probabilità in modo proporzionale alla frequenza delle problematiche.
-    Il risultato finale sarà una variabile booleana che indicherà il rifiuto della richiesta in base alla combinazione di questi fattori.
+    private Applicant(
+            int streamIndex,
+            boolean haAnzianitaDiLavoro,
+            boolean isRapportoRataRedditoOk,
+            boolean haContrattoIndeterminato,
+            boolean haRichiesteORifiutiRecenti) {
+        this(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti, false);
+    }
 
-    Mappatura delle variabili:
-    ===============================
-
-        boolean rifiutoRichiesteRecenti = rngs.random() <= 0.9;     // Problema più frequente
-        boolean tipologiaContratto = rngs.random() <= 0.7;          // Secondo problema più comune
-        boolean anzianitaLavoro = rngs.random() <= 0.6667;          // Problema meno comune
-        boolean rapportoRataReddito = rngs.random() <= 0.5;         // Problema raro
-
-        boolean richiestaRifiutata = rifiutoRichiesteRecenti && tipologiaContratto && anzianitaLavoro && rapportoRataReddito;
-
-    Spiegazione:
-    ===============================
-    Quando una di queste condizioni è true, la richiesta viene rifiutata (richiestaRifiutata diventa true).
-*/
     private Applicant(
             int streamIndex,
             boolean haAnzianitaDiLavoro,
@@ -73,6 +62,10 @@ public class Applicant {
                 && haCorrispondenzaInBancaDati;
     }
 
+    public boolean isAcceptedBySysScoring2() {
+        return haCorrispondenzaInBancaDati;
+    }
+
     public Applicant feedback(Rngs rngs) {
         rngs.selectStream(streamIndex);
         return Applicant.create(rngs);
@@ -95,6 +88,6 @@ public class Applicant {
     }
 
     public void setHasCorrispondenzaInBancaDati(Rngs rngs) {
-        haCorrispondenzaInBancaDati = rngs.random() <= 0.822;
+        haCorrispondenzaInBancaDati = rngs.random() <= P_C;
     }
 }

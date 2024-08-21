@@ -37,6 +37,8 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
 
     @Override
     public void spawnNextCenterEvent(MsqTime time, EventQueue queue, MsqEvent currEvent) {
+        rngs.selectStream(streamIndex + 1);
+        currEvent.applicant.setHasCorrispondenzaInBancaDati(rngs);
         if (isImprovedSimulation && currEvent.applicant.isAcceptedBySysScoring()) {
             baseSpawnNextCenterEvent(time, queue, currEvent);
         } else if (!isImprovedSimulation && currEvent.applicant.isAcceptedBySysScoring()){
@@ -48,8 +50,6 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
         EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
         MsqEvent event = new MsqEvent(type, time.current);
         event.applicant = currEvent.applicant;
-        // rngs.selectStream(streamIndex + 1);
-        // event.applicant.setHasCorrispondenzaInBancaDati(rngs);
         queue.add(event);
         if (!isBatch || (!warmup && !isDone())) acceptedJobs++;
     }
@@ -58,11 +58,7 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
     protected double getService(int streamIndex) {
         rngs.selectStream(streamIndex);
         double serviceTime;
-        if(approximateServiceAsExponential){
-            serviceTime = exponential(meanServiceTime, rngs);
-        } else {
-            serviceTime = uniform(meanServiceTime-0.5, meanServiceTime+0.5, rngs);
-        }
+        serviceTime = exponential(meanServiceTime, rngs);
         return serviceTime;
     }
 }

@@ -99,7 +99,7 @@ public class Distributions {
         double a = Math.log(mu) - 0.5 * b * b;
 
         // Calculate alpha (CDF at the left tail)
-        double alpha = rvms.cdfLogNormal(a,b,0.0);
+        double alpha = rvms.cdfLogNormal(a,b,1e-20);
         // Calculate beta (1 - CDF at truncation point)
         double beta = 1.0 - rvms.cdfLogNormal(a,b,truncationPoint);
 
