@@ -12,11 +12,25 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
         REJECTED
     }
     private final boolean isImprovedSimulation;
+    private final double sigma;
+    private final double truncationPoint;
     public int feedback = 0;
     public int feedbackCreated = 0;
 
-    public ComitatoCredito_SANTANDER(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches, boolean isImprovedSimulation) {
+    public ComitatoCredito_SANTANDER(
+            String centerName,
+            double meanServiceTime,
+            double sigma,
+            double truncationPoint,
+            int streamIndex,
+            boolean approximateServiceAsExponential,
+            boolean isBatch,
+            int batchSize,
+            int numBatches,
+            boolean isImprovedSimulation) {
         super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
+        this.sigma = sigma;
+        this.truncationPoint = truncationPoint;
         this.isImprovedSimulation = isImprovedSimulation;
     }
 
@@ -70,7 +84,7 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
         if(approximateServiceAsExponential){
             serviceTime = exponential(meanServiceTime, rngs);
         } else {
-            serviceTime = uniform(meanServiceTime-60, meanServiceTime+60, rngs);
+            serviceTime = truncatedLogNormal(meanServiceTime, sigma, truncationPoint, rngs);
         }
         return serviceTime;
     }

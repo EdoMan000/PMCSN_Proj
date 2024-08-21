@@ -5,12 +5,25 @@ import org.pmcsn.model.EventType;
 import org.pmcsn.model.MsqEvent;
 import org.pmcsn.model.MsqTime;
 
-import static org.pmcsn.utils.Distributions.exponential;
-import static org.pmcsn.utils.Distributions.uniform;
+import static org.pmcsn.utils.Distributions.*;
 
 public class RepartoLiquidazioni_MAACFinance extends SingleServer {
-    public RepartoLiquidazioni_MAACFinance(String centerName, double meanServiceTime, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
+    private final double sigma;
+    private final double truncationPoint;
+
+    public RepartoLiquidazioni_MAACFinance(
+            String centerName,
+            double meanServiceTime,
+            double sigma,
+            double truncationPoint,
+            int streamIndex,
+            boolean approximateServiceAsExponential,
+            boolean isBatch,
+            int batchSize,
+            int numBatches) {
         super(centerName, meanServiceTime, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
+        this.sigma = sigma;
+        this.truncationPoint = truncationPoint;
     }
 
     @Override
@@ -31,7 +44,7 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
         if(approximateServiceAsExponential){
             serviceTime = exponential(meanServiceTime, rngs);
         } else {
-            serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
+            serviceTime = truncatedLogNormal(meanServiceTime, sigma, truncationPoint, rngs);
         }
         return serviceTime;
     }

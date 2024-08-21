@@ -73,7 +73,7 @@ public class BatchImprovedSimulationRunner {
         // Generate the first arrival
         double time = preScoring.getArrival();
         MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-        firstEvent.applicant = Applicant.createBaseApplicant(rngs);
+        firstEvent.applicant = Applicant.create(rngs);
         events.add(firstEvent);
 
         resetCenters(rngs);
@@ -139,8 +139,8 @@ public class BatchImprovedSimulationRunner {
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
         CenterFactory factory = new CenterFactory(true);
         preScoring = factory.createPreScoring(approximateServiceAsExponential, true);
-        repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, true);
-        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, true);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, true);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, true);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, true);
     }

@@ -69,7 +69,7 @@ public class BatchSimulationRunner {
         // Generate the first arrival
         double time = repartoIstruttorie.getArrival();
         MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
-        firstEvent.applicant = Applicant.createBaseApplicant(rngs);
+        firstEvent.applicant = Applicant.create(rngs);
         events.add(firstEvent);
 
         resetCenters(rngs);
@@ -146,7 +146,7 @@ public class BatchSimulationRunner {
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
         CenterFactory factory = new CenterFactory(false);
         repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, true);
-        scoringAutomatico = factory.createSysScoringAutomatico(false, approximateServiceAsExponential, true);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, true);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, true);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, true);
     }

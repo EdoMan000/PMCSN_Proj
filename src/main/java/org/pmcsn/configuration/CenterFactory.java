@@ -22,62 +22,85 @@ public class CenterFactory {
 
 
     public RepartoIstruttorie_MAACFinance createRepartoIstruttorie(boolean approximateServiceAsExponential, boolean isBatch) {
+        int serversNumber;
+        double meanServiceTime;
+        if (isImprovedSimulation) {
+            serversNumber = configurationManager.getInt("repartoIstruttorieMAAC", "serversNumberImproved");
+            meanServiceTime = configurationManager.getDouble("repartoIstruttorieMAAC", "meanServiceTimeImproved");
+        } else {
+            serversNumber = configurationManager.getInt("repartoIstruttorieMAAC", "serversNumber");
+            meanServiceTime = configurationManager.getDouble("repartoIstruttorieMAAC", "meanServiceTime");
+        }
         return new RepartoIstruttorie_MAACFinance(
                 configurationManager.getString("repartoIstruttorieMAAC", "centerName"),
-                configurationManager.getDouble("repartoIstruttorieMAAC", "meanServiceTime"),
-                configurationManager.getInt("repartoIstruttorieMAAC", "serversNumber"),
+                meanServiceTime,
+                configurationManager.getDouble("repartoIstruttorieMAAC", "sigma"),
+                configurationManager.getDouble("repartoIstruttorieMAAC", "truncationPoint"),
+                serversNumber,
                 configurationManager.getInt("repartoIstruttorieMAAC", "streamIndex"),
-                approximateServiceAsExponential, isBatch, batchSize, numBatches);
-    }
-
-    public RepartoIstruttorie_MAACFinance createRepartoIstruttorieImproved(boolean approximateServiceAsExponential, boolean isBatch) {
-        return new RepartoIstruttorie_MAACFinance(
-                configurationManager.getString("repartoIstruttorieMAAC", "centerName"),
-                configurationManager.getDouble("repartoIstruttorieMAAC", "meanServiceTimeImproved"),
-                configurationManager.getInt("repartoIstruttorieMAAC", "serversNumberImproved"),
-                configurationManager.getInt("repartoIstruttorieMAAC", "streamIndex"),
-                approximateServiceAsExponential, isBatch, batchSize, numBatches);
+                approximateServiceAsExponential,
+                isBatch,
+                batchSize,
+                numBatches);
     }
 
     public PreScoring_MAACFinance createPreScoring(boolean approximateServiceAsExponential, boolean isBatch) {
         return new PreScoring_MAACFinance(
                 configurationManager.getString("preScoringMAAC", "centerName"),
                 configurationManager.getDouble("preScoringMAAC", "meanServiceTime"),
+                configurationManager.getDouble("preScoringMAAC", "sigma"),
+                configurationManager.getDouble("preScoringMAAC", "truncationPoint"),
                 configurationManager.getInt("preScoringMAAC", "serversNumber"),
                 configurationManager.getInt("preScoringMAAC", "streamIndex"),
-                approximateServiceAsExponential, isBatch, batchSize, numBatches);
+                approximateServiceAsExponential,
+                isBatch,
+                batchSize,
+                numBatches);
     }
 
-    public SysScoringAutomatico_SANTANDER createSysScoringAutomatico(boolean isImprovedSimulation, boolean approximateServiceAsExponential, boolean isBatch) {
+    public SysScoringAutomatico_SANTANDER createSysScoringAutomatico(boolean approximateServiceAsExponential, boolean isBatch) {
         return new SysScoringAutomatico_SANTANDER(
                 configurationManager.getString("sysScoringAutomaticoSANTANDER", "centerName"),
                 configurationManager.getDouble("sysScoringAutomaticoSANTANDER", "meanServiceTime"),
                 configurationManager.getInt("sysScoringAutomaticoSANTANDER", "streamIndex"),
-                approximateServiceAsExponential, isBatch, isImprovedSimulation, batchSize, numBatches);
+                approximateServiceAsExponential,
+                isBatch,
+                isImprovedSimulation,
+                batchSize,
+                numBatches);
     }
 
     public ComitatoCredito_SANTANDER createComitatoCredito(boolean approximateServiceAsExponential, boolean isBatch) {
         return new ComitatoCredito_SANTANDER(
                 configurationManager.getString("comitatoCreditoSANTANDER", "centerName"),
                 configurationManager.getDouble("comitatoCreditoSANTANDER", "meanServiceTime"),
+                configurationManager.getDouble("comitatoCreditoSANTANDER", "sigma"),
+                configurationManager.getDouble("comitatoCreditoSANTANDER", "truncationPoint"),
                 configurationManager.getInt("comitatoCreditoSANTANDER", "streamIndex"),
-                approximateServiceAsExponential, isBatch, batchSize, numBatches, isImprovedSimulation);
+                approximateServiceAsExponential,
+                isBatch,
+                batchSize,
+                numBatches,
+                isImprovedSimulation);
     }
 
     public RepartoLiquidazioni_MAACFinance createRepartoLiquidazioni(boolean approximateServiceAsExponential,  boolean isDigitalSignature, boolean isBatch) {
-
-        if(isDigitalSignature){
-            return new RepartoLiquidazioni_MAACFinance(
-                    configurationManager.getString("repartoLiquidazioniMAAC", "centerName"),
-                    configurationManager.getDouble("repartoLiquidazioniMAAC", "meanServiceTimeWithDigitalSignature"),
-                    configurationManager.getInt("repartoLiquidazioniMAAC", "streamIndex"),
-                    approximateServiceAsExponential, isBatch, batchSize, numBatches);
+        double meanServiceTime;
+        if (isDigitalSignature) {
+            meanServiceTime = configurationManager.getDouble("repartoLiquidazioniMAAC", "meanServiceTimeWithDigitalSignature");
         } else {
-            return new RepartoLiquidazioni_MAACFinance(
-                    configurationManager.getString("repartoLiquidazioniMAAC", "centerName"),
-                    configurationManager.getDouble("repartoLiquidazioniMAAC", "meanServiceTime"),
-                    configurationManager.getInt("repartoLiquidazioniMAAC", "streamIndex"),
-                    approximateServiceAsExponential, isBatch, batchSize, numBatches);
+            meanServiceTime = configurationManager.getDouble("repartoLiquidazioniMAAC", "meanServiceTime");
+
         }
+        return new RepartoLiquidazioni_MAACFinance(
+                configurationManager.getString("repartoLiquidazioniMAAC", "centerName"),
+                meanServiceTime,
+                configurationManager.getDouble("repartoLiquidazioniMAAC", "sigma"),
+                configurationManager.getDouble("repartoLiquidazioniMAAC", "truncationPoint"),
+                configurationManager.getInt("repartoLiquidazioniMAAC", "streamIndex"),
+                approximateServiceAsExponential,
+                isBatch,
+                batchSize,
+                numBatches);
     }
 }

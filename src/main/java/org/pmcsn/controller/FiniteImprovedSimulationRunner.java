@@ -85,7 +85,7 @@ public class FiniteImprovedSimulationRunner {
             //generating first arrival
             double time = preScoring.getArrival();
             MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-            firstEvent.applicant = Applicant.createBaseApplicant(rngs);
+            firstEvent.applicant = Applicant.create(rngs);
             queue.add(firstEvent);
 
             // Initialize and reset other centers
@@ -152,8 +152,8 @@ public class FiniteImprovedSimulationRunner {
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
         CenterFactory factory = new CenterFactory(true);
         preScoring = factory.createPreScoring(approximateServiceAsExponential, false);
-        repartoIstruttorie = factory.createRepartoIstruttorieImproved(approximateServiceAsExponential, false);
-        scoringAutomatico = factory.createSysScoringAutomatico(true, approximateServiceAsExponential, false);
+        repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, false);
+        scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, false);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, false);
         repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
     }

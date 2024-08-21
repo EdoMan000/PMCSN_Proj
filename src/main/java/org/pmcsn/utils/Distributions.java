@@ -1,9 +1,10 @@
 package org.pmcsn.utils;
 
 import org.pmcsn.libraries.Rngs;
+import org.pmcsn.libraries.Rvgs;
+import org.pmcsn.libraries.Rvms;
 
 public class Distributions {
-
     public static double erlang(long k, double b, Rngs rngs)
         /* ==================================================
          * Returns an Erlang distributed positive real number.
@@ -81,5 +82,31 @@ public class Distributions {
         return (m + s * z);
     }
 
+    /*
+     * For the Lognormal(a, b), the mean and variance are
+     *
+     *                        mean = Exp(a + 0.5*b*b)
+     *                    variance = (Exp(b*b) - 1)*Exp(2*a + b*b)
+     *
+     */
+    public static double truncatedLogNormal(double mu, double sigma, double truncationPoint, Rngs rngs) {
+        Rvms rvms = new Rvms();
+        Rvgs rvgs = new Rvgs(rngs);
 
+        // Calculate 'a' and 'b' based on the given mean and variance
+        double variance = sigma*sigma;
+        double b = Math.sqrt(Math.log(1 + (variance / (mu * mu))));
+        double a = Math.log(mu) - 0.5 * b * b;
+
+        // Calculate alpha (CDF at the left tail)
+        double alpha = rvms.cdfLogNormal(a,b,0.0);
+        // Calculate beta (1 - CDF at truncation point)
+        double beta = 1.0 - rvms.cdfLogNormal(a,b,truncationPoint);
+
+        // Generate a uniform value in the range [alpha, 1 - beta]
+        double u = rvgs.uniform(alpha, 1.0 - beta);
+
+        // Calculate the inverse distribution function
+        return rvms.idfLogNormal(a, b, u);
+    }
 }

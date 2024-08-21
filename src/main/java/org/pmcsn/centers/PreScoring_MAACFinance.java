@@ -4,19 +4,31 @@ import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
 
-import static org.pmcsn.utils.Distributions.exponential;
-import static org.pmcsn.utils.Distributions.uniform;
+import static org.pmcsn.utils.Distributions.*;
 
 public class PreScoring_MAACFinance extends MultiServer{
-
+    private final double sigma;
+    private final double truncationPoint;
     private double sarrival;
     private boolean endOfArrivals;
     private double STOP = Double.POSITIVE_INFINITY;
     private boolean isEndOfArrivals = false;
 
 
-    public PreScoring_MAACFinance(String centerName, double meanServiceTime, int serversNumber, int streamIndex, boolean approximateServiceAsExponential, boolean isBatch, int batchSize, int numBatches) {
+    public PreScoring_MAACFinance(
+            String centerName,
+            double meanServiceTime,
+            double sigma,
+            double truncationPoint,
+            int serversNumber,
+            int streamIndex,
+            boolean approximateServiceAsExponential,
+            boolean isBatch,
+            int batchSize,
+            int numBatches) {
         super(centerName, meanServiceTime, serversNumber, streamIndex, approximateServiceAsExponential, isBatch, batchSize, numBatches);
+        this.sigma = sigma;
+        this.truncationPoint = truncationPoint;
     }
 
     @Override
@@ -53,7 +65,7 @@ public class PreScoring_MAACFinance extends MultiServer{
         if(approximateServiceAsExponential){
             serviceTime = exponential(meanServiceTime, rngs);
         } else {
-            serviceTime = uniform(meanServiceTime-2, meanServiceTime+2, rngs);
+            serviceTime = truncatedLogNormal(meanServiceTime, sigma, truncationPoint, rngs);
         }
         return serviceTime;
     }
@@ -71,7 +83,7 @@ public class PreScoring_MAACFinance extends MultiServer{
             isEndOfArrivals = true;
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-            event.applicant = Applicant.createBaseApplicant(rngs);
+            event.applicant = Applicant.create(rngs);
             queue.add(event);
         }
     }

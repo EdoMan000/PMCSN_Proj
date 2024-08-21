@@ -4,6 +4,7 @@ import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 
 public class Applicant {
+    private static final double P_C = 0.82;
     final int streamIndex;
     boolean haAnzianitaDiLavoro;
     boolean isRapportoRataRedditoOk;
@@ -11,7 +12,7 @@ public class Applicant {
     boolean haRichiesteORifiutiRecenti;
     boolean haCorrispondenzaInBancaDati;
 
-    public static Applicant createBaseApplicant(Rngs rngs) {
+    public static Applicant create(Rngs rngs) {
         ConfigurationManager config = new ConfigurationManager();
         int streamIndex = config.getInt("general", "applicantStreamIndex");
         rngs.selectStream(streamIndex);
@@ -19,11 +20,9 @@ public class Applicant {
         boolean haAnzianitaDiLavoro = rngs.random() <= 0.889;
         boolean isRapportoRataRedditoOk = rngs.random() <= 0.75;
         boolean haContrattoIndeterminato = rngs.random() <= 0.84989;
-        boolean haCorrispondenzaInBancaDati = rngs.random() <= 0.82;
+        boolean haCorrispondenzaInBancaDati = rngs.random() <= P_C;
         return new Applicant(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti, haCorrispondenzaInBancaDati);
     }
-
-
 
 /*
     Per mappare i motivi di rifiuto delle richieste di credito in quattro variabili booleane con probabilità differenti,
@@ -76,12 +75,12 @@ public class Applicant {
 
     public Applicant feedback(Rngs rngs) {
         rngs.selectStream(streamIndex);
-        return Applicant.createBaseApplicant(rngs);
+        return Applicant.create(rngs);
     }
 
     public Applicant improvedFeedback(Rngs rngs) {
         rngs.selectStream(streamIndex);
-        boolean haCorrispondenza = rngs.random() <= 0.82;
+        boolean haCorrispondenza = rngs.random() <= P_C;
         return copy(haCorrispondenza);
     }
 
@@ -93,5 +92,9 @@ public class Applicant {
                 haContrattoIndeterminato,
                 haRichiesteORifiutiRecenti,
                 haCorrispondenzaInBancaDati);
+    }
+
+    public void setHasCorrispondenzaInBancaDati(Rngs rngs) {
+        haCorrispondenzaInBancaDati = rngs.random() <= 0.822;
     }
 }

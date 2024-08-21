@@ -48,6 +48,8 @@ public class SysScoringAutomatico_SANTANDER extends SingleServer {
         EventType type = EventType.ARRIVAL_COMITATO_CREDITO;
         MsqEvent event = new MsqEvent(type, time.current);
         event.applicant = currEvent.applicant;
+        // rngs.selectStream(streamIndex + 1);
+        // event.applicant.setHasCorrispondenzaInBancaDati(rngs);
         queue.add(event);
         if (!isBatch || (!warmup && !isDone())) acceptedJobs++;
     }
