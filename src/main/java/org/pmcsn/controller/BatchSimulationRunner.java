@@ -18,7 +18,6 @@ import static org.pmcsn.utils.PrintUtils.*;
 import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
 public class BatchSimulationRunner {
-
     // Constants
     private static final int START = 0;
     private static final long SEED = 123456789L;
@@ -64,7 +63,6 @@ public class BatchSimulationRunner {
         msqTime.current = START;
         EventQueue events = new EventQueue();
 
-        // Initialize LuggageChecks
         repartoIstruttorie.start(rngs, START);
         repartoIstruttorie.setStop(Double.POSITIVE_INFINITY);
 

@@ -22,7 +22,6 @@ import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
 
 public class FiniteImprovedSimulationRunner {
-
     /*  STATISTICS OF INTEREST :
      *  * Response times
      *  * Population
@@ -86,14 +85,14 @@ public class FiniteImprovedSimulationRunner {
             //generating first arrival
             double time = preScoring.getArrival();
             MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-            firstEvent.applicant = Applicant.createImprovedApplicant(rngs);
+            firstEvent.applicant = Applicant.createBaseApplicant(rngs);
             queue.add(firstEvent);
 
             // Initialize and reset other centers
             resetCenters(rngs);
 
             MsqEvent event;
-            int skip = 3;
+            int skip = 1;
             int eventCount = 0;
 
             // need to use OR because all the conditions should be false

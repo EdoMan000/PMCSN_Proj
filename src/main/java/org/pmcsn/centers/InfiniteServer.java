@@ -9,17 +9,6 @@ import static org.pmcsn.model.MeanStatistics.computeMean;
 import static org.pmcsn.utils.PrintUtils.*;
 
 public abstract class InfiniteServer {
-
-    /*  STATISTICS OF INTEREST :
-     *  * Response times
-     *  * Service times
-     *  * Queue times
-     *  * Inter-arrival times
-     *  * Population
-     *  * Utilization
-     *  * Queue population
-     */
-
     protected int streamIndex;
     protected BasicStatistics statistics;
     protected BatchStatistics batchStatistics;
@@ -65,7 +54,6 @@ public abstract class InfiniteServer {
         this.rngs = rngs;
         area.reset();
         sum.reset();
-        // resetting variables
         this.numberOfJobsInNode = 0;
         this.firstArrivalTime = Double.NEGATIVE_INFINITY;
         this.lastArrivalTime = 0;
@@ -201,8 +189,9 @@ public abstract class InfiniteServer {
         }
         double lambda = sum.served / lastArrivalTime;
         double meanNodePopulation = area.getNodeArea() / lastCompletionTime;
-        double meanResponseTime = meanNodePopulation / lambda;
-        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
+        double meanResponseTime = area.getNodeArea() / sum.served;
+        double meanServiceTime = sum.service / sum.served;
+        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, lambda);
     }
 
     public float getTotalNumberOfJobs() {

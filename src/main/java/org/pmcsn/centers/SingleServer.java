@@ -215,8 +215,9 @@ public abstract class SingleServer {
         }
         double lambda = sum.served / lastArrivalTime;
         double meanNodePopulation = area.getNodeArea() / lastCompletionTime;
-        double meanResponseTime = meanNodePopulation / lambda;
-        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
+        double meanResponseTime = area.getNodeArea() / sum.served;
+        double meanServiceTime = sum.service / sum.served;
+        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, lambda);
     }
 
     public float getTotalNumberOfJobs() {

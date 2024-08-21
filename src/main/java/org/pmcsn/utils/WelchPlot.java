@@ -45,6 +45,10 @@ public class WelchPlot {
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        WelchPlot.welchPlot("csvFiles/%s/observations".formatted("FINITE_SIMULATION"));
+    }
+
     public static void welchPlot(String parent) throws IOException {
         List<Path> files = listAllFiles(Path.of(parent));
         for (Path file : files) {
@@ -55,7 +59,7 @@ public class WelchPlot {
                         .boxed()
                         .collect(Collectors.toList()));
             }
-            List<Double> plot = welchPlot(matrix);
+            List<Double> plot = welchPlot2(matrix);
             String plotPath = file.toString().replace(".data", "_plot.csv");
             savePlot(plotPath, plot);
         }
@@ -92,6 +96,38 @@ public class WelchPlot {
             }
         }
         return files;
+    }
+
+    public static List<Double> welchPlot2(List<List<Double>> matrix) {
+        int m = matrix.stream().filter(r -> !r.isEmpty()).mapToInt(List::size).min().orElseThrow();
+        List<Double> ensembleAverage = new ArrayList<>(m);
+        int n = matrix.size();
+        for (int i = 0; i < m; i++) {
+            double sum = 0.0;
+            for (int j = 0; j < n; j++) {
+                sum += matrix.get(j).get(i);
+            }
+            ensembleAverage.add(sum / n);
+        }
+
+        int w = Math.min(m/4, 10);
+        List<Double> points = new ArrayList<>();
+        for (int i = 0; i < m; i++) {
+            if (i >= w + 1 && i <= m - w) {
+                double y = 0.0;
+                for (int s = -w; s < w; ++s) {
+                    y += ensembleAverage.get(i + s);
+                }
+                points.add(y/(2*w+1));
+            } else if (i >= 1 && i < w) {
+                double y = 0.0;
+                for (int s = -(i-1); s < i-1; ++s) {
+                    y += ensembleAverage.get(i + s);
+                }
+                points.add(y/(2*i-1));
+            }
+        }
+        return points;
     }
 
     public static List<Double> welchPlot(List<List<Double>> matrix) {

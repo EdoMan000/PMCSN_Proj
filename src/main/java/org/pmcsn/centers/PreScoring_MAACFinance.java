@@ -71,7 +71,7 @@ public class PreScoring_MAACFinance extends MultiServer{
             isEndOfArrivals = true;
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-            event.applicant = Applicant.createImprovedApplicant(rngs);
+            event.applicant = Applicant.createBaseApplicant(rngs);
             queue.add(event);
         }
     }
