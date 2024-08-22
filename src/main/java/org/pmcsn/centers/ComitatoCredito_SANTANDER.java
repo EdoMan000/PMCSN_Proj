@@ -14,7 +14,6 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
     private final boolean isImprovedSimulation;
     private final double sigma;
     private final double truncationPoint;
-    public int feedback = 0;
     public int feedbackCreated = 0;
 
     public ComitatoCredito_SANTANDER(
@@ -46,12 +45,12 @@ public class ComitatoCredito_SANTANDER extends InfiniteServer {
                     event.applicant = currEvent.applicant.feedback(rngs);
                 }
                 queue.add(event);
-                if (!isBatch || (!warmup && !isDone())) acceptedJobs++;
                 break;
             case ACCEPTED:
                 event = new MsqEvent(EventType.ARRIVAL_REPARTO_LIQUIDAZIONI, time.current);
                 event.applicant = currEvent.applicant;
                 queue.add(event);
+                if (!isBatch || (!warmup && !isDone())) acceptedJobs++;
                 break;
             case REJECTED:
                 break;

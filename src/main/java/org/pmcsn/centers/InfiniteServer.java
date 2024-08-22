@@ -125,9 +125,7 @@ public abstract class InfiniteServer {
         MsqSum[] sums = new MsqSum[1];
         sums[0] = this.sum;
         statistics.saveStats(area, sums, lastArrivalTime, lastCompletionTime, false, currentBatchStartTime);
-        if(centerName.contains("SCORING")) {
-            statistics.addProbAccept(acceptedJobs / totJobs);
-        }
+        statistics.addProbAccept(acceptedJobs / totJobs);
         statistics.addJobServed(totJobs);
     }
 
