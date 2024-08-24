@@ -74,7 +74,7 @@ public class PrintUtils {
     }
 
     private static String getAcfColor(double value) {
-        if (value > 0.2) {
+        if (Math.abs(value) > 0.2) {
             return BRIGHT_RED;
         } else {
             return BRIGHT_GREEN;
