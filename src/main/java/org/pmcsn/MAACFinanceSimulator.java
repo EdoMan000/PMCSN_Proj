@@ -52,20 +52,27 @@ public class MAACFinanceSimulator {
         FiniteSimulationRunner basicRunner = new FiniteSimulationRunner();
         FiniteImprovedSimulationRunner improvedRunner = new FiniteImprovedSimulationRunner();
 
+
         switch (simulationType) {
             case 1:
                 basicRunner.runFiniteSimulation(false, shouldTrackObservations, false);
                 break;
             case 2:
-                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
+                ModelVerificationBatchMeans.runModelWithBatchMeansMethod(); // Call BatchMeans main method
                 break;
             case 3:
-                improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, false);
+                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethod(); // Call BatchMeans main method
                 break;
             case 4:
-                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethodImproved();
+                improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, false);
                 break;
             case 5:
+                ModelVerificationBatchMeans.runModelWithBatchMeansMethodImproved();
+                break;
+            case 6:
+                ModelVerificationBatchMeans.runModelVerificationWithBatchMeansMethodImproved();
+                break;
+            case 7:
                 improvedRunner.runImprovedModelSimulation(false, shouldTrackObservations, true);
                 break;
             default:

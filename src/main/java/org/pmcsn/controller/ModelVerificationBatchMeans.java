@@ -75,7 +75,29 @@ public class ModelVerificationBatchMeans {
         }
     }
 
-    public static double acf(List<Double> data) {
+
+    public static void runModelWithBatchMeansMethod() throws Exception {
+        ConfigurationManager config = new ConfigurationManager();
+        int batchSize = config.getInt("general", "batchSize");
+        int numBatches = config.getInt("general", "numBatches");
+        int warmupThreshold = (int) ((batchSize * numBatches) * config.getDouble("general", "warmupPercentage"));
+        BatchSimulationRunner batchRunner = new BatchSimulationRunner(batchSize, numBatches, warmupThreshold);
+        batchRunner.runBatchSimulation(false, false);
+    }
+
+    public static void runModelWithBatchMeansMethodImproved() throws Exception {
+        ConfigurationManager config = new ConfigurationManager();
+        int batchSize = config.getInt("general", "batchSizeImproved");
+        int numBatches = config.getInt("general", "numBatchesImproved");
+        int warmupThreshold = (int) ((batchSize * numBatches) * config.getDouble("general", "warmupPercentageImproved"));
+
+        BatchImprovedSimulationRunner batchRunner = new BatchImprovedSimulationRunner(batchSize, numBatches, warmupThreshold);
+        batchRunner.runBatchSimulation(false, false);
+    }
+
+
+
+        public static double acf(List<Double> data) {
         int k = data.size();
         double mean = 0.0;
 
