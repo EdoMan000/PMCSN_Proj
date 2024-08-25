@@ -80,7 +80,7 @@ public class RepartoIstruttorie_MAACFinance extends MultiServer {
             isEndOfArrivals = true;
         } else {
             MsqEvent event = new MsqEvent(EventType.ARRIVAL_REPARTO_ISTRUTTORIE, time);
-            event.applicant = Applicant.create(rngs);
+            event.applicant = Applicant.create(rngs, time);
             queue.add(event);
         }
     }

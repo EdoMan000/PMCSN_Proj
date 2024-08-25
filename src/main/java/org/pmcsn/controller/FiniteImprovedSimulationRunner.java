@@ -85,7 +85,7 @@ public class FiniteImprovedSimulationRunner {
             //generating first arrival
             double time = preScoring.getArrival();
             MsqEvent firstEvent = new MsqEvent(EventType.ARRIVAL_PRE_SCORING, time);
-            firstEvent.applicant = Applicant.create(rngs);
+            firstEvent.applicant = Applicant.create(rngs, time);
             queue.add(firstEvent);
 
             // Initialize and reset other centers

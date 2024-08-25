@@ -6,13 +6,14 @@ import org.pmcsn.libraries.Rngs;
 public class Applicant {
     private static final double P_C = 0.82;
     final int streamIndex;
+    final double entranceTime;
     boolean haAnzianitaDiLavoro;
     boolean isRapportoRataRedditoOk;
     boolean haContrattoIndeterminato;
     boolean haRichiesteORifiutiRecenti;
     boolean haCorrispondenzaInBancaDati;
 
-    public static Applicant create(Rngs rngs) {
+    public static Applicant create(Rngs rngs, double entranceTime) {
         ConfigurationManager config = new ConfigurationManager();
         int streamIndex = config.getInt("general", "applicantStreamIndex");
         rngs.selectStream(streamIndex);
@@ -20,16 +21,7 @@ public class Applicant {
         boolean haContrattoIndeterminato = rngs.random() <= 0.75; // Secondo problema più comune
         boolean haAnzianitaDiLavoro = rngs.random() <= 0.84989; // Problema meno comune
         boolean isRapportoRataRedditoOk = rngs.random() <= 0.889; // Problema raro
-        return new Applicant(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti);
-    }
-
-    private Applicant(
-            int streamIndex,
-            boolean haAnzianitaDiLavoro,
-            boolean isRapportoRataRedditoOk,
-            boolean haContrattoIndeterminato,
-            boolean haRichiesteORifiutiRecenti) {
-        this(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti, false);
+        return new Applicant(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti, entranceTime);
     }
 
     private Applicant(
@@ -38,13 +30,25 @@ public class Applicant {
             boolean isRapportoRataRedditoOk,
             boolean haContrattoIndeterminato,
             boolean haRichiesteORifiutiRecenti,
-            boolean haCorrispondenzaInBancaDati) {
+            double entranceTime) {
+        this(streamIndex, haAnzianitaDiLavoro, isRapportoRataRedditoOk, haContrattoIndeterminato, haRichiesteORifiutiRecenti, false, entranceTime);
+    }
+
+    private Applicant(
+            int streamIndex,
+            boolean haAnzianitaDiLavoro,
+            boolean isRapportoRataRedditoOk,
+            boolean haContrattoIndeterminato,
+            boolean haRichiesteORifiutiRecenti,
+            boolean haCorrispondenzaInBancaDati,
+            double entranceTime) {
         this.streamIndex = streamIndex;
         this.haAnzianitaDiLavoro = haAnzianitaDiLavoro;
         this.isRapportoRataRedditoOk = isRapportoRataRedditoOk;
         this.haContrattoIndeterminato = haContrattoIndeterminato;
         this.haRichiesteORifiutiRecenti = haRichiesteORifiutiRecenti;
         this.haCorrispondenzaInBancaDati = haCorrispondenzaInBancaDati;
+        this.entranceTime = entranceTime;
     }
 
     public boolean isAcceptedByPreScoring() {
@@ -68,7 +72,7 @@ public class Applicant {
 
     public Applicant feedback(Rngs rngs) {
         rngs.selectStream(streamIndex);
-        return Applicant.create(rngs);
+        return Applicant.create(rngs, entranceTime);
     }
 
     public Applicant improvedFeedback(Rngs rngs) {
@@ -84,10 +88,15 @@ public class Applicant {
                 isRapportoRataRedditoOk,
                 haContrattoIndeterminato,
                 haRichiesteORifiutiRecenti,
-                haCorrispondenzaInBancaDati);
+                haCorrispondenzaInBancaDati,
+                entranceTime);
     }
 
     public void setHasCorrispondenzaInBancaDati(Rngs rngs) {
         haCorrispondenzaInBancaDati = rngs.random() <= P_C;
+    }
+
+    public double getEntranceTime() {
+        return entranceTime;
     }
 }
