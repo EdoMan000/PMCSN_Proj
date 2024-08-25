@@ -128,7 +128,7 @@ public abstract class AbstractStatistics {
                 .append(String.valueOf(meanQueueTimeList.get(run))).append(COMMA)
                 .append(String.valueOf(meanServiceTimeList.get(run))).append(COMMA)
                 .append(String.valueOf(meanSystemPopulationList.get(run))).append(COMMA)
-                .append(String.valueOf(meanQueueTimeList.get(run))).append(COMMA)
+                .append(String.valueOf(meanQueuePopulationList.get(run))).append(COMMA)
                 .append(String.valueOf(meanUtilizationList.get(run))).append(COMMA)
                 .append(String.valueOf(lambdaList.get(run))).append(DELIMITER);
     }
