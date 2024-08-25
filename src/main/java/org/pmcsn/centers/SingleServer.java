@@ -167,7 +167,9 @@ public abstract class SingleServer {
         double avgJobServed = computeMean(totJobsList);
 
         // Print all the stats
-        printStats(centerName, avgAcceptanceRate, avgJobServed, meanServiceTime);
+        double busyTime = getBusyTime();
+        double meanServiceTime = busyTime / avgJobServed;
+        printStats(centerName, avgAcceptanceRate, avgJobServed, meanServiceTime, getBusyTime());
     }
 
     public MeanStatistics getMeanStatistics() {
@@ -228,5 +230,9 @@ public abstract class SingleServer {
 
     public String getCenterName() {
         return centerName;
+    }
+
+    public double getBusyTime() {
+        return sum.service;
     }
 }

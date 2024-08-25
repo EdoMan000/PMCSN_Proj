@@ -70,7 +70,7 @@ public abstract class MultiServer {
     public void reset(Rngs rngs) {
         this.rngs = rngs;
         // resetting variables
-        this.numberOfJobsInNode =0;
+        this.numberOfJobsInNode = 0;
         area.reset();
         this.firstArrivalTime = Double.NEGATIVE_INFINITY;
         this.lastArrivalTime = 0;
@@ -194,7 +194,9 @@ public abstract class MultiServer {
         double avgJobServed = computeMean(totJobsList);
 
         // Print all the stats
-        printStats(centerName, avgAcceptanceRate, avgJobServed, meanServiceTime);
+        double busyTime = getBusyTime();
+        double meanServiceTime = busyTime / avgJobServed;
+        printStats(centerName, avgAcceptanceRate, avgJobServed, meanServiceTime, busyTime);
     }
 
     public MeanStatistics getMeanStatistics() {
@@ -248,5 +250,9 @@ public abstract class MultiServer {
 
     public int getServersNumber() {
         return servers.length;
+    }
+
+    public double getBusyTime() {
+        return Arrays.stream(sum).mapToDouble(s -> s.service).sum();
     }
 }

@@ -141,7 +141,8 @@ public class FiniteSimulationRunner {
             modelVerification(simulationType); // Computing and writing verifications stats csv
         }
         System.out.println();
-        System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ getMeanResponseTime() + " min");
+        getMeanResponseTime();
+        System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ repartoLiquidazioni.getMeanResidenceTime() + " min");
     }
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
@@ -220,15 +221,11 @@ public class FiniteSimulationRunner {
         return meanStatisticsList;
     }
 
-    private double getMeanResponseTime(){
+    private void getMeanResponseTime(){
         System.out.println("Average response time in REPARTO ISTRUTTORIE: "+ repartoIstruttorie.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in SISTEMA SCORING AUTOMATICO: "+ scoringAutomatico.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in COMITATO CREDITO: " + comitatoCredito.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in REPARTO LIQUIDAZIONI: "+repartoLiquidazioni.getMeanStatistics().meanResponseTime);
-        return repartoIstruttorie.getMeanStatistics().meanResponseTime+
-                scoringAutomatico.getMeanStatistics().meanResponseTime+
-                comitatoCredito.getMeanStatistics().meanResponseTime+
-                repartoLiquidazioni.getMeanStatistics().meanResponseTime;
     }
 
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {

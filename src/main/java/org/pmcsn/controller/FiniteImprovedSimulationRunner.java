@@ -144,7 +144,8 @@ public class FiniteImprovedSimulationRunner {
         }
 
         System.out.println();
-        System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ getMeanResponseTime() + " min");
+        printMeanResponseTime();
+        System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ repartoLiquidazioni.getMeanResidenceTime() + " min");
     }
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
@@ -233,17 +234,12 @@ public class FiniteImprovedSimulationRunner {
         return meanStatisticsList;
     }
 
-    private double getMeanResponseTime(){
+    private void printMeanResponseTime(){
         System.out.println("Average response time in PRE-SCORING: "+preScoring.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in REPARTO ISTRUTTORIE: "+ repartoIstruttorie.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in SISTEMA SCORING AUTOMATICO: "+ scoringAutomatico.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in COMITATO CREDITO: " + comitatoCredito.getMeanStatistics().meanResponseTime);
         System.out.println("Average response time in REPARTO LIQUIDAZIONI: "+repartoLiquidazioni.getMeanStatistics().meanResponseTime);
-        return preScoring.getMeanStatistics().meanResponseTime +
-                repartoIstruttorie.getMeanStatistics().meanResponseTime+
-                scoringAutomatico.getMeanStatistics().meanResponseTime+
-                comitatoCredito.getMeanStatistics().meanResponseTime+
-                repartoLiquidazioni.getMeanStatistics().meanResponseTime;
     }
 
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {
