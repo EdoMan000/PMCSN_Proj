@@ -5,10 +5,7 @@ import org.pmcsn.configuration.CenterFactory;
 import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
-import org.pmcsn.utils.AnalyticalComputation;
-import org.pmcsn.utils.Comparison;
-import org.pmcsn.utils.Verification;
-import org.pmcsn.utils.WelchPlot;
+import org.pmcsn.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,15 +19,9 @@ import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
 
 public class FiniteImprovedSimulationRunner {
-    /*  STATISTICS OF INTEREST :
-     *  * Response times
-     *  * Population
-     */
-
-    // Constants
     private static final ConfigurationManager config = new ConfigurationManager();
     private static final int START = 0;
-    private static double STOP = config.getDouble("general", "finiteSimObservationTime"); // 8 hours
+    private static final double STOP = config.getDouble("general", "finiteSimObservationTime"); // 8 hours
     private static final long SEED = 123456789L;
 
     private PreScoring_MAACFinance preScoring;
@@ -64,7 +55,7 @@ public class FiniteImprovedSimulationRunner {
 
         int runsNumber = config.getInt("general", "runsNumber");
         if (shouldTrackObservations) {
-            initObservations(runsNumber);
+            initObservations(simulationType, runsNumber);
         }
 
         for (int i = 0; i < runsNumber; i++) {
@@ -76,7 +67,12 @@ public class FiniteImprovedSimulationRunner {
             //Msq initialization
             MsqTime msqTime = new MsqTime();
             msqTime.current = START;
-            EventQueue queue = new EventQueue();
+            EventQueue queue;
+            if (shouldTrackObservations) {
+                queue = new FiniteSimulationEventQueue();
+            } else {
+                queue = new EventQueue();
+            }
 
             // Initialize LuggageChecks
             preScoring.start(rngs, sarrival);
@@ -92,14 +88,19 @@ public class FiniteImprovedSimulationRunner {
             resetCenters(rngs);
 
             MsqEvent event;
-            int skip = 1;
-            int eventCount = 0;
-
             // need to use OR because all the conditions should be false
             while (!preScoring.isEndOfArrivals() || !queue.isEmpty() || number != 0) {
 
                 // Retrieving next event to be processed
                 event = queue.pop();
+                if (event.type == EventType.SAVE_STAT) {
+                    preScoring.updateObservations(preScoringObservations, i);
+                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
+                    scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
+                    comitatoCredito.updateObservations(comitatoCreditoObservations, i);
+                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
+                    continue;
+                }
                 msqTime.next = event.time;
 
                 // Updating areas
@@ -109,9 +110,7 @@ public class FiniteImprovedSimulationRunner {
                 msqTime.current = msqTime.next;
 
                 // Processing the event based on its type
-                processCurrentEvent(shouldTrackObservations, event, msqTime, queue, eventCount, skip, i);
-
-                eventCount++;
+                processCurrentEvent(event, msqTime, queue);
 
                 number = getTotalNumberOfJobsInSystem();
             }
@@ -146,7 +145,6 @@ public class FiniteImprovedSimulationRunner {
 
         System.out.println();
         System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ getMeanResponseTime() + " min");
-        //printJobsServedByNodes(luggageChecks, checkInDesks, boardingPassScanners, securityChecks, passportChecks, stampsCheck, boarding, false);
     }
 
     private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
@@ -165,7 +163,7 @@ public class FiniteImprovedSimulationRunner {
         repartoLiquidazioni.reset(rngs);
     }
 
-    private void processCurrentEvent(boolean shouldTrackObservations, MsqEvent event, MsqTime msqTime, EventQueue events, int eventCount, int skip, int i) {
+    private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {
         switch (event.type) {
             case ARRIVAL_PRE_SCORING:
                 preScoring.processArrival(event, msqTime, events);
@@ -173,45 +171,30 @@ public class FiniteImprovedSimulationRunner {
                 break;
             case COMPLETION_PRE_SCORING:
                 preScoring.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0) {
-                    preScoring.updateObservations(preScoringObservations, i);
-                }
                 break;
             case ARRIVAL_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0) {
-                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
-                }
                 break;
             case ARRIVAL_SCORING_AUTOMATICO:
                 scoringAutomatico.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_SCORING_AUTOMATICO:
                 scoringAutomatico.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0) {
-                    scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
-                }
                 break;
             case ARRIVAL_COMITATO_CREDITO:
                 comitatoCredito.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_COMITATO_CREDITO:
                 comitatoCredito.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0) {
-                    comitatoCredito.updateObservations(comitatoCreditoObservations, i);
-                }
                 break;
             case ARRIVAL_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0) {
-                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
-                }
                 break;
         }
     }
@@ -308,7 +291,8 @@ public class FiniteImprovedSimulationRunner {
         repartoLiquidazioni.setArea(msqTime);
     }
 
-    private void initObservations(int runsNumber) {
+    private void initObservations(String simulationType, int runsNumber) {
+        FileUtils.deleteDirectory("csvFiles/%s/observations".formatted(simulationType));
         for (int i = 0; i < preScoring.getServersNumber(); i++) {
             preScoringObservations.add(new Observations("%s_%d".formatted(preScoring.getCenterName(), i + 1), runsNumber));
         }

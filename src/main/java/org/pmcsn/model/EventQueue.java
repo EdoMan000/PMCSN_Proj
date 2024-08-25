@@ -9,7 +9,7 @@ public class EventQueue {
     private static final Comparator<MsqEvent> CMP = Comparator.comparingDouble(o -> o.time);
 
     private final List<PriorityQueue<MsqEvent>> priority = List.of(new PriorityQueue<>(CMP), new PriorityQueue<>(CMP));
-    private final PriorityQueue<MsqEvent> noPriority = new PriorityQueue<>(CMP);
+    protected final PriorityQueue<MsqEvent> noPriority = new PriorityQueue<>(CMP);
 
     public void add(MsqEvent event) {
         noPriority.add(event);

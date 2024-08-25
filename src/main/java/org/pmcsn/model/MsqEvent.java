@@ -47,6 +47,10 @@ public class MsqEvent {
         this(type, time, service, 0, 0);
     }
 
+    public MsqEvent(EventType eventType) {
+        this(eventType, 0, 0);
+    }
+
     public double getTime(){
         return time;
     }

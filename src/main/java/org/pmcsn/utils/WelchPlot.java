@@ -20,10 +20,20 @@ public class WelchPlot {
         String path = "csvFiles/%s/observations/".formatted(simulationType);
         FileUtils.createDirectoryIfNotExists(path);
         File parent = new File(path);
-        for (Observations o : observationsList) {
-            File file = new File(parent, "%s.data".formatted(o.getCenterName()));
-            writeRow(file, o);
+        List<Double> row = new ArrayList<>();
+        int minSize = observationsList.stream().mapToInt(x -> x.getPoints().size()).min().orElseThrow();
+        for (int i = 0; i < minSize; i++) {
+            double s = 0;
+            for (Observations o : observationsList) {
+                s += o.getPoints().get(i);
+            }
+            row.add(s / observationsList.size());
         }
+        String centerName = observationsList.getFirst().getCenterName();
+        String[] s = centerName.split("_");
+        centerName = String.join("_", Arrays.copyOfRange(s, 0, s.length - 1));
+        File file = new File(parent, "%s.data".formatted(centerName));
+        writeRow(file, row);
     }
 
     public static void writeObservations(String simulationType, Observations observations) {
@@ -35,9 +45,13 @@ public class WelchPlot {
     }
 
     private static void writeRow(File file, Observations observations) {
+        writeRow(file, observations.getPoints());
+    }
+
+    private static void writeRow(File file, List<Double> points) {
         try (FileWriter fileWriter = new FileWriter(file, true)) {
             StringBuilder row = new StringBuilder();
-            observations.getPoints().forEach(p -> row.append(p.toString()).append(","));
+            points.forEach(p -> row.append(p.toString()).append(","));
             fileWriter.write(row.append("\n").toString());
             fileWriter.flush();
         } catch (IOException e) {
@@ -59,10 +73,26 @@ public class WelchPlot {
                         .boxed()
                         .collect(Collectors.toList()));
             }
-            List<Double> plot = welchPlot2(matrix);
-            String plotPath = file.toString().replace(".data", "_plot.csv");
+            List<Double> plot = finiteSimulationPlot(matrix);
+            String plotPath = file.toString().replace(".data", "_time_plot.csv");
+            savePlot(plotPath, plot);
+            plot = welchPlot2(matrix);
+            plotPath = file.toString().replace(".data", "_welch_plot.csv");
             savePlot(plotPath, plot);
         }
+    }
+
+    private static List<Double> finiteSimulationPlot(List<List<Double>> matrix) {
+        int minSize = matrix.stream().mapToInt(List::size).min().orElseThrow();
+        List<Double> averages = new ArrayList<>();
+        for (int i = 0; i < minSize; i++) {
+            double sum = 0.0;
+            for (int j = 0; j < matrix.size(); j++) {
+                sum += matrix.get(j).get(i);
+            }
+            averages.add(sum / matrix.size());
+        }
+        return averages;
     }
 
     private static void savePlot(String plotPath, List<Double> plot) {

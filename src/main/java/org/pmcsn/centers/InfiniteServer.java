@@ -183,13 +183,11 @@ public abstract class InfiniteServer {
 
     public void updateObservations(Observations observations, int run) {
         if (lastArrivalTime == 0 || lastCompletionTime == 0) {
+            observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, 0);
             return;
         }
-        double lambda = sum.served / lastArrivalTime;
-        double meanNodePopulation = area.getNodeArea() / lastCompletionTime;
         double meanResponseTime = area.getNodeArea() / sum.served;
-        double meanServiceTime = sum.service / sum.served;
-        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, lambda);
+        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
     }
 
     public float getTotalNumberOfJobs() {

@@ -54,11 +54,11 @@ public class FiniteSimulationRunner {
         seeds[0] = SEED;
         Rngs rngs = new Rngs();
 
+        int runsNumber = config.getInt("general", "runsNumber");
         if (shouldTrackObservations) {
-            initObservations(simulationType);
+            initObservations(simulationType, runsNumber);
         }
 
-        int runsNumber = config.getInt("general", "runsNumber");
         for (int i = 0; i < runsNumber; i++) {
             long number = 1;
 
@@ -67,7 +67,12 @@ public class FiniteSimulationRunner {
             //Msq initialization
             MsqTime msqTime = new MsqTime();
             msqTime.current = START;
-            EventQueue queue = new EventQueue();
+            EventQueue queue;
+            if (shouldTrackObservations) {
+                queue = new FiniteSimulationEventQueue();
+            } else {
+                queue = new EventQueue();
+            }
 
             // Initialize LuggageChecks
             repartoIstruttorie.start(rngs, START);
@@ -83,13 +88,17 @@ public class FiniteSimulationRunner {
             resetCenters(rngs);
 
             MsqEvent event;
-            int skip = 1;
-            int eventCount = 0;
             // need to use OR because all the conditions should be false
             while (!repartoIstruttorie.isEndOfArrivals() || !queue.isEmpty() || number != 0) {
-
                 // Retrieving next event to be processed
                 event = queue.pop();
+                if (event.type == EventType.SAVE_STAT) {
+                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
+                    scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
+                    comitatoCredito.updateObservations(comitatoCreditoObservations, i);
+                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
+                    continue;
+                }
                 msqTime.next = event.time;
 
                 // Updating areas
@@ -99,9 +108,7 @@ public class FiniteSimulationRunner {
                 msqTime.current = msqTime.next;
 
                 // Processing the event based on its type
-                processCurrentEvent(shouldTrackObservations, event, msqTime, queue, eventCount, skip, i);
-
-                eventCount++;
+                processCurrentEvent(event, msqTime, queue);
 
                 number = getTotalNumberOfJobsInSystem();
             }
@@ -151,7 +158,7 @@ public class FiniteSimulationRunner {
         repartoLiquidazioni.reset(rngs);
     }
 
-    private void processCurrentEvent(boolean shouldTrackObservations, MsqEvent event, MsqTime msqTime, EventQueue events, int eventCount, int skip, int i) {
+    private void processCurrentEvent(MsqEvent event, MsqTime msqTime, EventQueue events) {
         switch (event.type) {
             case ARRIVAL_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processArrival(event, msqTime, events);
@@ -159,32 +166,24 @@ public class FiniteSimulationRunner {
                 break;
             case COMPLETION_REPARTO_ISTRUTTORIE:
                 repartoIstruttorie.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0)
-                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
                 break;
             case ARRIVAL_SCORING_AUTOMATICO:
                 scoringAutomatico.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_SCORING_AUTOMATICO:
                 scoringAutomatico.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0)
-                    scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
                 break;
             case ARRIVAL_COMITATO_CREDITO:
                 comitatoCredito.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_COMITATO_CREDITO:
                 comitatoCredito.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0)
-                    comitatoCredito.updateObservations(comitatoCreditoObservations, i);
                 break;
             case ARRIVAL_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processArrival(event, msqTime, events);
                 break;
             case COMPLETION_REPARTO_LIQUIDAZIONI:
                 repartoLiquidazioni.processCompletion(event, msqTime, events);
-                if (shouldTrackObservations && eventCount % skip == 0)
-                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
                 break;
         }
     }
@@ -273,9 +272,8 @@ public class FiniteSimulationRunner {
     }
 
 
-    private void initObservations(String simulationType) {
+    private void initObservations(String simulationType, int runsNumber) {
         FileUtils.deleteDirectory("csvFiles/%s/observations".formatted(simulationType));
-        int runsNumber = config.getInt("general", "runsNumber");
         repartoIstruttorieObservations = new ArrayList<>();
         for (int i = 0; i < repartoIstruttorie.getServersNumber(); i++) {
             repartoIstruttorieObservations.add(new Observations("%s_%d".formatted(repartoIstruttorie.getCenterName(), i + 1), runsNumber));

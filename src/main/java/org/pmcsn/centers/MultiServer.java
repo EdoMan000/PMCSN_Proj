@@ -226,14 +226,8 @@ public abstract class MultiServer {
         if (lastArrivalTime < 0 || numberOfJobsServed == 0 || servers[serverId].lastCompletionTime == 0.0) {
             return;
         }
-        double lambda = numberOfJobsServed / lastArrivalTime;
-        double meanNodePopulation = area.getNodeArea() / lastCompletionTime;
         double meanResponseTime = area.getNodeArea() / numberOfJobsServed;
-        double meanServiceTime = Arrays.stream(sum)
-                .filter(s -> s.served > 0)
-                .mapToDouble(s -> s.service / s.served)
-                .average().orElseThrow();
-        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, lambda);
+        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
     }
 
     public boolean isDone() {
