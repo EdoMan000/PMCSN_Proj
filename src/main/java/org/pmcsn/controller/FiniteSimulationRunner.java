@@ -59,6 +59,7 @@ public class FiniteSimulationRunner {
             initObservations(simulationType, runsNumber);
         }
 
+        MsqEvent last = null;
         for (int i = 0; i < runsNumber; i++) {
             long number = 1;
 
@@ -99,6 +100,7 @@ public class FiniteSimulationRunner {
                     repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
                     continue;
                 }
+                last = event;
                 msqTime.next = event.time;
 
                 // Updating areas
@@ -128,7 +130,7 @@ public class FiniteSimulationRunner {
             seeds[i + 1] = rngs.getSeed();
         }
 
-        System.out.println(simulationType + " HAS JUST FINISHED.");
+        System.out.println(simulationType + " HAS JUST FINISHED at " + last.time);
 
         if (shouldTrackObservations) {
             WelchPlot.welchPlot("csvFiles/%s/observations".formatted(simulationType));

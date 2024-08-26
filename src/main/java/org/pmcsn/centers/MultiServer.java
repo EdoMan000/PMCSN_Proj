@@ -182,6 +182,7 @@ public abstract class MultiServer {
             statistics.addProbAccept(acceptedJobs / totJobs);
         }
         statistics.addJobServed(totJobs);
+        statistics.addBusyTime(getBusyTime());
     }
 
     public void writeStats(String simulationType) {
@@ -194,9 +195,7 @@ public abstract class MultiServer {
         double avgJobServed = computeMean(totJobsList);
 
         // Print all the stats
-        double busyTime = getBusyTime();
-        double meanServiceTime = busyTime / avgJobServed;
-        printStats(centerName, avgAcceptanceRate, avgJobServed, meanServiceTime, busyTime);
+        printStats(centerName, avgAcceptanceRate, avgJobServed, statistics.getMeanStatistics().meanServiceTime, statistics.getMeanBusyTime());
     }
 
     public MeanStatistics getMeanStatistics() {
