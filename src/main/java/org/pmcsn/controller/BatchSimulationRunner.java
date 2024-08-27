@@ -2,11 +2,10 @@ package org.pmcsn.controller;
 
 import org.pmcsn.centers.*;
 import org.pmcsn.configuration.CenterFactory;
+import org.pmcsn.configuration.ConfigurationManager;
 import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.*;
-import org.pmcsn.utils.AnalyticalComputation;
-import org.pmcsn.utils.Comparison;
-import org.pmcsn.utils.Verification;
+import org.pmcsn.utils.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +19,19 @@ import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 public class BatchSimulationRunner {
     // Constants
     private static final int START = 0;
-    private static final long SEED = 123456789L;
+    private final long seed;
 
     // Centri
     private RepartoIstruttorie_MAACFinance repartoIstruttorie;
     private SysScoringAutomatico_SANTANDER scoringAutomatico;
     private ComitatoCredito_SANTANDER comitatoCredito;
     private RepartoLiquidazioni_MAACFinance repartoLiquidazioni;
+
+    private List<Observations> psObservations;
+    private List<Observations> rimObservations;
+    private Observations saObservations;
+    private Observations ccObservations;
+    private Observations rilObservations;
 
     // We need to compute autocorrelation on the series
     // Number of jobs in single batch (B)
@@ -35,33 +40,38 @@ public class BatchSimulationRunner {
     private final int numBatches;
     private final int warmupThreshold;
     private boolean isWarmingUp = true;
-
+    private final int intervalLength;
 
     public BatchSimulationRunner(int batchSize, int numBatches, int warmupThreshold) {
+        this(batchSize, numBatches, warmupThreshold, 123456789L);
+    }
+
+    public BatchSimulationRunner(int batchSize, int numBatches, int warmupThreshold, long seed) {
         this.batchSize = batchSize;
         this.numBatches = numBatches;
         this.warmupThreshold = warmupThreshold;
+        this.seed = seed;
+        final ConfigurationManager conf = new ConfigurationManager();
+        intervalLength = conf.getInt("general", "bmIntervalLength");
     }
 
-    public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential,  boolean isDigitalSignature) throws Exception {
-        initCenters(approximateServiceAsExponential, isDigitalSignature);
+    public List<BatchStatistics> runBatchSimulation(boolean approximateServiceAsExponential,  boolean withDigitalSignature) throws Exception {
+        initCenters(approximateServiceAsExponential, withDigitalSignature);
 
-        String simulationType;
-        if (approximateServiceAsExponential) {
-            simulationType = "BATCH_SIMULATION_EXPONENTIAL";
-        } else {
-            simulationType = "BATCH_SIMULATION";
-        }
+        String simulationType = getSimulationType(approximateServiceAsExponential, withDigitalSignature);
         printDebug("\nRUNNING " + simulationType + "...");
 
         // Rng setting the seed
         Rngs rngs = new Rngs();
-        rngs.plantSeeds(SEED);
+        rngs.plantSeeds(seed);
+
+        String observationsPath = "csvFiles/%s/%d/observations".formatted(simulationType, seed);
+        initObservations(observationsPath);
 
         // Initialize MsqTime
         MsqTime msqTime = new MsqTime();
         msqTime.current = START;
-        EventQueue events = new EventQueue();
+        EventQueue events = new FiniteSimulationEventQueue(intervalLength);
 
         repartoIstruttorie.start(rngs, START);
         repartoIstruttorie.setStop(Double.POSITIVE_INFINITY);
@@ -80,6 +90,15 @@ public class BatchSimulationRunner {
         while(!isDone()) {
             // Retrieving next event to be processed
             MsqEvent event = events.pop();
+            if (event.type == EventType.SAVE_STAT) {
+                if (!isWarmingUp) {
+                    repartoIstruttorie.updateObservations(rimObservations);
+                    scoringAutomatico.updateObservations(saObservations);
+                    comitatoCredito.updateObservations(ccObservations);
+                    repartoLiquidazioni.updateObservations(rilObservations);
+                }
+                continue;
+            }
             msqTime.next = event.time;
 
             // Updating areas
@@ -98,7 +117,6 @@ public class BatchSimulationRunner {
             // Processing the event based on its type
             processCurrentEvent(event, msqTime, events);
 
-
             // Checking if still in warmup period
             if (isWarmingUp && getMinimumNumberOfJobsServedByCenters() >= warmupThreshold ) {
                 printSuccess("WARMUP COMPLETED... Starting to collect statistics for centers from now on.");
@@ -115,8 +133,11 @@ public class BatchSimulationRunner {
         printSuccess(simulationType + " HAS JUST FINISHED.");
         printDebug("Events queue size is " + events.size());
 
+        writeObservations(observationsPath);
+        PlotUtils.welchPlot(observationsPath);
+
         // Writing statistics csv with data from all batches
-        writeAllStats(simulationType);
+        writeAllStats(simulationType, seed);
 
         // Computing and writing verifications stats csv
         if (approximateServiceAsExponential) {
@@ -124,6 +145,37 @@ public class BatchSimulationRunner {
         }
 
         return getBatchStatistics();
+    }
+
+    private void initObservations(String path) {
+        FileUtils.deleteDirectory(path);
+        rimObservations = new ArrayList<>();
+        for (int i = 0; i < repartoIstruttorie.getServersNumber(); i++) {
+            rimObservations.add(new Observations("%s_%d".formatted(repartoIstruttorie.getCenterName(), i + 1)));
+        }
+        saObservations = new Observations(scoringAutomatico.getCenterName());
+        ccObservations = new Observations(comitatoCredito.getCenterName());
+        rilObservations = new Observations(repartoLiquidazioni.getCenterName());
+    }
+
+    private void writeObservations(String path) {
+        PlotUtils.writeObservations(path, rimObservations);
+        PlotUtils.writeObservations(path, saObservations);
+        PlotUtils.writeObservations(path, ccObservations);
+        PlotUtils.writeObservations(path, rilObservations);
+    }
+
+    private String getSimulationType(boolean approximateServiceAsExponential, boolean withDigitalSignature) {
+        String s;
+        if (approximateServiceAsExponential) {
+            s = "BATCH_SIMULATION_EXPONENTIAL";
+        } else {
+            s = "BATCH_SIMULATION";
+        }
+        if (withDigitalSignature) {
+            return s + "_DIGITAL_SIGNATURE";
+        }
+        return s;
     }
 
     private void stopWarmup(MsqTime time) {
@@ -198,23 +250,19 @@ public class BatchSimulationRunner {
 
     private List<MeanStatistics> aggregateBatchMeanStatistics() {
         List<MeanStatistics> batchMeanStatisticsList = new ArrayList<>();
-
         batchMeanStatisticsList.add(repartoIstruttorie.getBatchMeanStatistics());
         batchMeanStatisticsList.add(scoringAutomatico.getBatchMeanStatistics());
         batchMeanStatisticsList.add(comitatoCredito.getBatchMeanStatistics());
         batchMeanStatisticsList.add(repartoLiquidazioni.getBatchMeanStatistics());
-
         return batchMeanStatisticsList;
     }
 
     private List<ConfidenceIntervals> aggregateConfidenceIntervals() {
         List<ConfidenceIntervals> confidenceIntervalsList = new ArrayList<>();
-
         confidenceIntervalsList.add(createConfidenceIntervals(repartoIstruttorie.getBatchStatistics()));
         confidenceIntervalsList.add(createConfidenceIntervals(scoringAutomatico.getBatchStatistics()));
         confidenceIntervalsList.add(createConfidenceIntervals(comitatoCredito.getBatchStatistics()));
         confidenceIntervalsList.add(createConfidenceIntervals(repartoLiquidazioni.getBatchStatistics()));
-
         return confidenceIntervalsList;
     }
 
@@ -225,14 +273,12 @@ public class BatchSimulationRunner {
         );
     }
 
-
-    private void writeAllStats(String simulationType) {
+    private void writeAllStats(String simulationType, long seed) {
         printDebug("Writing csv files with stats for all the centers.");
-        repartoIstruttorie.writeBatchStats(simulationType);
-        scoringAutomatico.writeBatchStats(simulationType);
-        comitatoCredito.writeBatchStats(simulationType);
-        repartoLiquidazioni.writeBatchStats(simulationType);
-
+        repartoIstruttorie.writeBatchStats(simulationType, seed);
+        scoringAutomatico.writeBatchStats(simulationType, seed);
+        comitatoCredito.writeBatchStats(simulationType, seed);
+        repartoLiquidazioni.writeBatchStats(simulationType, seed);
     }
 
     private void updateAreas(MsqTime msqTime) {

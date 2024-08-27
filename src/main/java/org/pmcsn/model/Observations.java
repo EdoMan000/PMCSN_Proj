@@ -10,7 +10,7 @@ public class Observations {
     private final String centerName;
     private final List<Double> observations;
 
-    public Observations(String centerName, int runsNumber) {
+    public Observations(String centerName) {
         this.centerName = centerName;
         this.observations = new ArrayList<>();
     }
@@ -19,7 +19,7 @@ public class Observations {
         return centerName;
     }
 
-    public void saveObservation(int run, INDEX index, double point) {
+    public void saveObservation(double point) {
         observations.add(point);
     }
 

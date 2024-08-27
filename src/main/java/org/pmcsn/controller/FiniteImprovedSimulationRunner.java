@@ -20,9 +20,11 @@ import static org.pmcsn.utils.Verification.verifyConfidenceIntervals;
 
 public class FiniteImprovedSimulationRunner {
     private static final ConfigurationManager config = new ConfigurationManager();
-    private static final int START = 0;
-    private static final double STOP = config.getDouble("general", "finiteSimObservationTime"); // 8 hours
-    private static final long SEED = 123456789L;
+    private final int start = 0;
+    private static final double stop = config.getDouble("general", "finiteSimObservationTime"); // 8 hours
+    private final long seed;
+    private final int runsNumber = config.getInt("general", "runsNumber");
+    private final int streamIndex = config.getInt("general", "seedStreamIndex");
 
     private PreScoring_MAACFinance preScoring;
     private RepartoIstruttorie_MAACFinance repartoIstruttorie;
@@ -35,38 +37,38 @@ public class FiniteImprovedSimulationRunner {
     private Observations comitatoCreditoObservations;
     private Observations repartoLiquidazioniObservations;
 
+    public FiniteImprovedSimulationRunner() {
+        this(123456789L);
+    }
 
-    public void runImprovedModelSimulation(boolean approximateServiceAsExponential, boolean shouldTrackObservations, boolean isDigitalSignature) throws Exception {
-        initCenters(approximateServiceAsExponential, isDigitalSignature);
-        String simulationType;
-        if(approximateServiceAsExponential){
-            simulationType = "IMPROVED_FINITE_SIMULATION_EXPONENTIAL";
-        }else{
-            simulationType = "IMPROVED_FINITE_SIMULATION";
-        }
-        if(isDigitalSignature) simulationType = simulationType + "_DIGITAL_SIGNATURE";
+    public FiniteImprovedSimulationRunner(long seed) {
+        this.seed = seed;
+    }
+
+    public void runImprovedModelSimulation(boolean approximateServiceAsExponential, boolean shouldTrackObservations, boolean withDigitalSignature) throws Exception {
+        initCenters(approximateServiceAsExponential, withDigitalSignature);
+        String simulationType = getSimulationType(approximateServiceAsExponential, withDigitalSignature);
 
         System.out.println("\nRUNNING " + simulationType + "...");
 
         //Rng setting the seed
         long[] seeds = new long[1024];
-        seeds[0] = SEED;
+        seeds[0] = seed;
         Rngs rngs = new Rngs();
 
-        int runsNumber = config.getInt("general", "runsNumber");
+        String observationsPath = "csvFiles/%s/%d/observations".formatted(simulationType, seed);
         if (shouldTrackObservations) {
-            initObservations(simulationType, runsNumber);
+            initObservations(observationsPath);
         }
 
         for (int i = 0; i < runsNumber; i++) {
-            double sarrival = START;
             long number = 1;
 
             rngs.plantSeeds(seeds[i]);
 
             //Msq initialization
             MsqTime msqTime = new MsqTime();
-            msqTime.current = START;
+            msqTime.current = start;
             EventQueue queue;
             if (shouldTrackObservations) {
                 queue = new FiniteSimulationEventQueue();
@@ -75,8 +77,8 @@ public class FiniteImprovedSimulationRunner {
             }
 
             // Initialize LuggageChecks
-            preScoring.start(rngs, sarrival);
-            preScoring.setStop(STOP);
+            preScoring.start(rngs, start);
+            preScoring.setStop(stop);
 
             //generating first arrival
             double time = preScoring.getArrival();
@@ -94,11 +96,11 @@ public class FiniteImprovedSimulationRunner {
                 // Retrieving next event to be processed
                 event = queue.pop();
                 if (event.type == EventType.SAVE_STAT) {
-                    preScoring.updateObservations(preScoringObservations, i);
-                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations, i);
-                    scoringAutomatico.updateObservations(scoringAutomaticoObservations, i);
-                    comitatoCredito.updateObservations(comitatoCreditoObservations, i);
-                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations, i);
+                    preScoring.updateObservations(preScoringObservations);
+                    repartoIstruttorie.updateObservations(repartoIstruttorieObservations);
+                    scoringAutomatico.updateObservations(scoringAutomaticoObservations);
+                    comitatoCredito.updateObservations(comitatoCreditoObservations);
+                    repartoLiquidazioni.updateObservations(repartoLiquidazioniObservations);
                     continue;
                 }
                 msqTime.next = event.time;
@@ -117,11 +119,10 @@ public class FiniteImprovedSimulationRunner {
 
             // Writing observations for current run
             if (shouldTrackObservations) {
-                writeObservations(simulationType);
+                writeObservations(observationsPath);
                 resetObservations();
             }
 
-            //System.out.println("EVENT COUNT FOR RUN N°"+i+": " + eventCount);
             // Saving statistics for current run
             saveAllStats();
 
@@ -133,11 +134,11 @@ public class FiniteImprovedSimulationRunner {
         System.out.println(simulationType + " HAS JUST FINISHED.");
 
         if (shouldTrackObservations) {
-            WelchPlot.welchPlot("csvFiles/%s/observations".formatted(simulationType));
+            PlotUtils.welchPlot(observationsPath);
         }
 
         // Writing statistics csv with data from all runs
-        writeAllStats(simulationType);
+        writeAllStats(simulationType, seed);
 
         if(approximateServiceAsExponential) {
             modelVerification(simulationType); // Computing and writing verifications stats csv
@@ -148,13 +149,26 @@ public class FiniteImprovedSimulationRunner {
         System.out.println(BRIGHT_GREEN + "Average time spent by one job is: "+ repartoLiquidazioni.getMeanResidenceTime() + " min");
     }
 
-    private void initCenters(boolean approximateServiceAsExponential,  boolean isDigitalSignature) {
+    private String getSimulationType(boolean approximateServiceAsExponential, boolean withDigitalSignature) {
+        String simulationType;
+        if (approximateServiceAsExponential) {
+            simulationType = "IMPROVED_FINITE_SIMULATION_EXPONENTIAL";
+        } else {
+            simulationType = "IMPROVED_FINITE_SIMULATION";
+        }
+        if (withDigitalSignature) {
+            return simulationType + "_DIGITAL_SIGNATURE";
+        }
+        return simulationType;
+    }
+
+    private void initCenters(boolean approximateServiceAsExponential,  boolean withDigitalSignature) {
         CenterFactory factory = new CenterFactory(true);
         preScoring = factory.createPreScoring(approximateServiceAsExponential, false);
         repartoIstruttorie = factory.createRepartoIstruttorie(approximateServiceAsExponential, false);
         scoringAutomatico = factory.createSysScoringAutomatico(approximateServiceAsExponential, false);
         comitatoCredito = factory.createComitatoCredito(approximateServiceAsExponential, false);
-        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, isDigitalSignature, false);
+        repartoLiquidazioni = factory.createRepartoLiquidazioni(approximateServiceAsExponential, withDigitalSignature, false);
     }
 
     private void resetCenters(Rngs rngs) {
@@ -260,14 +274,14 @@ public class FiniteImprovedSimulationRunner {
         );
     }
 
-    private void writeAllStats(String simulationType) {
+    private void writeAllStats(String simulationType, long seed) {
         System.out.println("Writing csv files with stats for all the centers.");
 
-        preScoring.writeStats(simulationType);
-        repartoIstruttorie.writeStats(simulationType);
-        scoringAutomatico.writeStats(simulationType);
-        comitatoCredito.writeStats(simulationType);
-        repartoLiquidazioni.writeStats(simulationType);
+        preScoring.writeStats(simulationType, seed);
+        repartoIstruttorie.writeStats(simulationType, seed);
+        scoringAutomatico.writeStats(simulationType, seed);
+        comitatoCredito.writeStats(simulationType, seed);
+        repartoLiquidazioni.writeStats(simulationType, seed);
     }
 
     private long getTotalNumberOfJobsInSystem() {
@@ -287,17 +301,17 @@ public class FiniteImprovedSimulationRunner {
         repartoLiquidazioni.setArea(msqTime);
     }
 
-    private void initObservations(String simulationType, int runsNumber) {
-        FileUtils.deleteDirectory("csvFiles/%s/observations".formatted(simulationType));
+    private void initObservations(String path) {
+        FileUtils.deleteDirectory(path);
         for (int i = 0; i < preScoring.getServersNumber(); i++) {
-            preScoringObservations.add(new Observations("%s_%d".formatted(preScoring.getCenterName(), i + 1), runsNumber));
+            preScoringObservations.add(new Observations("%s_%d".formatted(preScoring.getCenterName(), i + 1)));
         }
         for (int i = 0; i < repartoIstruttorie.getServersNumber(); i++) {
-            repartoIstruttorieObservations.add(new Observations("%s_%d".formatted(repartoIstruttorie.getCenterName(), i + 1), runsNumber));
+            repartoIstruttorieObservations.add(new Observations("%s_%d".formatted(repartoIstruttorie.getCenterName(), i + 1)));
         }
-        scoringAutomaticoObservations = new Observations(scoringAutomatico.getCenterName(), runsNumber);
-        comitatoCreditoObservations = new Observations(comitatoCredito.getCenterName(), runsNumber);
-        repartoLiquidazioniObservations = new Observations(repartoLiquidazioni.getCenterName(), runsNumber);
+        scoringAutomaticoObservations = new Observations(scoringAutomatico.getCenterName());
+        comitatoCreditoObservations = new Observations(comitatoCredito.getCenterName());
+        repartoLiquidazioniObservations = new Observations(repartoLiquidazioni.getCenterName());
     }
 
     private void resetObservations() {
@@ -308,12 +322,12 @@ public class FiniteImprovedSimulationRunner {
         repartoLiquidazioniObservations.reset();
     }
 
-    private void writeObservations(String simulationType) {
+    private void writeObservations(String path) {
         // Computing warm up period boundaries
-        WelchPlot.writeObservations(simulationType, preScoringObservations);
-        WelchPlot.writeObservations(simulationType, repartoIstruttorieObservations);
-        WelchPlot.writeObservations(simulationType, scoringAutomaticoObservations);
-        WelchPlot.writeObservations(simulationType, comitatoCreditoObservations);
-        WelchPlot.writeObservations(simulationType, repartoLiquidazioniObservations);
+        PlotUtils.writeObservations(path, preScoringObservations);
+        PlotUtils.writeObservations(path, repartoIstruttorieObservations);
+        PlotUtils.writeObservations(path, scoringAutomaticoObservations);
+        PlotUtils.writeObservations(path, comitatoCreditoObservations);
+        PlotUtils.writeObservations(path, repartoLiquidazioniObservations);
     }
 }

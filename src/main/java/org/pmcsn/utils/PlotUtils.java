@@ -1,5 +1,8 @@
 package org.pmcsn.utils;
 
+import org.pmcsn.controller.FiniteImprovedSimulationRunner;
+import org.pmcsn.controller.FiniteSimulationRunner;
+import org.pmcsn.libraries.Rngs;
 import org.pmcsn.model.Observations;
 
 import java.io.File;
@@ -13,11 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class WelchPlot {
-    private WelchPlot() {}
+public class PlotUtils {
+    private PlotUtils() {}
 
-    public static void writeObservations(String simulationType, List<Observations> observationsList) {
-        String path = "csvFiles/%s/observations/".formatted(simulationType);
+    public static void writeObservations(String path, List<Observations> observationsList) {
         FileUtils.createDirectoryIfNotExists(path);
         File parent = new File(path);
         List<Double> row = new ArrayList<>();
@@ -36,8 +38,7 @@ public class WelchPlot {
         writeRow(file, row);
     }
 
-    public static void writeObservations(String simulationType, Observations observations) {
-        String path = "csvFiles/%s/observations/".formatted(simulationType);
+    public static void writeObservations(String path, Observations observations) {
         FileUtils.createDirectoryIfNotExists(path);
         File parent = new File(path);
         File file = new File(parent, "%s.data".formatted(observations.getCenterName()));
@@ -59,8 +60,21 @@ public class WelchPlot {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-        WelchPlot.welchPlot("csvFiles/%s/observations".formatted("FINITE_SIMULATION"));
+    public static void main(String[] args) throws Exception {
+        FileUtils.deleteDirectory("csvFiles/FINITE_SIMULATION");
+        FileUtils.deleteDirectory("csvFiles/IMPROVED_FINITE_SIMULATION");
+        Rngs rngs = new Rngs();
+        rngs.selectStream(255);
+        long[] seeds = new long[5];
+        for (int i = 0; i < seeds.length; i++) {
+            seeds[i] = (long) (rngs.random() * (Long.MAX_VALUE));
+        }
+        for (long seed : seeds) {
+            FiniteSimulationRunner runner = new FiniteSimulationRunner(seed);
+            runner.runFiniteSimulation(false, true, false);
+            FiniteImprovedSimulationRunner iRunner = new FiniteImprovedSimulationRunner(seed);
+            iRunner.runImprovedModelSimulation(false, true, false);
+        }
     }
 
     public static void welchPlot(String parent) throws IOException {
@@ -74,10 +88,7 @@ public class WelchPlot {
                         .collect(Collectors.toList()));
             }
             List<Double> plot = finiteSimulationPlot(matrix);
-            String plotPath = file.toString().replace(".data", "_time_plot.csv");
-            savePlot(plotPath, plot);
-            plot = welchPlot2(matrix);
-            plotPath = file.toString().replace(".data", "_welch_plot.csv");
+            String plotPath = file.toString().replace(".data", "_plot.csv");
             savePlot(plotPath, plot);
         }
     }
@@ -126,84 +137,5 @@ public class WelchPlot {
             }
         }
         return files;
-    }
-
-    public static List<Double> welchPlot2(List<List<Double>> matrix) {
-        int m = matrix.stream().filter(r -> !r.isEmpty()).mapToInt(List::size).min().orElseThrow();
-        List<Double> ensembleAverage = new ArrayList<>(m);
-        int n = matrix.size();
-        for (int i = 0; i < m; i++) {
-            double sum = 0.0;
-            for (int j = 0; j < n; j++) {
-                sum += matrix.get(j).get(i);
-            }
-            ensembleAverage.add(sum / n);
-        }
-
-        int w = Math.min(m/4, 10);
-        List<Double> points = new ArrayList<>();
-        for (int i = 0; i < m; i++) {
-            if (i >= w + 1 && i <= m - w) {
-                double y = 0.0;
-                for (int s = -w; s < w; ++s) {
-                    y += ensembleAverage.get(i + s);
-                }
-                points.add(y/(2*w+1));
-            } else if (i >= 1 && i < w) {
-                double y = 0.0;
-                for (int s = -(i-1); s < i-1; ++s) {
-                    y += ensembleAverage.get(i + s);
-                }
-                points.add(y/(2*i-1));
-            }
-        }
-        return points;
-    }
-
-    public static List<Double> welchPlot(List<List<Double>> matrix) {
-        int m = matrix.stream().filter(r -> !r.isEmpty()).mapToInt(List::size).min().orElseThrow();
-        List<Double> ensembleAverage = new ArrayList<>(m);
-
-        // Calculate ensemble averages
-        for (int i = 0; i < m; i++) {
-            double sum = 0.0;
-            int count = 0;
-            for (List<Double> row : matrix) {
-                if (!row.isEmpty()) {
-                    sum += row.get(i);
-                    count += 1;
-                }
-            }
-            ensembleAverage.add(sum / count);
-        }
-        // Define window size (w)
-        int w = Math.min(m / 4, 5); // Choose w as min(m/4, 5)
-        // Calculate moving averages
-        List<Double> movingAverage = new ArrayList<>(m);
-        for (int i = 0; i < m; i++) {
-            double sum = 0.0;
-            int count = 0;
-
-            if (i < w) {
-                for (int s = -i; s <= i; s++) {
-                    sum += ensembleAverage.get(i + s);
-                    count++;
-                }
-                movingAverage.add(sum / count);
-            } else if (i >= m - w) {
-                for (int s = -(m - i - 1); s <= (m - i - 1); s++) {
-                    sum += ensembleAverage.get(i + s);
-                    count++;
-                }
-                movingAverage.add(sum / count);
-            } else {
-                for (int s = -w; s <= w; s++) {
-                    sum += ensembleAverage.get(i + s);
-                    count++;
-                }
-                movingAverage.add(sum / (2 * w + 1));
-            }
-        }
-        return movingAverage;
     }
 }

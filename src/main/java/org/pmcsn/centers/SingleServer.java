@@ -158,8 +158,8 @@ public abstract class SingleServer {
         statistics.addBusyTime(getBusyTime());
     }
 
-    public void writeStats(String simulationType) {
-        statistics.writeStats(simulationType);
+    public void writeStats(String simulationType, long seed) {
+        statistics.writeStats(simulationType, seed);
         List<Double> prob = statistics.getProbAccept();
         List<Double> totJobsList = statistics.getJobServed();
 
@@ -179,8 +179,8 @@ public abstract class SingleServer {
         return this.statistics;
     }
 
-    public void writeBatchStats(String simulationType){
-        batchStatistics.writeStats(simulationType);
+    public void writeBatchStats(String simulationType, long seed){
+        batchStatistics.writeStats(simulationType, seed);
         System.out.println(centerName +" Probability is " + acceptedJobs/totJobs);
     }
 
@@ -210,13 +210,13 @@ public abstract class SingleServer {
         return batchStatistics.isBatchRetrievalDone();
     }
 
-    public void updateObservations(Observations observations, int run) {
+    public void updateObservations(Observations observations) {
         if (lastArrivalTime == 0 || lastCompletionTime == 0) {
-            observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, 0);
+            observations.saveObservation(0);
             return;
         }
         double meanResponseTime = area.getNodeArea() / sum.served;
-        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
+        observations.saveObservation(meanResponseTime);
     }
 
     public float getTotalNumberOfJobs() {

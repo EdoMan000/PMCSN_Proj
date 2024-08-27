@@ -3,13 +3,15 @@ package org.pmcsn.model;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static org.pmcsn.utils.PrintUtils.formatList;
+import java.util.logging.Logger;
 
 public abstract class AbstractStatistics {
+    private final Logger logger = Logger.getLogger(AbstractStatistics.class.getName());
+
     public enum Index {
         ServiceTime,
         QueueTime,
@@ -87,38 +89,27 @@ public abstract class AbstractStatistics {
 
     abstract void add(Index index, List<Double> list, double value);
 
-    public void writeStats(String simulationType) {
-        File file = new File("csvFiles/" + simulationType + "/results/");
-        if (!file.exists()) {
-            file.mkdirs();
+    public void writeStats(String simulationType, long seed) {
+        File parent = Path.of("csvFiles", simulationType, String.valueOf(seed), "results").toFile();
+        if (!parent.exists()) {
+            if (!parent.mkdirs()) {
+                logger.severe("Failed to create directory: " + parent.getPath());
+                System.exit(1);
+            }
         }
-
-        file = new File("csvFiles/" + simulationType + "/results/" + centerName + ".csv");
+        File file = new File(parent, centerName + ".csv");
         try (FileWriter fileWriter = new FileWriter(file)) {
-
             String DELIMITER = "\n";
             String COMMA = ",";
             int run;
             String name = simulationType.contains("BATCH") ? "#Batch" : "#Run";
             fileWriter.append(name).append(", E[Ts], E[Tq], E[s], E[Ns], E[Nq], ρ, λ").append(DELIMITER);
-
             for (run = 0; run < meanResponseTimeList.size(); run++) {
                 writeRunValuesRow(fileWriter, run, COMMA, DELIMITER);
             }
-
-            MeanStatistics meanStatistics = getMeanStatistics();
-            //writeMeanStatisticsRow(meanStatistics, fileWriter, COMMA, DELIMITER);
-
-            ConfidenceIntervals confidenceIntervals = new ConfidenceIntervals(
-                    meanResponseTimeList, meanQueueTimeList, meanServiceTimeList,
-                    meanSystemPopulationList, meanQueuePopulationList, meanUtilizationList, lambdaList
-            );
-
-            //writeConfidenceIntervalsRow(confidenceIntervals, fileWriter, COMMA, DELIMITER);
-
             fileWriter.flush();
         } catch (IOException e) {
-            //ignore
+            logger.severe(e.getMessage());
         }
     }
 
@@ -131,40 +122,6 @@ public abstract class AbstractStatistics {
                 .append(String.valueOf(meanQueuePopulationList.get(run))).append(COMMA)
                 .append(String.valueOf(meanUtilizationList.get(run))).append(COMMA)
                 .append(String.valueOf(lambdaList.get(run))).append(DELIMITER);
-    }
-
-    private void writeMeanStatisticsRow(MeanStatistics meanStatistics, FileWriter fileWriter, String COMMA, String DELIMITER) throws IOException {
-        fileWriter.append("MEAN_VALUES").append(COMMA)
-                .append(String.valueOf(meanStatistics.meanResponseTime)).append(COMMA)
-                .append(String.valueOf(meanStatistics.meanQueueTime)).append(COMMA)
-                .append(String.valueOf(meanStatistics.meanServiceTime)).append(COMMA)
-                .append(String.valueOf(meanStatistics.meanSystemPopulation)).append(COMMA)
-                .append(String.valueOf(meanStatistics.meanQueuePopulation)).append(COMMA)
-                .append(String.valueOf(meanStatistics.meanUtilization)).append(COMMA)
-                .append(String.valueOf(meanStatistics.lambda)).append(DELIMITER);
-    }
-
-    private void writeConfidenceIntervalsRow(ConfidenceIntervals confidenceIntervals, FileWriter fileWriter, String COMMA, String DELIMITER) throws IOException {
-        String PREAMBLE = "± ";
-        // Write confidence intervals row
-        fileWriter.append("CONFIDENCE_INTERVALS").append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getResponseTimeCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getQueueTimeCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getServiceTimeCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getSystemPopulationCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getQueuePopulationCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getUtilizationCI())).append(COMMA)
-                .append(PREAMBLE).append(String.valueOf(confidenceIntervals.getLambdaCI())).append(DELIMITER);
-    }
-
-    public void printLists() {
-        System.out.println("Mean Response Time List: " + formatList(meanResponseTimeList));
-        System.out.println("Mean Service Time List: " + formatList(meanServiceTimeList));
-        System.out.println("Mean Queue Time List: " + formatList(meanQueueTimeList));
-        System.out.println("Lambda List: " + formatList(lambdaList));
-        System.out.println("Mean System Population List: " + formatList(meanSystemPopulationList));
-        System.out.println("Mean Utilization List: " + formatList(meanUtilizationList));
-        System.out.println("Mean Queue Population List: " + formatList(meanQueuePopulationList));
     }
 
 }

@@ -185,8 +185,8 @@ public abstract class MultiServer {
         statistics.addBusyTime(getBusyTime());
     }
 
-    public void writeStats(String simulationType) {
-        statistics.writeStats(simulationType);
+    public void writeStats(String simulationType, long seed) {
+        statistics.writeStats(simulationType, seed);
         List<Double> prob = statistics.getProbAccept();
         List<Double> totJobsList = statistics.getJobServed();
 
@@ -202,8 +202,8 @@ public abstract class MultiServer {
         return statistics.getMeanStatistics();
     }
 
-    public void writeBatchStats(String simulationType){
-        batchStatistics.writeStats(simulationType);
+    public void writeBatchStats(String simulationType, long seed){
+        batchStatistics.writeStats(simulationType, seed);
     }
 
     public void saveBatchStats(MsqTime time) {
@@ -216,31 +216,23 @@ public abstract class MultiServer {
         return batchStatistics.getMeanStatistics();
     }
 
-    public void updateObservations(List<Observations> observationsList, int run) {
+    public void updateObservations(List<Observations> observationsList) {
         for (int i = 0; i < observationsList.size(); i++) {
-            updateObservation(observationsList.get(i), run, i);
+            updateObservation(observationsList.get(i), i);
         }
     }
 
-    private void updateObservation(Observations observations, int run, int serverId) {
+    private void updateObservation(Observations observations, int serverId) {
         long numberOfJobsServed = Arrays.stream(sum).mapToLong(x -> x.served).sum();
         if (lastArrivalTime < 0 || numberOfJobsServed == 0 || servers[serverId].lastCompletionTime == 0.0) {
             return;
         }
         double meanResponseTime = area.getNodeArea() / numberOfJobsServed;
-        observations.saveObservation(run, Observations.INDEX.RESPONSE_TIME, meanResponseTime);
+        observations.saveObservation(meanResponseTime);
     }
 
     public boolean isDone() {
         return batchStatistics.isBatchRetrievalDone();
-    }
-
-    public float getTotalNumberOfJobs() {
-        return totJobs;
-    }
-
-    public float getAcceptedJobs() {
-        return acceptedJobs;
     }
 
     public String getCenterName() {
