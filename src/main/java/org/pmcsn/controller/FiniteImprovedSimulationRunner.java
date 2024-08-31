@@ -91,7 +91,7 @@ public class FiniteImprovedSimulationRunner {
 
             MsqEvent event;
             // need to use OR because all the conditions should be false
-            while (!preScoring.isEndOfArrivals() || !queue.isEmpty() || number != 0) {
+            while (!preScoring.isEndOfArrivals() || !queue.isEmpty()) {
 
                 // Retrieving next event to be processed
                 event = queue.pop();

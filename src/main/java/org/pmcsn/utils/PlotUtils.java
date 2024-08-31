@@ -65,7 +65,7 @@ public class PlotUtils {
         FileUtils.deleteDirectory("csvFiles/IMPROVED_FINITE_SIMULATION");
         Rngs rngs = new Rngs();
         rngs.selectStream(255);
-        long[] seeds = new long[5];
+        long[] seeds = new long[1];
         for (int i = 0; i < seeds.length; i++) {
             seeds[i] = (long) (rngs.random() * (Long.MAX_VALUE));
         }
@@ -74,6 +74,8 @@ public class PlotUtils {
             runner.runFiniteSimulation(false, true, false);
             FiniteImprovedSimulationRunner iRunner = new FiniteImprovedSimulationRunner(seed);
             iRunner.runImprovedModelSimulation(false, true, false);
+            PlotUtils.welchPlot("csvFiles/IMPROVED_FINITE_SIMULATION/%d/observations".formatted(seed));
+            PlotUtils.welchPlot("csvFiles/FINITE_SIMULATION/%d/observations".formatted(seed));
         }
     }
 
@@ -82,10 +84,12 @@ public class PlotUtils {
         for (Path file : files) {
             List<List<Double>> matrix = new ArrayList<>();
             for (String line : Files.readAllLines(file)) {
-                matrix.add(Arrays.stream(line.trim().split(","))
-                        .mapToDouble(Double::parseDouble)
-                        .boxed()
-                        .collect(Collectors.toList()));
+                if (line.trim().split(",").length >= 30) {
+                    matrix.add(Arrays.stream(line.trim().split(","))
+                            .mapToDouble(Double::parseDouble)
+                            .boxed()
+                            .collect(Collectors.toList()));
+                }
             }
             List<Double> plot = finiteSimulationPlot(matrix);
             String plotPath = file.toString().replace(".data", "_plot.csv");

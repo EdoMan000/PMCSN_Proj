@@ -1,9 +1,6 @@
 package org.pmcsn.centers;
 
-import org.pmcsn.model.EventQueue;
-import org.pmcsn.model.EventType;
-import org.pmcsn.model.MsqEvent;
-import org.pmcsn.model.MsqTime;
+import org.pmcsn.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +42,11 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
         queue.add(event);
     }
 
+//    @Override
+//    public void updateObservations(Observations observations) {
+//        observations.saveObservation(getMeanResidenceTime());
+//    }
+
     protected double getService(int streamIndex) {
         rngs.selectStream(streamIndex);
         double serviceTime;
@@ -61,6 +63,6 @@ public class RepartoLiquidazioni_MAACFinance extends SingleServer {
     }
 
     public double getMeanResidenceTime() {
-        return residenceTimes.stream().mapToDouble(Double::doubleValue).average().orElseThrow();
+        return residenceTimes.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
     }
 }

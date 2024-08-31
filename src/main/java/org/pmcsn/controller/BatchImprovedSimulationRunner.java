@@ -94,8 +94,8 @@ public class BatchImprovedSimulationRunner {
                 if (!isWarmingUp) {
                     preScoring.updateObservations(psObservations);
                     repartoIstruttorie.updateObservations(rimObservations);
-                    scoringAutomatico.updateObservations(saObservations);
-                    comitatoCredito.updateObservations(ccObservations);
+//                    scoringAutomatico.updateObservations(saObservations);
+//                    comitatoCredito.updateObservations(ccObservations);
                     repartoLiquidazioni.updateObservations(rilObservations);
                 }
                 continue;
@@ -142,7 +142,7 @@ public class BatchImprovedSimulationRunner {
         FileUtils.deleteDirectory(path);
         psObservations = new ArrayList<>();
         for (int i = 0; i < preScoring.getServersNumber(); i++) {
-            psObservations.add(new Observations("%s_%d".formatted(repartoIstruttorie.getCenterName(), i + 1)));
+            psObservations.add(new Observations("%s_%d".formatted(preScoring.getCenterName(), i + 1)));
         }
         rimObservations = new ArrayList<>();
         for (int i = 0; i < repartoIstruttorie.getServersNumber(); i++) {
@@ -321,8 +321,8 @@ public class BatchImprovedSimulationRunner {
     private void writeObservations(String path) {
         PlotUtils.writeObservations(path, psObservations);
         PlotUtils.writeObservations(path, rimObservations);
-        PlotUtils.writeObservations(path, saObservations);
-        PlotUtils.writeObservations(path, ccObservations);
+//        PlotUtils.writeObservations(path, saObservations);
+//        PlotUtils.writeObservations(path, ccObservations);
         PlotUtils.writeObservations(path, rilObservations);
     }
 }
